@@ -1,0 +1,9 @@
+semaforo_alerta/
+__pycache__/
+*.pyc
+.env
+.vscode/
+
+semaforo_alerta/
+__pycache__/
+*.pyc
