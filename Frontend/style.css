@@ -1,0 +1,36 @@
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    height:100vh;
+}
+
+.contenedor{
+    display:flex;
+    height:100vh;
+}
+
+.izquierda{
+    width:50%;
+    background-color:white;
+
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    text-align:center;
+    padding:40px;
+}
+
+.logo{
+    width:1000px;
+    margin-bottom:100px;
+}
+
+.izquierda h1{
+    max-width:1000px;
+    font-size:50px;
+}
