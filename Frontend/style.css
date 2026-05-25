@@ -1,4 +1,3 @@
-/* --- CONFIGURACIÓN GENERAL --- */
 * {
     margin: 0;
     padding: 0;
@@ -17,7 +16,7 @@ body {
     display: none;
 }
 
-/* --- SECCIÓN IZQUIERDA (Desktop) --- */
+/* --- SECCIÓN IZQUIERDA  */
 .izquierda {
     width: 50%;
     background-image: linear-gradient(rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.45)), url('background-sin\ fondo.png'); 
