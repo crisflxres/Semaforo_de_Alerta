@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recuperar Contraseña - Semáforo de Alerta Académica</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <main class="contenedor">
+        <section class="izquierda">
+            <div class="contenido-izquierda">
+                <img src="img/Logo.png" alt="Logo CECyTE" class="logo">
+                <h1 class="titulo-escuela">
+                    Colegio de Estudios Científicos y Tecnológicos <br> del Estado de Hidalgo
+                </h1> 
+            </div> 
+        </section>
+        
+        <section class="derecha">
+            <div class="card-login"> 
+                <img src="img/Logo.png" alt="Logo CECyTE" class="logo-movil">
+                <p class="titulo-escuela-movil">Colegio de Estudios Científicos y Tecnológicos <br> del Estado de Hidalgo</p>
+                <h2 class="titulo-semaforo">Semáforo de Alerta Académica</h2>
+                <p class="subtitulo">Recuperar Contraseña</p>
+                
+                <p class="texto-ayuda">
+                    Ingresa tu correo para buscar tu cuenta y generar un enlace de restablecimiento.
+                </p>
+                <br>
+        
+                <form class="formulario">
+                    <div class="input-group">
+                        <label for="Correo-ecuperar" class="sr-only">Correo Electrónico</label>
+                        <div class="input-icon-wrapper">
+                            <i class="fa-regular fa-envelope icon-form"></i>
+                            <input type="email" id="Correo-recuperar" placeholder="Ingresa tu Correo Electrónico" required> 
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-azul">Enviar</button>
+                </form> 
+
+                <p class="enlace-retorno"><a href="index.html">Regresar al Login</a></p>
+            </div> 
+        </section> 
+    </main>
+    <script src="recuperar.js"></script>
+</body>
+</html>
