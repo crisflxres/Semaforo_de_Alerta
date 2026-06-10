@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 23-05-2026 a las 18:03:49
+-- Tiempo de generación: 10-06-2026 a las 19:52:06
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Base de datos: `semaforo_academico`
+-- Base de datos: `semaforo_alerta`
 --
 
 -- --------------------------------------------------------
@@ -50,7 +50,20 @@ CREATE TABLE `alumnos` (
   `Id_Grupo` smallint(5) UNSIGNED NOT NULL,
   `Foto` varchar(255) DEFAULT NULL,
   `Email` varchar(150) DEFAULT NULL,
-  `Activo` tinyint(1) NOT NULL DEFAULT 1
+  `Activo` tinyint(1) NOT NULL DEFAULT 1,
+  `Id_Usuario` int(10) UNSIGNED NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_spanish_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `aulas`
+--
+
+CREATE TABLE `aulas` (
+  `Id_Aula` int(10) UNSIGNED NOT NULL,
+  `Nombre` varchar(50) NOT NULL,
+  `Tipo` varchar(50) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_spanish_ci;
 
 -- --------------------------------------------------------
@@ -69,7 +82,7 @@ CREATE TABLE `calificaciones` (
   `P2` decimal(4,2) DEFAULT NULL,
   `P3` decimal(4,2) DEFAULT NULL,
   `PR` decimal(4,2) NOT NULL,
-  `Aprobado` tinyint(1) GENERATED ALWAYS AS (`PR` >= 6.0) STORED
+  `Aprobado` tinyint(1) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_spanish_ci;
 
 -- --------------------------------------------------------
@@ -112,7 +125,7 @@ CREATE TABLE `horarios` (
   `Dia_Semana` enum('Lunes','Martes','Miercoles','Jueves','Viernes') NOT NULL,
   `Hora_Inicio` time NOT NULL,
   `Hora_Fin` time NOT NULL,
-  `Aula` varchar(20) NOT NULL
+  `Id_Aula` int(10) UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_spanish_ci;
 
 -- --------------------------------------------------------
@@ -183,7 +196,8 @@ CREATE TABLE `notificaciones` (
   `Asunto` varchar(255) NOT NULL,
   `Cuerpo` text NOT NULL,
   `Fecha_Enviado` datetime NOT NULL DEFAULT current_timestamp(),
-  `Estado` enum('Enviado','Error') NOT NULL DEFAULT 'Enviado'
+  `Estado` enum('Enviado','Error') NOT NULL DEFAULT 'Enviado',
+  `Id_Alerta` int(10) UNSIGNED DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_spanish_ci;
 
 -- --------------------------------------------------------
@@ -259,10 +273,11 @@ CREATE TABLE `usuarios` (
   `Id_Rol` tinyint(3) UNSIGNED NOT NULL,
   `Nombre` varchar(100) NOT NULL,
   `Apellidos` varchar(150) NOT NULL,
-  `Email` varchar(150) NOT NULL,
+  `Email` varchar(150) DEFAULT NULL,
   `Password` varchar(255) NOT NULL,
   `Activo` tinyint(1) NOT NULL DEFAULT 1,
-  `Fecha_Creacion` datetime NOT NULL DEFAULT current_timestamp()
+  `Fecha_Creacion` datetime NOT NULL DEFAULT current_timestamp(),
+  `Telefono` varchar(20) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_spanish_ci;
 
 --
@@ -282,7 +297,14 @@ ALTER TABLE `alertas`
 --
 ALTER TABLE `alumnos`
   ADD PRIMARY KEY (`Matricula`),
-  ADD KEY `FK_Alumno_Grupo` (`Id_Grupo`);
+  ADD KEY `FK_Alumno_Grupo` (`Id_Grupo`),
+  ADD KEY `FK_Alumno_Usuario` (`Id_Usuario`);
+
+--
+-- Indices de la tabla `aulas`
+--
+ALTER TABLE `aulas`
+  ADD PRIMARY KEY (`Id_Aula`);
 
 --
 -- Indices de la tabla `calificaciones`
@@ -315,7 +337,8 @@ ALTER TABLE `horarios`
   ADD PRIMARY KEY (`Id_Horario`),
   ADD KEY `FK_Horario_Usuario` (`Id_Usuario`),
   ADD KEY `FK_Horario_Grupo` (`Id_Grupo`),
-  ADD KEY `FK_Horario_Materia` (`Id_Materia`);
+  ADD KEY `FK_Horario_Materia` (`Id_Materia`),
+  ADD KEY `FK_Horario_Aula` (`Id_Aula`);
 
 --
 -- Indices de la tabla `importaciones`
@@ -345,7 +368,8 @@ ALTER TABLE `niveles_alerta`
 --
 ALTER TABLE `notificaciones`
   ADD PRIMARY KEY (`Id_Notificacion`),
-  ADD KEY `FK_Notificacion_Alumno` (`Matricula`);
+  ADD KEY `FK_Notificacion_Alumno` (`Matricula`),
+  ADD KEY `FK_Notificacion_Alerta` (`Id_Alerta`);
 
 --
 -- Indices de la tabla `observaciones`
@@ -395,6 +419,12 @@ ALTER TABLE `usuarios`
 --
 ALTER TABLE `alertas`
   MODIFY `Id_Alerta` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `aulas`
+--
+ALTER TABLE `aulas`
+  MODIFY `Id_Aula` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `calificaciones`
@@ -489,7 +519,8 @@ ALTER TABLE `alertas`
 -- Filtros para la tabla `alumnos`
 --
 ALTER TABLE `alumnos`
-  ADD CONSTRAINT `FK_Alumno_Grupo` FOREIGN KEY (`Id_Grupo`) REFERENCES `grupos` (`Id_Grupo`);
+  ADD CONSTRAINT `FK_Alumno_Grupo` FOREIGN KEY (`Id_Grupo`) REFERENCES `grupos` (`Id_Grupo`),
+  ADD CONSTRAINT `FK_Alumno_Usuario` FOREIGN KEY (`Id_Usuario`) REFERENCES `usuarios` (`Id_Usuario`);
 
 --
 -- Filtros para la tabla `calificaciones`
@@ -509,6 +540,7 @@ ALTER TABLE `grupos`
 -- Filtros para la tabla `horarios`
 --
 ALTER TABLE `horarios`
+  ADD CONSTRAINT `FK_Horario_Aula` FOREIGN KEY (`Id_Aula`) REFERENCES `aulas` (`Id_Aula`),
   ADD CONSTRAINT `FK_Horario_Grupo` FOREIGN KEY (`Id_Grupo`) REFERENCES `grupos` (`Id_Grupo`),
   ADD CONSTRAINT `FK_Horario_Materia` FOREIGN KEY (`Id_Materia`) REFERENCES `materias` (`Id_Materia`),
   ADD CONSTRAINT `FK_Horario_Usuario` FOREIGN KEY (`Id_Usuario`) REFERENCES `usuarios` (`Id_Usuario`);
@@ -530,6 +562,7 @@ ALTER TABLE `materias`
 -- Filtros para la tabla `notificaciones`
 --
 ALTER TABLE `notificaciones`
+  ADD CONSTRAINT `FK_Notificacion_Alerta` FOREIGN KEY (`Id_Alerta`) REFERENCES `alertas` (`Id_Alerta`),
   ADD CONSTRAINT `FK_Notificacion_Alumno` FOREIGN KEY (`Matricula`) REFERENCES `alumnos` (`Matricula`);
 
 --

@@ -48,19 +48,14 @@ def importar_materias(hoja):
             
             nombre = str(valor)
             
-            if nombre == ultimo:
-                continue
-            
             if nombre == ultimo or nombre == "PAC":
                 continue
             
             if nombre.lower().startswith("sub"):
                 tipo = "submodulo"
-            elif nombre.lower().startswith("mód") or nombre.lower().startswith("mod"):
-                    tipo = "modulo"
             else:
                 tipo = "basica"
-
+                
             materia = {
                 "nombre":  nombre,
                 "tipo":    tipo,
@@ -70,19 +65,39 @@ def importar_materias(hoja):
             ultimo = nombre
     return materias
 
+def limpiar_calificacion(valor):
+    if float(valor) == 0 or pd.isna(valor):
+        return None  #Guarda Null en lugar de 0 para que no falle la logica de aprobacion
+    return float(valor)
+
 def importar_calificaciones(hoja, materias):
     calificaciones:list = []
     
     for i, fila in hoja.iterrows():
         if str(fila[0]).startswith("M") and len(str(fila[0])) >= 15:
             for materia in materias:
+                P1 = limpiar_calificacion(fila[materia["columna"]])
+                P2 = limpiar_calificacion(fila[materia["columna"] + 1])
+                P3 = limpiar_calificacion(fila[materia["columna"] + 2])
+                PR = limpiar_calificacion(fila[materia["columna"] + 3])
+                
+                if P1 is None and P2 is None and P3 is None:
+                    continue
+                
+                if materia["tipo"] == "submodulo":
+                    aprobado = 1 if (P1 and P1 >= 6) and (P2 and P2 >= 6) and (P3 and P3 >= 6) else 0
+                else:
+                    aprobado = 1 if PR and PR >= 6 else 0 #0 significa que reprobo y uno que aprobo
+
+                
                 calificacion:dict = {
                     "matricula": fila[0],
                     "materia": materia["nombre"],
-                    "P1": float(fila[materia["columna"]]),
-                    "P2": float(fila[materia["columna"] + 1]),
-                    "P3": float(fila[materia["columna"] + 2]),
-                    "PR": float(fila[materia["columna"] + 3]),
+                    "P1": P1,
+                    "P2": P2,
+                    "P3": P3,
+                    "PR": PR,
+                    "aprobado": aprobado,
                 }
                 calificaciones.append(calificacion)
     return calificaciones
