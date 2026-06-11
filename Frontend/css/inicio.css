@@ -1,0 +1,69 @@
+/* 1. CONFIGURACIÓN GENERAL */
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+body { background-color: #f4f6f9; min-height: 100vh; display: flex; flex-direction: column; overflow-x: hidden; }
+
+/* 2. HEADER SUPERIOR */
+.header-barra { background-color: #850121; height: 70px; display: flex; align-items: center; justify-content: space-between; padding: 0 25px; position: fixed; width: 100%; z-index: 100; }
+.btn-menu { background: none; border: none; color: white; font-size: 24px; cursor: pointer; z-index: 102; }
+.logo-top { height: 52px; object-fit: contain; position: absolute; left: 50%; transform: translateX(-50%); }
+.usuario-avatar { background-color: #dbc9b1; color: #333; width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; border: 2px solid white; }
+
+/* Menú Perfil Flotante */
+.menu-perfil { position: fixed; top: 75px; right: 25px; background: white; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); display: none; flex-direction: column; width: 160px; z-index: 101; overflow: hidden; }
+.menu-perfil.activo { display: flex; }
+.menu-perfil a { padding: 12px 15px; color: #333; text-decoration: none; font-size: 0.95rem; display: flex; align-items: center; gap: 10px; }
+.menu-perfil a:hover { background-color: #f8fafc; }
+.menu-perfil a.cerrar-sesion { color: #850121; border-top: 1px solid #141414; }
+
+/* 3. LAYOUT Y SIDEBAR OCULTABLE */
+.contenedor-layout { display: flex; margin-top: 70px; min-height: calc(100vh - 70px); padding: 20px; gap: 20px; position: relative; }
+.sidebar { background-color: #561c24; width: 260px; padding: 20px 12px; display: flex; flex-direction: column; gap: 12px; transition: transform 0.3s ease, width 0.3s ease; border-radius: 24px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12); height: calc(100vh - 110px); position: sticky; top: 90px; flex-shrink: 0; }
+.sidebar.oculto { transform: translateX(-300px); width: 0; padding: 20px 0; margin-right: -20px; }
+
+.nav-item { display: flex; align-items: center; gap: 15px; color: #ffffff; text-decoration: none; padding: 14px 18px; border-radius: 16px; font-size: 1rem; transition: all 0.2s; white-space: nowrap; }
+.nav-item i { font-size: 20px; width: 24px; text-align: center; }
+.nav-item:hover, .nav-item.activo { background-color: #b0997a; color: #ffffff; }
+
+/* 4. PANEL DE CONTENIDO EN GENERAL */
+.contenido-panel { flex: 1; padding: 10px 20px; transition: all 0.3s ease; }
+.encabezado-contenido h1 { color: #561c24; font-size: 1.8rem; }
+.ciclo { color: #8a8a8a; font-size: 0.9rem; margin-top: 4px; }
+.seccion-titulo { font-size: 0.85rem; color: #850121; letter-spacing: 1px; margin: 30px 0 15px 0; }
+
+/* 5. TARJETAS DEL SEMÁFORO ACADÉMICO */
+.grid-tarjetas { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; }
+.tarjeta { background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.04); display: flex; flex-direction: column; justify-content: space-between; border: 1.5px solid; }
+
+/* Asignación de colores intensos a los bordes */
+.estado-total { border-color: #610018; }      
+.estado-regulares { border-color: #00a896; }  
+.estado-riesgo { border-color: #d19000; }     
+.estado-criticos { border-color: #d90429; }   
+
+/* Elementos internos de las tarjetas */
+.tarjeta-cabecera { padding: 20px; display: flex; align-items: center; gap: 15px; }
+.tarjeta-cabecera span { font-size: 0.95rem; color: #334155; font-weight: 500; display: block; }
+.tarjeta-cabecera strong { font-size: 1.9rem; color: #0f172a; margin-top: 2px; }
+
+/* Inyección de color heredado directamente a los íconos */
+.icon-c { font-size: 38px; opacity: 0.75; }
+.estado-total .icon-c { color: #610018; }
+.estado-regulares .icon-c { color: #00a896; }
+.estado-riesgo .icon-c { color: #d19000; }
+.estado-criticos .icon-c { color: #d90429; }
+
+.ver-mas { background: #fafafa; padding: 12px 20px; font-size: 0.85rem; color: #475569; text-decoration: none; display: flex; align-items: center; justify-content: space-between; border-top: 1px solid #f1f5f9; transition: all 0.2s ease; }
+.ver-mas:hover { background: #610018; color: #ffffff; }
+
+/* 6. SECCIÓN DE GESTIÓN RÁPIDA */
+.gestion-rapida { background: white; border-radius: 20px; padding: 30px; margin-top: 35px; border: 1.5px solid #cbd5e1; box-shadow: 0 4px 12px rgba(0,0,0,0.04); }
+.gestion-rapida h3 { color: #850121; font-size: 1.2rem; margin-bottom: 25px; }
+.grid-gestion { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
+
+.opcion-gestion { border: 1.5px solid #850121; border-radius: 16px; padding: 20px; text-align: center; display: flex; flex-direction: column; align-items: center; background-color: #ffffff; transition: transform 0.2s, box-shadow 0.2s; }
+.opcion-gestion:hover { transform: translateY(-2px); box-shadow: 0 6px 14px rgba(0,0,0,0.05); }
+.icon-box { background: #fdf2f4; color: #850121; width: 55px; height: 55px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; margin-bottom: 12px; }
+.opcion-gestion span { font-size: 0.95rem; font-weight: 500; color: #334155; margin-bottom: 15px; }
+
+.btn-gestion { font-size: 0.85rem; color: #850121; text-decoration: none; border: 1px solid #850121; padding: 8px 16px; border-radius: 20px; width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s; }
+.btn-gestion:hover { background: #850121; color: white; }

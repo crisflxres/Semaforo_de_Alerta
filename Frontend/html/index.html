@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">    
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar Sesion -  Semaforo de Alerta Academica</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="../css/login.css">
+</head>
+<body>
+    <header class="header-institucional">
+        <div class="logos-container">
+            <img src="Logo-cecyteh.png" alt="Logo CECyTEH" class="logo-cecyteh">
+             <div class="divisor-linea"></div>
+            <img src="Logo-SEP.png" alt="Logo Gobierno del Estado de Hidalgo" class="logo-gobierno">
+        </div>
+        <div class="nombre-colegio">
+            Colegio de Estudios Científicos y Tecnológicos del Estado de Hidalgo
+        </div>
+    </header>
+    <main class="login-wrapper">
+        <section class="info-lado">
+            <h1 class="titulo-sistema">
+                Semaforo de <br>
+                <span>Alerta Academica</span>
+            </h1>
+        </section>
+        <section class="formulario-lado">
+            <div class="tarjeta-login">
+                <h2>Bienvenidos</h2>
+                <p class="subtitulo">Ingresa tus credencilaes para acceder al sistema</p>
+                <form id="formLogin">
+                    <div class="grupo-input">
+                        <div class="input-icono-wrapper">
+                            <i class="fa-regular fa-user"></i>
+                            <input type="text" id="usuario" placeholder="Usuario" required autocomplete="username">
+                        </div>
+                    </div>
+                    <div class="grupo-input">
+                        <div class="input-icono-wrapper">
+                            <i class="fa-solid fa-lock"></i>
+                            <input type="password" id="matricula" placeholder="Matricula" required autocomplete="current-password">
+                        </div>
+                    </div>
+                    <div class="olvido-contraseña">
+                        <a href="#">¿Olvidaste tu contraseña?</a>
+                    </div>
+                    <div class="grupo-botones">
+                        <button type="submit" class="btn-iniciar">Iniciar Sesión</button>
+                        <button type="button" class="btn-Crear-cuenta">Crear Cuenta</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+        <script src="../js/login.js"></script>
+    </main>
+</body>

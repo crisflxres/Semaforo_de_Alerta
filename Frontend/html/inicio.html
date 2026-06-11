@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Semáforo de Alerta Académica - Panel</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/inicio.css">
+</head>
+<body>
+
+    <header class="header-barra">
+        <button class="btn-menu" id="btnMenu"><i class="fa-solid fa-bars"></i></button>
+        <img src="logo-cecyteh.png" alt="CECYTEH" class="logo-top">
+        <div class="usuario-avatar" id="avatarBtn">V</div>
+    </header>
+
+    <div class="menu-perfil" id="menuPerfil">
+        <a href="#"><i class="fa-solid fa-user"></i> Perfil</a>
+        <a href="#" class="cerrar-sesion"><i class="fa-solid fa-right-from-bracket"></i> Cerrar Sesión</a>
+    </div>
+
+    <div class="contenedor-layout">
+        <nav class="sidebar" id="sidebar">
+            <a href="inicio.html" class="nav-item activo"><i class="fa-solid fa-house"></i> <span>Inicio</span></a>
+            <a href="alumnos.html" class="nav-item"><i class="fa-solid fa-users"></i> <span>Alumnos</span></a>
+            <a href="alertas.html" class="nav-item"><i class="fa-solid fa-bell"></i> <span>Alertas</span></a>
+            <a href="gestion.html" class="nav-item"><i class="fa-solid fa-calendar-days"></i> <span>Horarios de Docentes</span></a>
+            <a href="configuracion.html" class="nav-item"><i class="fa-solid fa-gear"></i> <span>Configuración</span></a>
+        </nav>
+
+        <main class="contenido-panel">
+            <div class="encabezado-contenido">
+                <h1>Panel de Control</h1>
+                <p class="ciclo">Ciclo Escolar 2025-2026</p>
+            </div>
+
+            <h2 class="seccion-titulo">ALUMNOS</h2>
+            
+            <div class="grid-tarjetas">
+                <div class="tarjeta estado-total">
+                    <div class="tarjeta-cabecera"><i class="fa-solid fa-users icon-c"></i> <div><span>Total</span><strong>1400</strong></div></div>
+                    <a href="alumnos.html" class="ver-mas">Ver más <i class="fa-solid fa-arrow-right"></i></a>
+                </div>
+                <div class="tarjeta estado-regulares">
+                    <div class="tarjeta-cabecera"><i class="fa-solid fa-circle-check icon-c"></i> <div><span>Regulares</span><strong>980</strong></div></div>
+                    <a href="alumnos.html" class="ver-mas">Ver más <i class="fa-solid fa-arrow-right"></i></a>
+                </div>
+                <div class="tarjeta estado-riesgo">
+                    <div class="tarjeta-cabecera"><i class="fa-solid fa-triangle-exclamation icon-c"></i> <div><span>En riesgo</span><strong>198</strong></div></div>
+                    <a href="alumnos.html" class="ver-mas">Ver más <i class="fa-solid fa-arrow-right"></i></a>
+                </div>
+                <div class="tarjeta estado-criticos">
+                    <div class="tarjeta-cabecera"><i class="fa-solid fa-circle-xmark icon-c"></i> <div><span>Críticos</span><strong>62</strong></div></div>
+                    <a href="alumnos.html" class="ver-mas">Ver más <i class="fa-solid fa-arrow-right"></i></a>
+                </div>
+            </div>
+
+            <div class="gestion-rapida">
+                <h3>Gestión rápida</h3>
+                <div class="grid-gestion">
+                    <div class="opcion-gestion">
+                        <div class="icon-box"><i class="fa-solid fa-table-cells-large"></i></div>
+                        <span>Grupos Registrados</span>
+                        <a href="gestion.html?tab=grupos" class="btn-gestion">Ver grupos <i class="fa-solid fa-arrow-right"></i></a>
+                    </div>
+                    <div class="opcion-gestion">
+                        <div class="icon-box"><i class="fa-solid fa-id-card-clip"></i></div>
+                        <span>Docentes registrados</span>
+                        <a href="gestion.html?tab=docentes" class="btn-gestion">Ver docentes <i class="fa-solid fa-arrow-right"></i></a>
+                    </div>
+                    <div class="opcion-gestion">
+                        <div class="icon-box"><i class="fa-solid fa-book-open"></i></div>
+                        <span>Materias Registradas</span>
+                        <a href="gestion.html?tab=materias" class="btn-gestion">Ver materias <i class="fa-solid fa-arrow-right"></i></a>
+                    </div>
+                    <div class="opcion-gestion">
+                        <div class="icon-box"><i class="fa-solid fa-door-open"></i></div>
+                        <span>Aulas Asignadas</span>
+                        <a href="gestion.html?tab=aulas" class="btn-gestion">Ver aulas <i class="fa-solid fa-arrow-right"></i></a>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script src="../js/inicio.js"></script>
+</body>
+</html>
