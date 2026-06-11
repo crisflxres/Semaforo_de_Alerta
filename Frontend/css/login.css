@@ -1,0 +1,150 @@
+/* 1. CONFIGURACIÓN GLOBAL Y RESPONSIVA */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+body {
+    background-color: #fcfbfa;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+}
+
+/* 2. HEADER INSTITUCIONAL */
+.header-institucional {
+    width: 100%;
+    min-height: 90px;
+    padding: 15px 5%;
+    background: #ffffff;
+    border-bottom: 4px solid #850121; 
+    box-shadow: 0 4px 0px 0px #bc955c;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap; 
+    z-index: 10;
+}
+.logos-container { display: flex; align-items: center; gap: 20px; }
+.logo-cecyteh { height: 50px; object-fit: contain; }
+.divisor-linea { width: 2px; height: 40px; background-color: #bc955c; }
+.logo-gobierno { height: 50px; object-fit: contain; }
+.nombre-colegio { font-size: 0.95rem; color: #850121; font-weight: 600; }
+
+/* 3. CONTENEDOR PRINCIPAL */
+.login-wrapper {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 40px 10%;
+    position: relative;
+    min-height: calc(100vh - 94px);
+    background-image: url('../html/fondo.png'); 
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+/* 4. DISTRIBUCIÓN DE COLUMNAS FLEXIBLES */
+.info-lado {
+    flex: 1;
+    max-width: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    z-index: 2;
+    padding-right: 20px;
+}
+.titulo-sistema { font-size: clamp(2rem, 4vw, 3rem); color: #850121; font-weight: 700; line-height: 1.2; }
+.titulo-sistema span { color: #850121; font-size: clamp(2.3rem, 4.5vw, 3.4rem); }
+.formulario-lado { flex: 1; display: flex; justify-content: flex-end; align-items: center; z-index: 2; }
+
+/* 5. TARJETA DE LOGIN ESCALABLE */
+.tarjeta-login {
+    background: #ffffff;
+    width: 100%;
+    max-width: 460px;
+    padding: 50px 40px;
+    border-radius: 28px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1); 
+    border: 1px solid #e2e8f0;
+    text-align: center;
+}
+.tarjeta-login h2 { font-size: 2.2rem; color: #850121; margin-bottom: 8px; }
+.subtitulo { font-size: 0.85rem; color: #8a8a8a; margin-bottom: 35px; }
+.grupo-input { margin-bottom: 24px; }
+.input-icono-wrapper { position: relative; width: 100%; }
+
+/* Icono de entrada izquierdo (Usuario/Candado) */
+.input-icono-wrapper > i {
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #475569; 
+    font-size: 22px;
+}
+.input-icono-wrapper input {
+    width: 100%;
+    padding: 18px 40px 18px 55px; 
+    text-align: left; 
+    border: 1px solid #cbd5e1;
+    border-radius: 14px;
+    background-color: #f8fafc; 
+    font-size: 1rem;
+    color: #334155;
+    outline: none;
+    transition: all 0.2s ease;
+}
+.input-icono-wrapper input:focus {
+    border-color: #850121;
+    background-color: #ffffff;
+    box-shadow: 0 0 0 4px rgba(133, 1, 33, 0.1);
+}
+
+.olvido-contraseña { text-align: center; margin-bottom: 35px; }
+.olvido-contraseña a { color: #561C24; font-size: 0.9rem; text-decoration: none; font-weight: 500; }
+
+/* 6. BOTONES COMPLETAMENTE ÓVALOS ESTILO FIGMA */
+.grupo-botones { display: flex; flex-direction: column; gap: 18px; margin-top: 10px; }
+
+.btn-iniciar {
+    width: 100% !important;
+    height: 58px !important;
+    font-size: 1.15rem !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 50px !important;
+    background-color: #850121 !important; 
+    color: #ffffff !important;
+    border: none !important;
+    box-shadow: 0 4px 12px rgba(133, 1, 33, 0.25) !important;
+    transition: all 0.2s ease !important;
+    outline: none !important;
+}
+.btn-iniciar:hover { background-color: #561C24 !important; transform: translateY(-2px) !important; box-shadow: 0 6px 18px rgba(133, 1, 33, 0.35) !important; }
+
+.btn-Crear-cuenta {
+    width: 100% !important;
+    height: 58px !important;
+    font-size: 1.15rem !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 50px !important;
+    background-color: #ffffff !important;
+    color: #850121 !important;
+    border: 2.5px solid #850121 !important; 
+    transition: all 0.2s ease !important;
+    outline: none !important;
+}
+.btn-Crear-cuenta:hover { background-color: #fdf2f4 !important; transform: translateY(-2px) !important; }
+.btn-iniciar:active, .btn-Crear-cuenta:active { transform: translateY(1px) !important; }

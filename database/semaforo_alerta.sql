@@ -1,3 +1,5 @@
+CREATE DATABASE IF NOT EXISTS semaforo_academico;
+USE semaforo_academico;materias
 -- phpMyAdmin SQL Dump
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
