@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seguimiento Académico del Alumno</title>
+    <link rel="stylesheet" href="../css/seguimiento_alumno.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+
+    <div class="navbar">
+        <span class="menu-toggle"><i class="fas fa-bars"></i></span>
+        <img src="Logo-cecyteh.png" alt="Logo" class="logo-img">
+        <div class="user-avatar">A</div>
+    </div>
+
+    <div class="container">
+        <div class="back-container">
+            <a href="alumnos.html" class="btn-back">
+                <i class="fas fa-chevron-left"></i>
+            </a>
+        </div>
+
+        <div class="profile-card">
+            <div class="header-maroon">
+                <h2>SEGUIMIENTO ACADÉMICO DEL ALUMNO</h2>
+            </div>
+            
+            <div class="profile-content">
+                <div class="avatar-container">
+                    <div class="avatar-circle">
+                        <i class="fas fa-user-graduate" style="font-size: 80px; color: #fff;"></i>
+                    </div>
+                </div>
+
+                <div class="student-details">
+                    <h3 id="txt-nombre">CARGANDO ALUMNO...</h3>
+                    <p><strong>Matrícula:</strong> <span id="txt-matricula">00000000</span></p>
+                    <p><strong>Correo electrónico:</strong> <span class="link-text">juanlopez@gmail.com</span></p>
+                    <p><strong>Carrera:</strong> Programación</p>
+                    <p><strong>Grupo:</strong> 48M &nbsp;&nbsp;&nbsp;&nbsp; <strong>Turno:</strong> Matutino</p>
+                    
+                    <div class="badges-row">
+                        <span class="badge-reprobadas">Materias reprobadas: 0</span>
+                        <span id="txt-estado" class="badge-estado-regular">Estado: Regular</span>
+                    </div>
+                </div>
+
+                <div class="tutor-details">
+                    <h4>Datos del tutor</h4>
+                    <p><strong>Nombre:</strong> Juana Pérez López</p>
+                    <p><strong>Relación:</strong> Madre</p>
+                    <br>
+                    <p><strong>Correo electrónico:</strong> <span class="link-text-tutor">juanlopez@gmail.com</span></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Materia</th>
+                        <th>Primer Parcial</th>
+                        <th>Segundo Parcial</th>
+                        <th>Tercer Parcial</th>
+                        <th>PR</th>
+                        <th>PAC</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Inglés IV</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td class="sidebar-cell" rowspan="8"></td>
+                    </tr>
+                    <tr>
+                        <td>Relaciones quimicas: conservacion de la materia en la formación de nuevas sustancias</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>Temas selectos de matematicas 1</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>Ciencias sociales III</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>Conciencia histórica I. Perspectivas del México antiguo en los contextos globales</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>Submódulo 1 Controla entradas y salidas de almacén</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>Submódulo 2 Elabora inventarios de almacén</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>Submódulo 3 Maneja materiales, partes y productos terminados</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="../js/seguimiento_alumno.js"></script>
+</body>
+</html>

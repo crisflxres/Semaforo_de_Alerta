@@ -1,0 +1,256 @@
+/* --- VARIABLES DE DISEÑO (Colores Institucionales) --- */
+:root {
+    --brand-maroon: #800c2f;
+    --brand-maroon-dark: #581825;
+    --white: #ffffff;
+    --text-dark: #333333;
+    --text-muted: #777777;
+    --bg-main: #f4f6f9;
+    --bg-regular: #eaf7ed;
+    --brand-green: #2da13c;
+}
+
+/* --- RECONSTRUCCIÓN GENERAL --- */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: var(--bg-main);
+    color: var(--text-dark);
+    padding-bottom: 40px;
+}
+
+/* --- NAVBAR --- */
+.navbar {
+    background-color: var(--brand-maroon);
+    color: var(--white);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 30px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.nav-left {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.menu-toggle {
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.logo-img {
+    height: 45px;
+    width: auto;
+    object-fit: contain;
+}
+
+.user-avatar {
+    background-color: #d1c7bd;
+    color: var(--text-dark);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 18px;
+}
+
+/* --- CONTENEDOR PRINCIPAL --- */
+.container {
+    max-width: 1280px;
+    margin: 20px auto;
+    padding: 0 20px;
+}
+
+/* --- BOTÓN REGRESAR --- */
+.back-container {
+    margin-bottom: 15px;
+}
+
+.btn-back {
+    color: #000000;
+    font-size: 28px;
+    text-decoration: none;
+    display: inline-block;
+    transition: transform 0.2s;
+}
+
+.btn-back:hover {
+    transform: scale(1.1);
+}
+
+/* --- TARJETA DE PERFIL (CONTORNO NEGRO FINO) --- */
+.profile-card {
+    background-color: var(--white);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 25px;
+    border: 1px solid #000000; /* Contorno estilizado */
+}
+
+.header-maroon {
+    background-color: var(--brand-maroon-dark);
+    color: var(--white);
+    padding: 12px 20px;
+    text-align: center;
+}
+
+.header-maroon h2 {
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: 1px;
+}
+
+/* Distribución del contenido interno de la tarjeta */
+.profile-content {
+    display: grid;
+    grid-template-columns: 220px 1fr 1fr;
+    padding: 25px;
+    background-color: #f5eae4; /* Tono arena suave de fondo */
+    align-items: center;
+    gap: 20px;
+}
+
+/* Avatar Redondo */
+.avatar-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.avatar-circle {
+    width: 160px;
+    height: 160px;
+    background-color: #e27d7d; /* Fondo rojizo/coral del avatar */
+    border-radius: 50%;
+    border: 4px solid var(--brand-maroon-dark);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+/* Detalles del Alumno */
+.student-details h3 {
+    font-size: 22px;
+    color: #000000;
+    margin-bottom: 10px;
+}
+
+.student-details p {
+    font-size: 14px;
+    margin-bottom: 6px;
+    color: #333;
+}
+
+.link-text {
+    color: #2980b9;
+    text-decoration: underline;
+}
+
+/* Badges de Estado */
+.badges-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.badge-reprobadas {
+    background-color: var(--white);
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 500;
+    border: 1px solid #ccc;
+}
+
+.badge-estado-regular {
+    background-color: var(--brand-green);
+    color: var(--white);
+    padding: 6px 20px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+/* Detalles del Tutor */
+.tutor-details {
+    border-left: 2px solid var(--brand-maroon-dark);
+    padding-left: 25px;
+    height: 80%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.tutor-details h4 {
+    color: #8e443d;
+    font-size: 16px;
+    margin-bottom: 10px;
+}
+
+.tutor-details p {
+    font-size: 14px;
+    margin-bottom: 6px;
+}
+
+.link-text-tutor {
+    color: #2980b9;
+}
+
+/* --- TABLA DE CALIFICACIONES --- */
+.table-container {
+    background-color: var(--white);
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #000000; /* Contorno estilizado */
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    font-size: 14px;
+}
+
+.data-table th {
+    background-color: var(--brand-maroon-dark);
+    color: var(--white);
+    padding: 14px;
+    font-weight: 500;
+    border-right: 1px solid #6d2331;
+}
+
+.data-table th:last-child {
+    border-right: none;
+}
+
+.data-table td {
+    padding: 12px 14px;
+    border-bottom: 1px solid #cccccc;
+    border-right: 1px solid #cccccc;
+    height: 45px;
+}
+
+.data-table td:last-child {
+    border-right: none;
+}
+
+.data-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* Columna lateral de PAC */
+.sidebar-cell {
+    background-color: #f4f6f9;
+}

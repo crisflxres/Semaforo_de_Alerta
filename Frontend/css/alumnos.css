@@ -1,0 +1,415 @@
+:root {
+    --bg-main: #f4f6f9;
+    --white: #ffffff;
+    --text-dark: #333333;
+    --text-muted: #777777;
+    
+    /* Colores institucionales y alertas desaturadas */
+    --brand-maroon: #800c2f;
+    --brand-green: #3ab54a;
+    --alert-yellow: #f1c40f;
+    --alert-red: #e74c3c;
+    
+    /* Fondos suaves para los badges de estado */
+    --bg-regular: #eaf7ed;
+    --bg-riesgo: #fef9e7;
+    --bg-critico: #fdedec;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: var(--bg-main);
+    color: var(--text-dark);
+    padding-bottom: 40px;
+}
+
+/* --- NAVBAR CON CENTRADO ABSOLUTO DEL LOGO --- */
+.navbar {
+    background-color: var(--brand-maroon);
+    color: var(--white);
+    display: flex;
+    justify-content: space-between; /* Empuja el menú a la izquierda y el avatar a la derecha */
+    align-items: center;
+    padding: 12px 30px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    position: relative; /* Clave para permitir que el logo se posicione de forma absoluta */
+    height: 70px; /* Asegura una altura consistente para la barra */
+}
+
+.menu-toggle {
+    font-size: 24px;
+    cursor: pointer;
+}
+
+/* Centrado matemático perfecto del logo en la barra */
+.logo-img {
+    height: 45px;
+    width: auto;
+    object-fit: contain;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%); /* Lo desplaza hacia atrás su propio 50% en X e Y */
+}
+
+.user-avatar {
+    background-color: #d1c7bd;
+    color: var(--text-dark);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 18px;
+}
+
+/* --- CONTAINER PRINCIPAL --- */
+.container {
+    max-width: 1280px;
+    margin: 30px auto;
+    padding: 0 20px;
+}
+
+/* --- ENCABEZADO DE SECCIÓN --- */
+.header-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 25px;
+}
+
+.title-area h1 {
+    font-size: 28px;
+    color: #581825;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.title-area p {
+    font-size: 13px;
+    color: var(--brand-maroon);
+    margin-top: 2px;
+}
+
+.btn-reporte {
+    background-color: var(--brand-maroon);
+    color: var(--white);
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-reporte:hover {
+    background-color: #610721;
+}
+
+/* TARJETAS DE MÉTRICAS (KPIs) */
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.metric-card {
+    background-color: #ffffff;
+    border-radius: 14px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    position: relative;
+    padding-bottom: 30px;
+    border: 1px solid #000000; 
+}
+
+.icon-circle {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+}
+
+.metric-card.total .icon-circle { background-color: #fcedf1; color: var(--brand-maroon); }
+.metric-card.regulares .icon-circle { background-color: var(--bg-regular); color: var(--brand-green); }
+.metric-card.riesgo .icon-circle { background-color: var(--bg-riesgo); color: var(--alert-yellow); }
+.metric-card.criticos .icon-circle { background-color: var(--bg-critico); color: var(--alert-red); }
+
+.metric-info h3 {
+    font-size: 26px;
+    font-weight: 700;
+    color: #111;
+}
+
+.metric-info p {
+    font-size: 13px;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+.metric-card::after {
+    content: '';
+    position: absolute;
+    bottom: 12px;
+    left: 20px;
+    right: 20px;
+    height: 5px;
+    border-radius: 5px;
+    background-color: #e0e0e0;
+}
+.metric-card.total::after { background-color: var(--brand-maroon); width: 60%; }
+.metric-card.regulares::after { background-color: var(--brand-green); width: 45%; }
+.metric-card.riesgo::after { background-color: var(--alert-yellow); width: 35%; }
+.metric-card.criticos::after { background-color: var(--alert-red); width: 25%; }
+
+/* PANEL DE FILTROS */
+.filters-panel {
+    background-color: var(--white);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.04);
+    margin-bottom: 25px;
+    border: 1px solid #000000;
+}
+
+.search-row {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.search-container {
+    position: relative;
+    flex-grow: 1;
+}
+
+.search-container i {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+}
+
+.search-input {
+    width: 100%;
+    padding: 12px 12px 12px 45px;
+    border: 1px solid #dcdcdc;
+    border-radius: 8px;
+    font-size: 14px;
+    outline: none;
+}
+
+.btn-limpiar {
+    background: none;
+    border: 1px solid var(--brand-maroon);
+    color: var(--brand-maroon);
+    padding: 0 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.btn-limpiar:hover {
+    background-color: #fcedf1;
+}
+
+.selects-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 15px;
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.filter-group label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-muted);
+}
+
+.filter-select {
+    padding: 10px;
+    border: 1px solid #dcdcdc;
+    border-radius: 8px;
+    font-size: 13px;
+    background-color: #fafafa;
+    outline: none;
+    cursor: pointer;
+}
+
+/* TABLA DE ALUMNOS */
+.table-container {
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.04);
+    overflow-x: auto;
+    border: 1px solid #000000;
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    font-size: 13px;
+}
+
+.data-table th {
+    background-color: var(--white);
+    color: var(--text-dark);
+    padding: 16px 12px;
+    font-weight: 600;
+    border-bottom: 2px solid #e0e0e0;
+    white-space: nowrap;
+}
+
+.data-table td {
+    padding: 14px 12px;
+    border-bottom: 1px solid #eeeeee;
+    vertical-align: middle;
+    color: #444;
+}
+
+.data-table tbody tr:hover {
+    background-color: #fafafa;
+}
+
+.avatar-cell {
+    font-size: 24px;
+    color: var(--text-muted);
+    text-align: center;
+    width: 40px;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 12px;
+    text-align: center;
+}
+
+.status-badge.regular { background-color: var(--bg-regular); color: var(--brand-green); }
+.status-badge.riesgo { background-color: var(--bg-riesgo); color: var(--alert-yellow); }
+.status-badge.critico { background-color: var(--bg-critico); color: var(--alert-red); }
+
+.numeric-cell {
+    text-align: center;
+}
+
+.btn-action {
+    background: none;
+    border: none;
+    color: var(--text-dark);
+    font-size: 14px;
+    cursor: pointer;
+    padding: 4px 8px;
+}
+
+.btn-action:hover {
+    color: var(--brand-maroon);
+}
+
+/* Overlay oscuro */
+.menu-flotante-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5); /* Fondo oscuro */
+    visibility: hidden;
+    opacity: 0;
+    transition: 0.3s ease;
+    z-index: 9999;
+}
+
+.menu-flotante-overlay.open {
+    visibility: visible;
+    opacity: 1;
+}
+
+/* Panel lateral (color vino) */
+.tarjeta-menu-flotante {
+    width: 280px;
+    height: 100%;
+    background: #581825; /* Color vino de tu sistema */
+    padding: 30px;
+    position: absolute;
+    left: -300px; /* Escondido a la izquierda */
+    transition: 0.3s ease;
+    border-radius: 0 20px 20px 0;
+}
+
+.menu-flotante-overlay.open .tarjeta-menu-flotante {
+    left: 0; /* Aparece al abrir */
+}
+
+/* Estilos de elementos */
+.btn-cerrar-flotante { color: white; cursor: pointer; font-size: 28px; margin-bottom: 30px; }
+.lista-menu-flotante { list-style: none; }
+.lista-menu-flotante li { margin-bottom: 25px; }
+.lista-menu-flotante a { color: white; text-decoration: none; display: flex; align-items: center; gap: 15px; font-size: 18px; }
+
+/* Estilo para la opción activa (como en tu imagen) */
+.opcion-activa {
+    background: #d1c7bd;
+    padding: 10px;
+    border-radius: 10px;
+}
+.opcion-activa a { color: #333; font-weight: bold; }
+/* Fondo oscuro que bloquea la pantalla */
+.menu-flotante-overlay {
+    position: fixed;
+    top: 0;
+    left: -100%; /* Inicia oculto a la izquierda */
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 9999;
+    transition: left 0.3s ease;
+}
+
+/* Clase que activaremos con JS para mostrarlo */
+.menu-flotante-overlay.open {
+    left: 0;
+}
+
+/* El panel color vino de tu imagen */
+.tarjeta-menu-flotante {
+    width: 300px;
+    height: 100%;
+    background: #581825; /* Ajusta este color al de tu diseño */
+    padding: 30px;
+    color: white;
+    border-radius: 0 20px 20px 0;
+}
+
+/* Estilo de la opción activa como en tu captura */
+.opcion-activa {
+    background: #d1c7bd;
+    border-radius: 8px;
+    padding: 10px;
+}

@@ -1,0 +1,41 @@
+body { background: #ECEFF3; font-family: Arial, sans-serif; }
+
+.contenedor-grupos { max-width: 1100px; margin: 40px auto; padding: 20px; }
+
+.header-grupos { display: flex; justify-content: space-between; margin-bottom: 20px; }
+
+.grid-tarjetas { 
+    display: grid; 
+    grid-template-columns: repeat(4, 1fr); 
+    gap: 20px; 
+    background: #ECEFF3; /* El color del fondo principal */
+}
+
+.tarjeta-grupo { 
+    background: white; 
+    padding: 15px; 
+    border-radius: 12px; 
+    display: flex; 
+    align-items: center; 
+    position: relative; 
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    border: 1px solid #ddd;
+}
+
+/* Borde para el seleccionado */
+.tarjeta-grupo.seleccionada { border: 2px solid #98002E; }
+
+.icono-grupo { 
+    width: 50px; height: 50px; border-radius: 50%; 
+    display: flex; justify-content: center; align-items: center; margin-right: 15px; 
+}
+
+/* Colores */
+.rosa { background: #F3C8D3; }
+.azul { background: #BFD8F7; }
+
+.info-grupo h3 { margin: 0; font-size: 16px; }
+.info-grupo p { margin: 0; font-size: 12px; color: #666; }
+.etiqueta { font-size: 10px; padding: 2px 8px; border-radius: 4px; display: inline-block; margin-top: 5px; }
+
+.btn-opciones { position: absolute; right: 10px; top: 10px; border: none; background: none; cursor: pointer; font-size: 18px; }

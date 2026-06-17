@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Gestión de Grupos</title>
+    <link rel="stylesheet" href="../css/horarios.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <header class="main-header">
+        <div class="menu-btn" id="btnHamburguesa">☰</div>
+        <div class="logo-container">
+            <img src="../html/Logo-cecyteh.png" class="logo" alt="Logo">
+        </div>
+        <div class="user-avatar">A</div>
+    </header>
+
+    <nav class="tabs-container">
+        <div class="tabs">
+            <a href="horarios.html" class="tab-item">📅 Horarios</a>
+            <a href="grupos.html" class="tab-item active">👥 Grupos</a>
+            <a href="#" class="tab-item">👤 Docentes</a>
+            <a href="#" class="tab-item">📖 Materias</a>
+            <a href="#" class="tab-item">🚪 Aulas</a>
+        </div>
+    </nav>
+
+    <main class="contenedor-grupos">
+        <h2>Gestión de Grupos</h2>
+
+        <div class="header-grupos">
+            <input type="text" class="input-buscar" placeholder="🔍 Buscar">
+            <button class="btn-nuevo">+ Nuevo grupo</button>
+        </div>
+
+        <p class="subtitulo">Grupos Registrados</p>
+
+        <div class="grid-tarjetas">
+            <div class="tarjeta-grupo">
+                <div class="icono-grupo"><i class="fa-solid fa-table-cells-large"></i></div>
+                <div class="info-grupo">
+                    <h3>Grupo 1</h3>
+                    <p>30 Alumnos</p>
+                    <span class="etiqueta">Matutino</span>
+                </div>
+                <button class="btn-opciones">⋮</button>
+            </div>
+            
+            <div class="tarjeta-grupo">
+                <div class="icono-grupo"><i class="fa-solid fa-table-cells-large"></i></div>
+                <div class="info-grupo">
+                    <h3>Grupo 2</h3>
+                    <p>30 Alumnos</p>
+                    <span class="etiqueta">Matutino</span>
+                </div>
+                <button class="btn-opciones">⋮</button>
+            </div>
+            </div>
+
+        <div class="paginador">
+            <button>&lt;</button> 
+            <button class="active">1</button> 
+            <button>2</button> 
+            <button>3</button> 
+            <button>&gt;</button>
+        </div>
+    </main>
+
+    <div class="menu-flotante-overlay" id="sidebarOverlay">
+        <div class="btn-cerrar-flotante" id="btnCerrarSidebar">
+            <i class="fa-solid fa-xmark"></i>
+        </div>
+        <nav class="tarjeta-menu-flotante">
+            <ul class="lista-menu-flotante">
+                <li><a href="inicio.html"><i class="fa-solid fa-house"></i> <span>Inicio</span></a></li>
+                <li><a href="alumnos.html"><i class="fa-solid fa-user-group"></i> <span>Alumnos</span></a></li>
+                <li><a href="alertas.html"><i class="fa-solid fa-bell"></i> <span>Alertas</span></a></li>
+                <li><a href="horarios.html"><i class="fa-solid fa-calendar-days"></i> <span>Horarios de Docentes</span></a></li>
+                <li class="opcion-activa-figma"><a href="configuracion.html"><i class="fa-solid fa-gear"></i> <span>Configuración</span></a></li>
+            </ul>
+        </nav>
+    </div>
+
+    <div class="tarjeta-grupo seleccionada">
+    <div class="icono-grupo" style="background: #F3C8D3;"><i class="fa-solid fa-table-cells-large"></i></div>
+    <div class="info-grupo">
+        <h3>Grupo 1</h3>
+        <p>30 Alumnos</p>
+        <span class="etiqueta" style="background: #F3C8D3;">Matutino</span>
+    </div>
+    <button class="btn-opciones">⋮</button>
+</div>
+
+<div class="tarjeta-grupo">
+    <div class="icono-grupo" style="background: #BFD8F7;"><i class="fa-solid fa-table-cells-large"></i></div>
+    <div class="info-grupo">
+        <h3>Grupo 2</h3>
+        <p>30 Alumnos</p>
+        <span class="etiqueta" style="background: #BFD8F7;">Matutino</span>
+    </div>
+    <button class="btn-opciones">⋮</button>
+</div>
+
+    <script src="../js/horarios.js"></script>
+</body>
+</html>
