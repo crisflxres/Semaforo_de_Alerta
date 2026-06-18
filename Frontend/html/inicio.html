@@ -3,86 +3,131 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Semáforo de Alerta Académica - Panel</title>
+    <title>Panel de Control - CECyTEH</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="../css/inicio.css">
 </head>
 <body>
 
-    <header class="header-barra">
-        <button class="btn-menu" id="btnMenu"><i class="fa-solid fa-bars"></i></button>
-        <img src="logo-cecyteh.png" alt="CECYTEH" class="logo-top">
-        <div class="usuario-avatar" id="avatarBtn">V</div>
+    <div class="menu-flotante-overlay" id="sidebarOverlay">
+        <div class="btn-cerrar-flotante" id="btnCerrarSidebar">
+            <i class="fa-solid fa-xmark"></i>
+        </div>
+        <nav class="tarjeta-menu-flotante">
+            <ul class="lista-menu-flotante">
+                <li class="opcion-activa-figma"><a href="inicio.html"><i class="fa-solid fa-house"></i> <span>Inicio</span></a></li>
+                <li><a href="alumnos.html"><i class="fa-solid fa-user-group"></i> <span>Alumnos</span></a></li>
+                <li><a href="alertas.html"><i class="fa-solid fa-bell"></i> <span>Alertas</span></a></li>
+                <li><a href="horarios.html"><i class="fa-solid fa-calendar-days"></i> <span>Horarios de Docentes</span></a></li>
+                <li><a href="configuracion.html"><i class="fa-solid fa-gear"></i> <span>Configuración</span></a></li>
+            </ul>
+        </nav>
+    </div>
+
+    <header class="header-institucional">
+        <div class="menu-hamburguesa" id="btnHamburguesa">
+            <i class="fa-solid fa-bars"></i>
+        </div>
+        <div class="logo-centro">
+            <img src="Logo-cecyteh.png" alt="Logo CECyTEH">
+        </div>
+        <div class="perfil-usuario">
+            <div class="avatar">A</div>
+        </div>
     </header>
 
-    <div class="menu-perfil" id="menuPerfil">
-        <a href="#"><i class="fa-solid fa-user"></i> Perfil</a>
-        <a href="#" class="cerrar-sesion"><i class="fa-solid fa-right-from-bracket"></i> Cerrar Sesión</a>
-    </div>
+    <main class="contenido-principal">
+        <div class="encabezado-panel">
+            <h1 class="titulo-panel">Panel de Control</h1>
+            <p class="ciclo-escolar">Ciclo Escolar 2025-2026</p>
+        </div>
 
-    <div class="contenedor-layout">
-        <nav class="sidebar" id="sidebar">
-            <a href="inicio.html" class="nav-item activo"><i class="fa-solid fa-house"></i> <span>Inicio</span></a>
-            <a href="alumnos.html" class="nav-item"><i class="fa-solid fa-users"></i> <span>Alumnos</span></a>
-            <a href="alertas.html" class="nav-item"><i class="fa-solid fa-bell"></i> <span>Alertas</span></a>
-            <a href="gestion.html" class="nav-item"><i class="fa-solid fa-calendar-days"></i> <span>Horarios de Docentes</span></a>
-            <a href="configuracion.html" class="nav-item"><i class="fa-solid fa-gear"></i> <span>Configuración</span></a>
-        </nav>
+        <div class="banner-total-alumnos">
+            <div class="icono-banner">
+                <i class="fa-solid fa-user-graduate"></i>
+            </div>
+            <div class="info-banner">
+                <span class="label-banner">Total de Alumnos</span>
+                <span class="numero-banner">1400</span>
+                <span class="sub-banner">Alumnos registrados en el sistema</span>
+            </div>
+        </div>
 
-        <main class="contenido-panel">
-            <div class="encabezado-contenido">
-                <h1>Panel de Control</h1>
-                <p class="ciclo">Ciclo Escolar 2025-2026</p>
+        <h2 class="titulo-seccion">ALUMNOS</h2>
+        <div class="grid-semaforo">
+            <div class="tarjeta-semaforo verde">
+                <div class="fila-superior-semaforo">
+                    <div class="icono-semaforo-card verde-bg">
+                        <i class="fa-solid fa-user-group"></i>
+                    </div>
+                    <div class="info-semaforo">
+                        <span class="label-semaforo">Regulares</span>
+                        <span class="numero-semaforo">980</span>
+                    </div>
+                </div>
+                <a href="alumnos.html" class="link-ver-mas">Ver mas →</a>
             </div>
 
-            <h2 class="seccion-titulo">ALUMNOS</h2>
-            
-            <div class="grid-tarjetas">
-                <div class="tarjeta estado-total">
-                    <div class="tarjeta-cabecera"><i class="fa-solid fa-users icon-c"></i> <div><span>Total</span><strong>1400</strong></div></div>
-                    <a href="alumnos.html" class="ver-mas">Ver más <i class="fa-solid fa-arrow-right"></i></a>
+            <div class="tarjeta-semaforo amarillo">
+                <div class="fila-superior-semaforo">
+                    <div class="icono-semaforo-card amarillo-bg">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                    </div>
+                    <div class="info-semaforo">
+                        <span class="label-semaforo">En riesgo</span>
+                        <span class="numero-semaforo">198</span>
+                    </div>
                 </div>
-                <div class="tarjeta estado-regulares">
-                    <div class="tarjeta-cabecera"><i class="fa-solid fa-circle-check icon-c"></i> <div><span>Regulares</span><strong>980</strong></div></div>
-                    <a href="alumnos.html" class="ver-mas">Ver más <i class="fa-solid fa-arrow-right"></i></a>
-                </div>
-                <div class="tarjeta estado-riesgo">
-                    <div class="tarjeta-cabecera"><i class="fa-solid fa-triangle-exclamation icon-c"></i> <div><span>En riesgo</span><strong>198</strong></div></div>
-                    <a href="alumnos.html" class="ver-mas">Ver más <i class="fa-solid fa-arrow-right"></i></a>
-                </div>
-                <div class="tarjeta estado-criticos">
-                    <div class="tarjeta-cabecera"><i class="fa-solid fa-circle-xmark icon-c"></i> <div><span>Críticos</span><strong>62</strong></div></div>
-                    <a href="alumnos.html" class="ver-mas">Ver más <i class="fa-solid fa-arrow-right"></i></a>
-                </div>
+                <a href="alumnos.html" class="link-ver-mas">Ver mas →</a>
             </div>
 
-            <div class="gestion-rapida">
-                <h3>Gestión rápida</h3>
-                <div class="grid-gestion">
-                    <div class="opcion-gestion">
-                        <div class="icon-box"><i class="fa-solid fa-table-cells-large"></i></div>
-                        <span>Grupos Registrados</span>
-                        <a href="gestion.html?tab=grupos" class="btn-gestion">Ver grupos <i class="fa-solid fa-arrow-right"></i></a>
+            <div class="tarjeta-semaforo rojo">
+                <div class="fila-superior-semaforo">
+                    <div class="icono-semaforo-card rojo-bg">
+                        <i class="fa-solid fa-circle-exclamation"></i>
                     </div>
-                    <div class="opcion-gestion">
-                        <div class="icon-box"><i class="fa-solid fa-id-card-clip"></i></div>
-                        <span>Docentes registrados</span>
-                        <a href="gestion.html?tab=docentes" class="btn-gestion">Ver docentes <i class="fa-solid fa-arrow-right"></i></a>
-                    </div>
-                    <div class="opcion-gestion">
-                        <div class="icon-box"><i class="fa-solid fa-book-open"></i></div>
-                        <span>Materias Registradas</span>
-                        <a href="gestion.html?tab=materias" class="btn-gestion">Ver materias <i class="fa-solid fa-arrow-right"></i></a>
-                    </div>
-                    <div class="opcion-gestion">
-                        <div class="icon-box"><i class="fa-solid fa-door-open"></i></div>
-                        <span>Aulas Asignadas</span>
-                        <a href="gestion.html?tab=aulas" class="btn-gestion">Ver aulas <i class="fa-solid fa-arrow-right"></i></a>
+                    <div class="info-semaforo">
+                        <span class="label-semaforo">Críticos</span>
+                        <span class="numero-semaforo">62</span>
                     </div>
                 </div>
+                <a href="alumnos.html" class="link-ver-mas">Ver mas →</a>
             </div>
-        </main>
-    </div>
+        </div>
+
+        <h2 class="titulo-seccion">GESTIÓN-RAPIDA</h2>
+        <div class="grid-gestion">
+            <div class="tarjeta-gestion">
+                <div class="fila-gestion">
+                    <div class="icono-gestion"><i class="fa-solid fa-border-all"></i></div>
+                    <span class="label-gestion">Grupos Registrados</span>
+                </div>
+                <a href="#" class="btn-gestion">Ver grupos <i class="fa-solid fa-arrow-right"></i></a>
+            </div>
+            <div class="tarjeta-gestion">
+                <div class="fila-gestion">
+                    <div class="icono-gestion"><i class="fa-solid fa-chalkboard-user"></i></div>
+                    <span class="label-gestion">Docentes registrados</span>
+                </div>
+                <a href="#" class="btn-gestion">Ver docentes <i class="fa-solid fa-arrow-right"></i></a>
+            </div>
+            <div class="tarjeta-gestion">
+                <div class="fila-gestion">
+                    <div class="icono-gestion"><i class="fa-solid fa-book-open"></i></div>
+                    <span class="label-gestion">Materias Registradas</span>
+                </div>
+                <a href="#" class="btn-gestion">Ver materias <i class="fa-solid fa-arrow-right"></i></a>
+            </div>
+            <div class="tarjeta-gestion">
+                <div class="fila-gestion">
+                    <div class="icono-gestion"><i class="fa-solid fa-door-open"></i></div>
+                    <span class="label-gestion">Aulas Registradas</span>
+                </div>
+                <a href="#" class="btn-gestion">Ver aulas <i class="fa-solid fa-arrow-right"></i></a>
+            </div>
+        </div>
+    </main>
+
     <script src="../js/inicio.js"></script>
 </body>
 </html>

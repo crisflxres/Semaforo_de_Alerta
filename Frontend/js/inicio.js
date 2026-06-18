@@ -1,23 +1,40 @@
+// 1. Lógica del Menú Lateral (Sidebar)
 document.addEventListener('DOMContentLoaded', () => {
-    const btnMenu = document.getElementById('btnMenu');
-    const sidebar = document.getElementById('sidebar');
-    const contenido = document.querySelector('.contenido-panel');
-    const avatarBtn = document.getElementById('avatarBtn');
-    const menuPerfil = document.getElementById('menuPerfil');
+    const btnHamburguesa = document.getElementById("btnHamburguesa");
+    const btnCerrar = document.getElementById("btnCerrarSidebar");
+    const overlay = document.getElementById("sidebarOverlay");
 
-    // Control del colapso completo del menú izquierdo
-    if (btnMenu && sidebar && contenido) {
-        btnMenu.onclick = () => {
-            sidebar.classList.toggle('oculto');
-            contenido.classList.toggle('expandido');
-        };
+    if (btnHamburguesa) {
+        btnHamburguesa.addEventListener("click", () => overlay.classList.add("open"));
     }
-    // Control del menú desplegable del perfil de usuario
-    if (avatarBtn && menuPerfil) {
-        avatarBtn.onclick = (e) => {
-            e.stopPropagation();
-            menuPerfil.classList.toggle('activo');
-        };
-        document.onclick = () => menuPerfil.classList.remove('activo');
+    
+    if (btnCerrar) {
+        btnCerrar.addEventListener("click", () => overlay.classList.remove("open"));
     }
+
+    if (overlay) {
+        overlay.addEventListener("click", (e) => {
+            if (e.target === overlay) overlay.classList.remove("open");
+        });
+    }
+
+    // 2. Aquí llamaremos a la API para cargar los datos reales
+    cargarDatosDashboard();
 });
+
+// 3. Función para traer datos del servidor
+async function cargarDatosDashboard() {
+    try {
+        const respuesta = await fetch('http://127.0.0.1:5000/api/dashboard-stats');
+        const data = await respuesta.json();
+
+        // Ejemplo: Si tu API devuelve { totalAlumnos: 1400, regulares: 980, riesgo: 198, criticos: 62 }
+        // Actualizamos los números en el HTML
+        if (data.success) {
+            document.querySelector('.numero-banner').textContent = data.totalAlumnos;
+            // Podrías actualizar las tarjetas de semáforo aquí también
+        }
+    } catch (error) {
+        console.error("Error al cargar datos del dashboard:", error);
+    }
+}

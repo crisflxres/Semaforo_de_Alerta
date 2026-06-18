@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configuración del Sistema - CECyTEH</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/configuracion.css">
+</head>
+<body>
+
+    <div class="menu-flotante-overlay" id="sidebarOverlay">
+        <div class="btn-cerrar-flotante" id="btnCerrarSidebar"><i class="fa-solid fa-xmark"></i></div>
+        <nav class="tarjeta-menu-flotante">
+            <ul class="lista-menu-flotante">
+                <li><a href="inicio.html"><i class="fa-solid fa-house"></i> <span>Inicio</span></a></li>
+                <li><a href="alumnos.html"><i class="fa-solid fa-user-group"></i> <span>Alumnos</span></a></li>
+                <li><a href="alertas.html"><i class="fa-solid fa-bell"></i> <span>Alertas</span></a></li>
+                <li><a href="horarios.html"><i class="fa-solid fa-calendar-days"></i> <span>Horarios de Docentes</span></a></li>
+                <li class="opcion-activa-figma"><a href="configuracion.html"><i class="fa-solid fa-gear"></i> <span>Configuración</span></a></li>
+            </ul>
+        </nav>
+    </div>
+
+    <header class="header-institucional">
+        <div class="menu-hamburguesa" id="btnHamburguesa"><i class="fa-solid fa-bars"></i></div>
+        <div class="logo-centro"><img src="Logo-cecyteh.png" alt="Logo CECyTEH"></div>
+        <div class="perfil-usuario"><div class="avatar">A</div></div>
+    </header>
+
+    <main class="contenido-principal">
+        <h1 class="titulo-pagina">Configuración del Sistema</h1>
+
+        <div class="tarjeta-importacion">
+            <div class="grid-importacion">
+                <div class="seccion-importar">
+                    <h3><div class="icono-tipo icono-verde-bg"><i class="fa-solid fa-file-lines"></i></div>Datos Académicos</h3>
+                    <p>Importar Excel de calificaciones</p>
+                    <input type="file" id="inputAcademico" style="display:none;" onchange="manejarArchivo(this, 'academico')">
+                    <div class="zona-drop zona-drop-verde" id="dropAcademico" onclick="document.getElementById('inputAcademico').click()" ondragover="event.preventDefault(); this.classList.add('dragover')" ondragleave="this.classList.remove('dragover')" ondrop="manejarDrop(event, 'academico')">
+                        <i class="fa-solid fa-cloud-arrow-up"></i>
+                        <strong>Seleccionar archivo</strong>
+                        <span>o arrastra tu archivo aquí</span>
+                    </div>
+                    <div class="mensaje-exito verde" id="exitoAcademico"><i class="fa-solid fa-circle-check"></i><span id="textoExitoAcademico"></span></div>
+                </div>
+
+                <div class="divisor-vertical"></div>
+
+                <div class="seccion-importar">
+                    <h3><div class="icono-tipo icono-morado-bg"><i class="fa-solid fa-address-book"></i></div>Contactos</h3>
+                    <p>Importar Excel de contactos</p>
+                    <input type="file" id="inputContactos" style="display:none;" onchange="manejarArchivo(this, 'contactos')">
+                    <div class="zona-drop zona-drop-morado" id="dropContactos" onclick="document.getElementById('inputContactos').click()" ondragover="event.preventDefault(); this.classList.add('dragover')" ondragleave="this.classList.remove('dragover')" ondrop="manejarDrop(event, 'contactos')">
+                        <i class="fa-solid fa-cloud-arrow-up"></i>
+                        <strong>Seleccionar archivo</strong>
+                        <span>o arrastra tu archivo aquí</span>
+                    </div>
+                    <div class="mensaje-exito morado" id="exitoContactos"><i class="fa-solid fa-circle-check"></i><span id="textoExitoContactos"></span></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tarjeta-historial">
+            <div class="cabecera-historial"><i class="fa-solid fa-clock-rotate-left"></i> Historial de Importaciones</div>
+            <table>
+                <thead><tr><th>Archivo</th><th>Fecha de importación</th><th>Registros</th><th>Acciones</th></tr></thead>
+                <tbody id="cuerpoHistorial"></tbody>
+            </table>
+            <div id="historialVacio" style="text-align:center; padding:30px; color:#aaa; font-size:14px;"><i class="fa-solid fa-inbox" style="font-size:28px; display:block; margin-bottom:8px;"></i> Aún no se han importado archivos</div>
+        </div>
+    </main>
+
+    <script src="../js/configuracion.js"></script>
+</body>
+</html>

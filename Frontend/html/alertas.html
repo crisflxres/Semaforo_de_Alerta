@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Semáforo de Alerta Académica - Configurar Alertas</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/alertas.css">
+</head>
+<body>
+
+    <div class="menu-flotante-overlay" id="sidebarOverlay">
+        <div class="btn-cerrar-flotante" id="btnCerrarSidebar">
+            <i class="fa-solid fa-xmark"></i>
+        </div>
+        <nav class="tarjeta-menu-flotante" id="sidebarNav">
+            <ul class="lista-menu-flotante">
+                <li><a href="inicio.html"><i class="fa-solid fa-house"></i> <span>Inicio</span></a></li>
+                <li><a href="alumnos.html"><i class="fa-solid fa-user-group"></i> <span>Alumnos</span></a></li>
+                <li><a href="alertas.html"><i class="fa-solid fa-bell"></i> <span>Alertas</span></a></li>
+                <li><a href="horarios.html"><i class="fa-solid fa-calendar-days"></i> <span>Horarios de Docentes</span></a></li>
+                <li class="opcion-activa-figma"><a href="configuracion.html"><i class="fa-solid fa-gear"></i> <span>Configuración</span></a></li>
+            </ul>
+        </nav>
+    </div>
+
+    <header class="header-institucional">
+        <div class="menu-hamburguesa" id="btnHamburguesa">
+            <i class="fa-solid fa-bars"></i>
+        </div>
+        <div class="logo-centro">
+            <img src="Logo-cecyteh.png" alt="Logo CECyTEH">
+        </div>
+        <div class="perfil-usuario">
+            <div class="avatar" id="btnPerfil">V</div>
+        </div>
+    </header>
+
+    <main class="dashboard-alertas">
+        
+        <section class="columna-configuracion">
+            <h1 class="titulo-modulo">Configurar Alertas del Semáforo</h1>
+            <p class="subtitulo-modulo">Módulo de envío masivo e institucional para la prevención del rezago académico</p>
+
+            <div class="contenedor-config-figma">
+                <div class="seccion-bloque">
+                    <h3>Selecciona el tipo de Alerta</h3>
+                    <div class="selector-tipo-alerta">
+
+                        <!-- Botón Verde -->
+                        <button type="button" class="btn-tipo" id="btnVerde">
+                            <div class="icono-semaforo icono-verde">
+                                <i class="fa-solid fa-circle-check"></i>
+                            </div>
+                            Regulares
+                        </button>
+
+                        <!-- Botón Amarillo -->
+                        <button type="button" class="btn-tipo" id="btnAmarillo">
+                            <div class="icono-semaforo icono-amarillo">
+                                <i class="fa-solid fa-triangle-exclamation"></i>
+                            </div>
+                            En Riesgo
+                        </button>
+
+                        <!-- Botón Rojo -->
+                        <button type="button" class="btn-tipo" id="btnRojo">
+                            <div class="icono-semaforo icono-rojo">
+                                <i class="fa-solid fa-circle-exclamation"></i>
+                            </div>
+                            Riesgo Crítico
+                        </button>
+
+                    </div>
+                </div>
+
+                <div class="seccion-bloque">
+                    <h3>¿A quién deseas enviar esta alerta?</h3>
+                    <div class="selector-destinatarios">
+                        <label class="check-destinatario-figma" id="labelAlumnos">
+                            <input type="checkbox" name="destinatarios" value="alumnos" id="checkAlumnos">
+                            Alumnos
+                        </label>
+                        <label class="check-destinatario-figma" id="labelTutores">
+                            <input type="checkbox" name="destinatarios" value="tutores" id="checkTutores">
+                            Tutores/Padres
+                        </label>
+                        <label class="check-destinatario-figma" id="labelDocentes">
+                            <input type="checkbox" name="destinatarios" value="docentes" id="checkDocentes">
+                            Docentes
+                        </label>
+                    </div>
+                </div>
+
+                <div class="distribucion-inferior-figma">
+                    <div class="columna-alcance">
+                        <h3>Alcance</h3>
+                        <label class="opcion-radio-figma">
+                            <input type="radio" name="alcance" value="todos" checked>
+                            Todos los grupos
+                        </label>
+                        <label class="opcion-radio-figma">
+                            <input type="radio" name="alcance" value="especifico">
+                            Seleccionar grupo específico
+                        </label>
+                        <select class="select-control" id="selectGrupo" disabled style="margin-top: 5px;">
+                            <option value="">-- Elige un grupo --</option>
+                            <option value="1a">1° Semestre - Grupo A</option>
+                            <option value="3b">3° Semestre - Grupo B</option>
+                            <option value="5c">5° Semestre - Grupo C</option>
+                        </select>
+                    </div>
+
+                    <div class="linea-divisoria-vertical"></div>
+
+                    <div class="columna-programacion">
+                        <h3>Programación de envío</h3>
+                        <div style="display: flex; gap: 20px;">
+                            <label class="opcion-radio-figma">
+                                <input type="radio" name="programacion" value="ahora" checked>
+                                Enviar ahora
+                            </label>
+                            <label class="opcion-radio-figma">
+                                <input type="radio" name="programacion" value="programar">
+                                Programar envío
+                            </label>
+                        </div>
+                        <div class="inputs-fecha-hora" id="bloqueProgramar" style="margin-top: 5px; opacity: 0.5; pointer-events: none;">
+                            <div>
+                                <span class="mini-label-figma">Fecha de envío</span>
+                                <input type="date" id="inputFecha">
+                            </div>
+                            <div>
+                                <span class="mini-label-figma">Hora de envío</span>
+                                <input type="time" id="inputHora">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tarjeta-config">
+                <div class="encabezado-asunto">
+                    <label>Asunto del correo</label>
+                    <input type="text" class="input-asunto" id="asuntoNotificacion" placeholder="Ej: Situación Académica de {alumno}">
+                    <div class="contenedor-dropdown-variables">
+                        <button type="button" class="btn-insertar-variable" id="btnDropdownVars">
+                            Insertar variable <i class="fa-solid fa-caret-down"></i>
+                        </button>
+                        <ul class="dropdown-menu-variables" id="menuDesplegableVars">
+                            <li data-variable="{destinatario}">Destinatario</li>
+                            <li data-variable="{alumno}">Alumno</li>
+                            <li data-variable="{matricula}">Matrícula</li>
+                            <li data-variable="{grupo}">Grupo</li>
+                            <li data-variable="{estatus}">Estatus Académico</li>
+                            <li data-variable="{rendimiento}">Rendimiento</li>
+                            <li data-variable="{ciclo}">Ciclo Escolar</li>
+                            <li data-variable="{semestre}">Semestre</li>
+                            <li data-variable="{pac}">PAC</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="cuerpo-mensaje">
+                    <label>Redacta tu mensaje</label>
+                    <div class="editor-contenedor">
+                        <div class="barra-herramientas-editor">
+                            <button type="button" onclick="ejecutarComando('bold')" title="Negrita"><i class="fa-solid fa-bold"></i></button>
+                            <button type="button" onclick="ejecutarComando('italic')" title="Cursiva"><i class="fa-solid fa-italic"></i></button>
+                            <button type="button" onclick="ejecutarComando('underline')" title="Subrayado"><i class="fa-solid fa-underline"></i></button>
+                            <div class="separador-herramientas"></div>
+                            <button type="button" onclick="ejecutarComando('insertUnorderedList')" title="Lista Viñetas"><i class="fa-solid fa-list-ul"></i></button>
+                            <button type="button" onclick="ejecutarComando('insertOrderedList')" title="Lista Numerada"><i class="fa-solid fa-list-ol"></i></button>
+                            <div class="separador-herramientas"></div>
+                            <button type="button" onclick="ejecutarComando('justifyLeft')" title="Alinear Izquierda"><i class="fa-solid fa-align-left"></i></button>
+                            <button type="button" onclick="ejecutarComando('justifyCenter')" title="Alinear Centro"><i class="fa-solid fa-align-center"></i></button>
+                            <button type="button" onclick="ejecutarComando('justifyRight')" title="Alinear Derecha"><i class="fa-solid fa-align-right"></i></button>
+                            <div class="separador-herramientas"></div>
+                            <button type="button" onclick="insertarEnlace()" title="Enlace"><i class="fa-solid fa-link"></i></button>
+                            <button type="button" onclick="insertarImagen()" title="Imagen"><i class="fa-solid fa-image"></i></button>
+                            <button type="button" class="btn-vista-previa" id="btnVistaPrevia">
+                                <i class="fa-regular fa-eye"></i> Vista previa
+                            </button>
+                        </div>
+                        <div class="div-editor-editable" id="mensajeEditor" contenteditable="true"></div>
+                    </div>
+                </div>
+
+                <div class="contenedor-boton-enviar">
+                    <button type="button" class="btn-enviar-accion-rojo" id="btnEnviarAlerta">
+                        <i class="fa-solid fa-paper-plane"></i> Enviar Alerta
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <aside class="columna-lateral">
+            <div class="tarjeta-lateral">
+                <h3>Resumen de Operación</h3>
+                <div class="item-resumen">
+                    <span class="etiqueta">Tipo seleccionado:</span>
+                    <span class="valor" id="resumenTipo">Ninguno</span>
+                </div>
+                <div class="item-resumen">
+                    <span class="etiqueta">Destinatarios:</span>
+                    <span class="valor" id="resumenDestinatarios">0 seleccionados</span>
+                </div>
+                <div class="item-resumen">
+                    <span class="etiqueta">Segmentación:</span>
+                    <span class="valor" id="resumenAlcance">Todos los grupos</span>
+                </div>
+                <div class="item-resumen">
+                    <span class="etiqueta">Modalidad:</span>
+                    <span class="valor" id="resumenEnvio">Inmediato</span>
+                </div>
+                <hr class="divisor-resumen">
+                <div class="item-resumen total-envios">
+                    <span class="etiqueta" style="color: #000;">Estimado de envíos:</span>
+                    <span class="valor" id="resumenTotal" style="color: var(--guinda-principal); font-size: 16px;">0</span>
+                </div>
+            </div>
+
+            <div class="tarjeta-lateral">
+                <h3>Últimas Alertas Emitidas</h3>
+                <div class="lista-historial">
+                    <div class="bloque-vacio-historial"></div>
+                    <div class="bloque-vacio-historial"></div>
+                    <div class="bloque-vacio-historial"></div>
+                </div>
+                <a href="#" class="link-ver-todo">Ver historial completo de envíos</a>
+            </div>
+        </aside>
+    </main>
+
+    <!-- MODAL INSERTAR ENLACE / IMAGEN -->
+    <div id="modalEditor" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.45); z-index:9999; align-items:center; justify-content:center;">
+        <div style="background:#fff; border-radius:14px; padding:30px; width:420px; max-width:90vw; box-shadow:0 10px 40px rgba(0,0,0,0.2);">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                <h3 id="modalTitulo" style="font-size:18px; color:#6c1d35; font-weight:700;"></h3>
+                <button onclick="cerrarModal()" style="background:none; border:none; font-size:22px; cursor:pointer; color:#666;">&times;</button>
+            </div>
+
+            <!-- Sección archivo (solo imagen) -->
+            <div id="seccionArchivo" style="margin-bottom:16px;">
+                <label style="font-size:13px; font-weight:600; color:#444; display:block; margin-bottom:8px;">Seleccionar desde tu computadora</label>
+                <label style="display:flex; align-items:center; gap:10px; border:2px dashed #cccccc; border-radius:8px; padding:14px 16px; cursor:pointer; color:#666; font-size:14px; transition: border-color 0.2s;" 
+                       onmouseover="this.style.borderColor='#6c1d35'" onmouseout="this.style.borderColor='#ccc'">
+                    <i class="fa-solid fa-upload" style="color:#6c1d35; font-size:18px;"></i>
+                    Haz clic para elegir un archivo
+                    <input type="file" id="modalInputArchivo" style="display:none;">
+                </label>
+                <img id="previewImagen" src="" alt="preview" style="display:none; margin-top:10px; max-width:100%; max-height:120px; border-radius:6px; border:1px solid #eee;">
+                <div style="text-align:center; color:#aaa; font-size:13px; margin:12px 0;">— o —</div>
+            </div>
+
+            <!-- Sección URL -->
+            <div id="seccionUrl" style="margin-bottom:20px;">
+                <label style="font-size:13px; font-weight:600; color:#444; display:block; margin-bottom:8px;">Pegar URL</label>
+                <input type="text" id="modalInputUrl" style="width:100%; padding:10px 14px; border:1px solid #ccc; border-radius:8px; font-size:14px; outline:none;"
+                       onkeydown="if(event.key==='Enter') confirmarModal()">
+            </div>
+
+            <div style="display:flex; justify-content:flex-end; gap:10px;">
+                <button onclick="cerrarModal()" style="padding:10px 22px; border:1px solid #ccc; background:#fff; border-radius:8px; font-size:14px; cursor:pointer; color:#555;">Cancelar</button>
+                <button onclick="confirmarModal()" style="padding:10px 22px; background:#6c1d35; color:#fff; border:none; border-radius:8px; font-size:14px; font-weight:600; cursor:pointer;">Insertar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/alertas.js"></script>
+</body>
+</html>

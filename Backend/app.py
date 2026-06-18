@@ -23,7 +23,8 @@ def inicio():
     return "El servidor de Python para el Semáforo Académico está corriendo perfectamente."
 
 
-# 3. RUTA PARA EL INICIO DE SESIÓN (LOGIN)
+# ── 3. RUTAS PARA USUARIOS (LOGIN, REGISTRO, RECUPERACIÓN) ─────────────────
+
 @app.route('/login', methods=['POST'])
 def login():
     datos = request.get_json()
@@ -60,7 +61,6 @@ def login():
         return jsonify({"success": False, "message": f"Error de base de datos: {err}"}), 500
 
 
-# 4. RUTA PARA EL REGISTRO DE USUARIOS
 @app.route('/registro', methods=['POST'])
 def registro():
     datos = request.get_json()
@@ -97,10 +97,9 @@ def registro():
         return jsonify({"success": True, "message": "Usuario registrado correctamente en MySQL Workbench."})
 
     except mysql.connector.Error as err:
-        # Si el correo ya existe, saltará el error por la llave UNIQUE de tu BD
         return jsonify({"success": False, "message": f"Error al registrar: {err}"}), 500
-    
-    # 5. RUTA PARA RECUPERAR / RESTABLECER CONTRASEÑA
+
+
 @app.route('/recuperar', methods=['POST'])
 def recuperar():
     datos = request.get_json()
@@ -139,6 +138,81 @@ def recuperar():
 
     except mysql.connector.Error as err:
         return jsonify({"success": False, "message": f"Error en la base de datos: {err}"}), 500
+
+
+# ── 4. RUTAS PARA ALUMNOS (CRUD COMPLETO) ──────────────────────────────────
+
+# CONSULTAR todos los alumnos
+@app.route('/alumnos', methods=['GET'])
+def get_alumnos():
+    try:
+        conexion = obtener_conexion()
+        cursor = conexion.cursor(dictionary=True)
+        cursor.execute("""
+            SELECT a.Matricula, a.Nombre, a.Apellidos, a.Email, g.Nombre as Grupo, a.Activo
+            FROM alumnos a
+            JOIN grupos g ON a.Id_Grupo = g.Id_Grupo
+            WHERE a.Activo = 1
+        """)
+        alumnos = cursor.fetchall()
+        cursor.close()
+        conexion.close()
+        return jsonify({"success": True, "data": alumnos})
+    except mysql.connector.Error as err:
+        return jsonify({"success": False, "message": str(err)}), 500
+
+# REGISTRAR alumno
+@app.route('/alumnos', methods=['POST'])
+def crear_alumno():
+    datos = request.get_json()
+    try:
+        conexion = obtener_conexion()
+        cursor = conexion.cursor()
+        cursor.execute("""
+            INSERT INTO alumnos (Matricula, Nombre, Apellidos, Id_Grupo, Email, Id_Usuario)
+            VALUES (%s, %s, %s, %s, %s, %s)
+        """, (datos['matricula'], datos['nombre'], datos['apellidos'],
+              datos['id_grupo'], datos['email'], datos['id_usuario']))
+        conexion.commit()
+        cursor.close()
+        conexion.close()
+        return jsonify({"success": True, "message": "Alumno registrado correctamente."})
+    except mysql.connector.Error as err:
+        return jsonify({"success": False, "message": str(err)}), 500
+
+# MODIFICAR alumno
+@app.route('/alumnos/<matricula>', methods=['PUT'])
+def editar_alumno(matricula):
+    datos = request.get_json()
+    try:
+        conexion = obtener_conexion()
+        cursor = conexion.cursor()
+        cursor.execute("""
+            UPDATE alumnos SET Nombre=%s, Apellidos=%s, Email=%s, Id_Grupo=%s
+            WHERE Matricula=%s
+        """, (datos['nombre'], datos['apellidos'], datos['email'],
+              datos['id_grupo'], matricula))
+        conexion.commit()
+        cursor.close()
+        conexion.close()
+        return jsonify({"success": True, "message": "Alumno actualizado correctamente."})
+    except mysql.connector.Error as err:
+        return jsonify({"success": False, "message": str(err)}), 500
+
+# ELIMINAR alumno (Borrado lógico)
+@app.route('/alumnos/<matricula>', methods=['DELETE'])
+def eliminar_alumno(matricula):
+    try:
+        conexion = obtener_conexion()
+        cursor = conexion.cursor()
+        cursor.execute("UPDATE alumnos SET Activo=0 WHERE Matricula=%s", (matricula,))
+        conexion.commit()
+        cursor.close()
+        conexion.close()
+        return jsonify({"success": True, "message": "Alumno eliminado correctamente."})
+    except mysql.connector.Error as err:
+        return jsonify({"success": False, "message": str(err)}), 500
+
 
 if __name__ == '__main__':
     # Corremos el servidor en el puerto 5000
