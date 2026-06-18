@@ -1,16 +1,11 @@
-/* ==========================================================================
-   1. VARIABLES Y CONFIGURACIÓN GENERAL (Colores Institucionales)
-   ========================================================================== */
 :root {
-    --guinda-principal: #6c1d35; /* Color institucional CECyTEH */
+    --guinda-principal: #6c1d35;
     --guinda-oscuro: #4a1222;
     --dorado-detalle: #bc955c;
     --texto-oscuro: #333333;
     --texto-mutado: #666666;
     --fondo-gris: #f4f6f9;
     --blanco: #ffffff;
-    
-    /* Colores del Semáforo */
     --verde-alerta: #28a745;
     --verde-fondo: #f1f9f3;
     --amarillo-alerta: #ffc107;
@@ -32,9 +27,7 @@ body {
     min-height: 100vh;
 }
 
-/* ==========================================================================
-   2. HEADER INSTITUCIONAL
-   ========================================================================== */
+/* HEADER */
 .header-institucional {
     position: relative;
     background-color: var(--guinda-principal);
@@ -91,9 +84,7 @@ body {
     cursor: pointer;
 }
 
-/* ==========================================================================
-   3. MENÚ FLOTANTE INTERACTIVO (Estilo Exacto Figma)
-   ========================================================================== */
+/* MENÚ FLOTANTE */
 .menu-flotante-overlay {
     position: fixed;
     top: 0;
@@ -107,7 +98,6 @@ body {
     transition: opacity 0.25s ease;
 }
 
-/* Estado activo disparado por JS */
 .menu-flotante-overlay.open {
     opacity: 1;
     pointer-events: auto;
@@ -168,7 +158,6 @@ body {
     text-decoration: underline;
 }
 
-/* Opción activa con diseño de tarjeta dorada */
 .lista-menu-flotante .opcion-activa-figma {
     background-color: #cbb393;
     border-radius: 16px;
@@ -185,9 +174,7 @@ body {
     color: #000000;
 }
 
-/* ==========================================================================
-   4. MAQUETACIÓN EN DASHBOARD (Estructura de Columnas)
-   ========================================================================== */
+/* DASHBOARD */
 .dashboard-alertas {
     display: grid;
     grid-template-columns: 1fr 320px;
@@ -210,9 +197,6 @@ body {
     font-weight: 500;
 }
 
-/* ==========================================================================
-   5. GRAN CONTENEDOR UNIFICADO (Estilo Exacto Figma)
-   ========================================================================== */
 .contenedor-config-figma {
     background: var(--blanco);
     border-radius: 12px;
@@ -233,17 +217,17 @@ body {
     margin-bottom: 15px;
 }
 
-/* Botones del Semáforo con Sombras Proyectadas */
 .selector-tipo-alerta {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 20px;
 }
 
+/* ---- BOTONES SEMÁFORO NUEVOS ---- */
 .btn-tipo {
     background: var(--blanco);
-    border: 1px solid #cccccc;
-    padding: 16px;
+    border: 2px solid #cccccc;
+    padding: 16px 20px;
     border-radius: 10px;
     font-size: 16px;
     font-weight: bold;
@@ -251,36 +235,46 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 12px;
+    gap: 14px;
     color: #333333;
     box-shadow: 0 4px 6px rgba(0,0,0,0.06);
     transition: all 0.2s ease;
 }
 
-.btn-tipo i {
-    font-size: 28px;
+.icono-semaforo {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 20px;
 }
 
-/* Estados Activos con Bordes Gruesos y Sombras */
+.icono-verde     { background-color: #d4edda; color: #1a7a31; }
+.icono-amarillo  { background-color: #fff3cd; color: #856404; }
+.icono-rojo      { background-color: #f8d7da; color: #842029; }
+
 .active-verde {
-    background-color: var(--verde-fondo) !important;
+    background-color: #f1f9f3 !important;
     border: 2px solid var(--verde-alerta) !important;
-    color: #155724 !important;
+    color: #1a7a31 !important;
 }
 
 .active-amarillo {
-    background-color: var(--amarillo-fondo) !important;
+    background-color: #fffdf0 !important;
     border: 2px solid var(--amarillo-alerta) !important;
-    color: #333333 !important;
+    color: #856404 !important;
 }
 
 .active-rojo {
-    background-color: var(--rojo-fondo) !important;
+    background-color: #fce8e6 !important;
     border: 2px solid var(--rojo-alerta) !important;
-    color: #333333 !important;
+    color: #842029 !important;
 }
+/* --------------------------------- */
 
-/* Tarjetas de Destinatarios Interactivas */
 .selector-destinatarios {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -289,8 +283,8 @@ body {
 
 .check-destinatario-figma {
     position: relative;
-    border: 1.5px solid #cccccc; 
-    background-color: var(--blanco); 
+    border: 1.5px solid #cccccc;
+    background-color: var(--blanco);
     padding: 20px;
     border-radius: 8px;
     text-align: center;
@@ -312,18 +306,15 @@ body {
     opacity: 0;
     cursor: pointer;
     margin: 0;
-    z-index: 2; 
-    display: block !important; 
+    z-index: 2;
 }
 
-/* ESTADO SELECCIONADO (Vía pseudo-clase CSS y clase fallback JS) */
 .check-destinatario-figma:has(input[type="checkbox"]:checked),
 .check-destinatario-figma.is-selected {
     border: 1.5px solid var(--guinda-principal);
     background-color: #fff5f6;
 }
 
-/* Palomita circular guinda */
 .check-destinatario-figma:has(input[type="checkbox"]:checked)::after,
 .check-destinatario-figma.is-selected::after {
     content: '\f00c';
@@ -342,10 +333,9 @@ body {
     justify-content: center;
     font-size: 12px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-    z-index: 1; 
+    z-index: 1;
 }
 
-/* Distribución inferior de dos columnas */
 .distribucion-inferior-figma {
     display: grid;
     grid-template-columns: 1fr 15px 1fr;
@@ -361,7 +351,6 @@ body {
     justify-self: center;
 }
 
-/* Botones de Radio Grandes */
 .opcion-radio-figma {
     display: flex;
     align-items: center;
@@ -404,7 +393,6 @@ body {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 10px;
-    transition: opacity 0.2s ease;
 }
 
 .inputs-fecha-hora input {
@@ -423,107 +411,208 @@ body {
     margin-bottom: 4px;
 }
 
-/* ==========================================================================
-   6. EDITOR DE MENSAJES Y TEXTAREA
-   ========================================================================== */
 .tarjeta-config {
     background: var(--blanco);
     border-radius: 12px;
-    padding: 24px;
+    padding: 30px;
     margin-bottom: 20px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
     border: 1px solid #cccccc;
 }
 
 .encabezado-asunto {
     display: flex;
-    flex-direction: column;
-    margin-bottom: 20px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 25px;
+}
+
+.encabezado-asunto label {
+    font-size: 22px;
+    font-weight: bold;
+    color: #000000;
+    white-space: nowrap;
 }
 
 .input-asunto {
-    width: 100%;
-    padding: 12px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
+    flex-grow: 1;
+    padding: 12px 16px;
+    border: 1px solid #cccccc;
+    border-radius: 8px;
     font-size: 14px;
-    margin-top: 5px;
+    outline: none;
+    color: #333;
+}
+
+.contenedor-dropdown-variables {
+    position: relative;
+    display: inline-block;
+}
+
+.btn-insertar-variable {
+    background-color: var(--blanco);
+    border: 1px solid #a3a3a3;
+    color: #222222;
+    padding: 0 20px;
+    font-size: 14px;
+    font-weight: 500;
+    border-radius: 8px;
+    cursor: pointer;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    height: 46px;
+}
+
+.dropdown-menu-variables {
+    position: absolute;
+    top: 110%;
+    right: 0;
+    background-color: var(--blanco);
+    border: 1px solid #cccccc;
+    border-radius: 8px;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+    width: 220px;
+    padding: 6px 0;
+    list-style: none;
+    z-index: 100;
+    display: none;
+}
+
+.dropdown-menu-variables.show {
+    display: block;
+}
+
+.dropdown-menu-variables li {
+    padding: 10px 16px;
+    font-size: 13.5px;
+    color: var(--texto-oscuro);
+    cursor: pointer;
+}
+
+.dropdown-menu-variables li:hover {
+    background-color: #fff5f6;
+    color: var(--guinda-principal);
+    font-weight: 600;
+}
+
+.cuerpo-mensaje {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.cuerpo-mensaje label {
+    font-size: 22px;
+    font-weight: bold;
+    color: #000000;
 }
 
 .editor-contenedor {
-    border: 1px solid #ccc;
-    border-radius: 8px;
+    border: 1px solid #b5b5b5;
+    border-radius: 4px;
     overflow: hidden;
-    margin-top: 8px;
 }
 
 .barra-herramientas-editor {
-    background: #f1f3f4;
-    padding: 8px;
+    background: #f0f0f0;
+    padding: 10px 14px;
     display: flex;
-    gap: 10px;
+    gap: 4px;
     align-items: center;
-    border-bottom: 1px solid #ccc;
+    border-bottom: 1px solid #cdcdcd;
 }
 
 .barra-herramientas-editor button {
     background: transparent;
     border: none;
-    padding: 6px 10px;
+    width: 34px;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     cursor: pointer;
     border-radius: 4px;
-    color: #555;
+    color: #72777a;
+    font-size: 15px;
 }
 
-.barra-herramientas-editor button:hover {
-    background: #e0e0e0;
+.barra-herramientas-editor button:hover,
+.barra-herramientas-editor button.active {
+    background: #e2e2e2;
+    color: #000;
+}
+
+.separador-herramientas {
+    width: 1px;
+    height: 20px;
+    background-color: #ccc;
+    margin: 0 8px;
 }
 
 .btn-vista-previa {
-    margin-left: auto;
-    font-weight: 500;
-    border: 1px solid #ccc !important;
-    background: var(--blanco) !important;
+    margin-left: auto !important;
+    background-color: #f7f3f4 !important;
+    border: 1.5px solid var(--guinda-principal) !important;
+    color: var(--guinda-principal) !important;
+    font-weight: 600 !important;
+    font-size: 14px !important;
+    border-radius: 20px !important;
+    padding: 0 20px !important;
+    width: auto !important;
+    height: 36px !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
 }
 
-.textarea-editor {
+.div-editor-editable {
     width: 100%;
     border: none;
-    padding: 15px;
-    font-size: 14px;
+    padding: 20px;
+    font-size: 15px;
     line-height: 1.6;
-    resize: vertical;
+    overflow-y: auto;
     outline: none;
+    color: #222;
+    min-height: 240px;
+    background-color: var(--blanco);
+}
+
+.div-editor-editable:empty::before {
+    content: "Comienza a redactar tu mensaje institucional aquí...";
+    color: #aaa;
+    pointer-events: none;
 }
 
 .contenedor-boton-enviar {
     display: flex;
     justify-content: flex-end;
-    margin-top: 20px;
+    margin-top: 25px;
 }
 
 .btn-enviar-accion-rojo {
     background-color: var(--guinda-principal);
     color: var(--blanco);
     border: none;
-    padding: 12px 30px;
-    border-radius: 6px;
-    font-size: 15px;
-    font-weight: 600;
+    padding: 16px 40px;
+    border-radius: 8px;
+    font-size: 18px;
+    font-weight: 500;
     cursor: pointer;
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 12px;
     transition: background 0.2s;
+    box-shadow: 0 4px 10px rgba(108, 29, 53, 0.2);
 }
 
 .btn-enviar-accion-rojo:hover {
     background-color: var(--guinda-oscuro);
 }
 
-/* ==========================================================================
-   7. COLUMNA LATERAL (Resumen e Historial)
-   ========================================================================== */
 .columna-lateral {
     display: flex;
     flex-direction: column;
@@ -545,7 +634,6 @@ body {
     font-weight: 600;
 }
 
-/* Ajustes de flexbox para el resumen */
 .item-resumen {
     display: flex;
     justify-content: space-between;
@@ -553,14 +641,8 @@ body {
     margin-bottom: 10px;
 }
 
-.item-resumen .etiqueta {
-    color: var(--texto-mutado);
-}
-
-.item-resumen .valor {
-    font-weight: 600;
-    color: #333;
-}
+.item-resumen .etiqueta { color: var(--texto-mutado); }
+.item-resumen .valor { font-weight: 600; color: #333; }
 
 .divisor-resumen {
     border: none;
@@ -568,10 +650,7 @@ body {
     margin: 12px 0;
 }
 
-.total-envios {
-    font-size: 15px;
-    font-weight: bold;
-}
+.total-envios { font-size: 15px; font-weight: bold; }
 
 .lista-historial {
     display: flex;
@@ -595,23 +674,13 @@ body {
     text-decoration: none;
 }
 
-.link-ver-todo:hover {
-    text-decoration: underline;
-}
+.link-ver-todo:hover { text-decoration: underline; }
 
-/* ==========================================================================
-   8. RESPONSIVE DESIGN
-   ========================================================================== */
 @media (max-width: 992px) {
-    .dashboard-alertas {
-        grid-template-columns: 1fr;
-    }
-    
-    .distribucion-inferior-figma {
-        grid-template-columns: 1fr;
-    }
-    
-    .linea-divisoria-vertical {
-        display: none;
-    }
+    .dashboard-alertas { grid-template-columns: 1fr; }
+    .encabezado-asunto { flex-direction: column; align-items: flex-start; gap: 10px; }
+    .input-asunto, .contenedor-dropdown-variables, .btn-insertar-variable { width: 100%; }
+    .btn-insertar-variable { justify-content: space-between; }
+    .distribucion-inferior-figma { grid-template-columns: 1fr; }
+    .linea-divisoria-vertical { display: none; }
 }

@@ -18,7 +18,7 @@ body { background-color: var(--fondo-gris); color: var(--texto-oscuro); min-heig
 
 /* HEADER */
 .header-institucional {
-    position: relative; /* Necesario para centrar el logo de forma absoluta */
+    position: relative;
     background-color: var(--guinda-principal);
     display: flex;
     justify-content: space-between;
@@ -29,7 +29,6 @@ body { background-color: var(--fondo-gris); color: var(--texto-oscuro); min-heig
 }
 .menu-hamburguesa { font-size: 24px; color: var(--blanco); cursor: pointer; width: 40px; z-index: 2; }
 
-/* Logo centrado de forma absoluta */
 .logo-centro { 
     position: absolute; 
     left: 50%; 
