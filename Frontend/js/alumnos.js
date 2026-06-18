@@ -1,4 +1,30 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // --- 1. LÓGICA DEL MENÚ FLOTANTE ---
+    const btnHamburguesa = document.getElementById('btnHamburguesa');
+    const overlay = document.getElementById('sidebarOverlay');
+    const btnCerrar = document.getElementById('btnCerrarSidebar');
+
+    if (btnHamburguesa && overlay) {
+        btnHamburguesa.addEventListener('click', () => {
+            overlay.classList.add('open');
+        });
+    }
+
+    if (btnCerrar) {
+        btnCerrar.addEventListener('click', () => {
+            overlay.classList.remove('open');
+        });
+    }
+
+    if (overlay) {
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) {
+                overlay.classList.remove('open');
+            }
+        });
+    }
+
+    // --- 2. LÓGICA DE FILTROS Y TABLA ---
     const inputBuscar = document.querySelector('.search-input');
     const btnLimpiar = document.querySelector('.btn-limpiar');
     const selects = document.querySelectorAll('.filter-select');
@@ -7,7 +33,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // Mapeo de columnas para los filtros
     const mapeoColumnas = { 0: 4, 1: 7, 2: 6, 3: 5, 4: 9 };
 
-    // --- FUNCIÓN PARA LLENAR LOS SELECTS DINÁMICAMENTE ---
     function inicializarFiltrosDinamicos() {
         const opcionesPorFiltro = { 0: new Set(), 1: new Set(), 2: new Set(), 3: new Set(), 4: new Set() };
 
@@ -33,7 +58,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- FUNCIÓN DE FILTRADO ---
     function filtrarTabla() {
         const textoBusqueda = inputBuscar.value.toLowerCase().trim();
 
@@ -66,16 +90,14 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- NUEVO: GUARDAR ALUMNO AL DAR CLIC EN LA FLECHA ---
+    // --- 3. LÓGICA DE NAVEGACIÓN A SEGUIMIENTO ---
     function CONFIGURAR_CLICS_SEGUIMIENTO() {
         filasTabla.forEach(fila => {
             const enlace = fila.querySelector('a');
             if (enlace) {
                 enlace.addEventListener('click', (e) => {
-                    // 1. Evitamos que el enlace intente usar los parámetros de la URL viejos
                     e.preventDefault(); 
                     
-                    // 2. Extraemos los textos de las celdas de esta fila específica
                     const celdas = fila.querySelectorAll('td');
                     const badgeEstado = fila.querySelector('.status-badge');
                     
@@ -91,17 +113,14 @@ document.addEventListener('DOMContentLoaded', () => {
                         reprobadas: celdas[10].textContent.trim()
                     };
                     
-                    // 3. Guardamos toda la información en la memoria local (localStorage)
                     localStorage.setItem('alumnoSeleccionado', JSON.stringify(datosAlumno));
-                    
-                    // 4. Viajamos a la página de seguimiento limpiamente
                     window.location.href = "seguimiento_alumno.html";
                 });
             }
         });
     }
 
-    // Inicializar todo el sistema
+    // Inicialización general
     inicializarFiltrosDinamicos();
     CONFIGURAR_CLICS_SEGUIMIENTO();
 
@@ -115,37 +134,4 @@ document.addEventListener('DOMContentLoaded', () => {
             filtrarTabla(); 
         });
     }
-});
-document.addEventListener("DOMContentLoaded", () => {
-    const btnHamburguesa = document.getElementById("btnHamburguesa");
-    const sidebarOverlay = document.getElementById("sidebarOverlay");
-    const btnCerrar = document.getElementById("btnCerrarSidebar");
-
-    // Abrir menú
-    btnHamburguesa.addEventListener("click", () => {
-        sidebarOverlay.classList.add("open");
-    });
-
-    // Cerrar con la X
-    btnCerrar.addEventListener("click", () => {
-        sidebarOverlay.classList.remove("open");
-    });
-
-    // Cerrar al hacer clic en el fondo oscuro
-    sidebarOverlay.addEventListener("click", (e) => {
-        if (e.target === sidebarOverlay) {
-            sidebarOverlay.classList.remove("open");
-        }
-    });
-});
-const btnHamburguesa = document.getElementById('btnHamburguesa');
-const overlay = document.getElementById('sidebarOverlay');
-const btnCerrar = document.getElementById('btnCerrarSidebar');
-
-btnHamburguesa.addEventListener('click', () => {
-    overlay.classList.add('open');
-});
-
-btnCerrar.addEventListener('click', () => {
-    overlay.classList.remove('open');
 });

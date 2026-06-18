@@ -61,3 +61,22 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 });
+
+document.addEventListener("DOMContentLoaded", () => {
+    const btnMenu = document.querySelector(".menu-toggle");
+    const overlay = document.getElementById("sidebarOverlay");
+    const btnCerrar = document.getElementById("btnCerrarSidebar");
+
+    if (btnMenu) {
+        btnMenu.addEventListener("click", () => overlay.classList.add("open"));
+    }
+
+    if (btnCerrar) {
+        btnCerrar.addEventListener("click", () => overlay.classList.remove("open"));
+    }
+
+    // Cierra si haces clic fuera de la tarjeta
+    overlay.addEventListener("click", (e) => {
+        if (e.target === overlay) overlay.classList.remove("open");
+    });
+});

@@ -254,3 +254,56 @@ body {
 .sidebar-cell {
     background-color: #f4f6f9;
 }
+
+/* --- 4. MENÚ FLOTANTE (ESTILO COMPACTO) --- */
+.menu-flotante-overlay {
+    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+    background-color: rgba(0,0,0,0.6); z-index: 1000;
+    opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
+}
+.menu-flotante-overlay.open { opacity: 1; pointer-events: auto; }
+
+/* Botón cerrar más pegado */
+.btn-cerrar-flotante {
+    position: absolute; top: 15px; left: 15px;
+    width: 50px; height: 50px; background-color: #d4b483;
+    border-radius: 50%; border: 2px solid #000;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px; color: #000; cursor: pointer;
+}
+
+/* Tarjeta más compacta */
+.tarjeta-menu-flotante {
+    position: absolute; top: 75px; left: 15px; width: 280px;
+    background-color: #4a151b; border-radius: 20px;
+    padding: 15px; /* Reduje el padding para que esté más junto */
+    box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+}
+
+/* Lista con menos espacio entre opciones */
+.lista-menu-flotante { 
+    list-style: none; display: flex; flex-direction: column; 
+    gap: 8px; /* Reduje el gap de 20px a 8px */
+    padding: 0; margin: 0; 
+}
+
+.lista-menu-flotante li a { 
+    display: flex; align-items: center; gap: 12px; 
+    color: #fff; text-decoration: none; font-size: 18px; 
+    padding: 8px 10px; /* Ajuste fino */
+}
+
+/* Opción activa compacta */
+.opcion-activa-figma { 
+    background-color: #d4b483; 
+    border-radius: 12px; 
+    padding: 0; /* Eliminamos el padding extra */
+}
+
+.opcion-activa-figma a { 
+    color: #000 !important; 
+    font-weight: 600;
+    padding: 10px 15px !important; /* Mantenemos el clic amplio aquí */
+}
+
+.opcion-activa-figma a i { color: #000; }

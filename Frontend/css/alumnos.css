@@ -27,19 +27,25 @@ body {
     background-color: var(--bg-main);
     color: var(--text-dark);
     padding-bottom: 40px;
+    /* --- AGREGA ESTO --- */
+    padding-top: 70px; /* Igual a la altura de tu navbar para que nada quede oculto */
 }
 
 /* --- NAVBAR CON CENTRADO ABSOLUTO DEL LOGO --- */
 .navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 70px;
     background-color: var(--brand-maroon);
-    color: var(--white);
+    color: #fff;
     display: flex;
-    justify-content: space-between; /* Empuja el menú a la izquierda y el avatar a la derecha */
+    justify-content: space-between;
     align-items: center;
-    padding: 12px 30px;
+    padding: 0 30px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    position: relative; /* Clave para permitir que el logo se posicione de forma absoluta */
-    height: 70px; /* Asegura una altura consistente para la barra */
+    z-index: 1000;
 }
 
 .menu-toggle {
@@ -50,12 +56,11 @@ body {
 /* Centrado matemático perfecto del logo en la barra */
 .logo-img {
     height: 45px;
-    width: auto;
-    object-fit: contain;
     position: absolute;
     left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%); /* Lo desplaza hacia atrás su propio 50% en X e Y */
+    /* margin-left negativo de la mitad del ancho aprox del logo */
+    margin-left: -60px; 
+    top: 12px;
 }
 
 .user-avatar {
@@ -332,84 +337,56 @@ body {
     color: var(--brand-maroon);
 }
 
-/* Overlay oscuro */
+/* --- MENÚ FLOTANTE (ESTILO AJUSTADO) --- */
+/* --- MENÚ FLOTANTE (ESTILO AJUSTADO A REFERENCIA) --- */
+/* --- MENÚ FLOTANTE (VERSIÓN MÁS GRANDE Y COMPACTA) --- */
 .menu-flotante-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5); /* Fondo oscuro */
-    visibility: hidden;
-    opacity: 0;
-    transition: 0.3s ease;
-    z-index: 9999;
+    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+    background-color: rgba(0,0,0,0.6); z-index: 1000;
+    opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
+}
+.menu-flotante-overlay.open { opacity: 1; pointer-events: auto; }
+
+/* Botón cerrar más grande */
+.btn-cerrar-flotante {
+    position: absolute; top: 20px; left: 20px;
+    width: 65px; height: 65px; background-color: #d4b483;
+    border-radius: 50%; border: 2px solid #000;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 32px; color: #000; cursor: pointer;
 }
 
-.menu-flotante-overlay.open {
-    visibility: visible;
-    opacity: 1;
-}
-
-/* Panel lateral (color vino) */
+/* Tarjeta principal - Aumentada significativamente */
 .tarjeta-menu-flotante {
-    width: 280px;
-    height: 100%;
-    background: #581825; /* Color vino de tu sistema */
-    padding: 30px;
-    position: absolute;
-    left: -300px; /* Escondido a la izquierda */
-    transition: 0.3s ease;
-    border-radius: 0 20px 20px 0;
+    position: absolute; top: 100px; left: 20px; 
+    width: 420px; /* Ancho mayor para que se vea más grande */
+    background-color: #4a151b; 
+    border-radius: 25px;
+    padding: 30px; /* Más espacio para que el menú sea físicamente más grande */
+    box-shadow: 0 10px 25px rgba(0,0,0,0.4);
 }
 
-.menu-flotante-overlay.open .tarjeta-menu-flotante {
-    left: 0; /* Aparece al abrir */
+.lista-menu-flotante { 
+    list-style: none; 
+    display: flex; 
+    flex-direction: column; 
+    gap: 8px; /* Mantiene las palabras juntas */
+    padding: 0; margin: 0; 
 }
 
-/* Estilos de elementos */
-.btn-cerrar-flotante { color: white; cursor: pointer; font-size: 28px; margin-bottom: 30px; }
-.lista-menu-flotante { list-style: none; }
-.lista-menu-flotante li { margin-bottom: 25px; }
-.lista-menu-flotante a { color: white; text-decoration: none; display: flex; align-items: center; gap: 15px; font-size: 18px; }
-
-/* Estilo para la opción activa (como en tu imagen) */
-.opcion-activa {
-    background: #d1c7bd;
-    padding: 10px;
-    border-radius: 10px;
-}
-.opcion-activa a { color: #333; font-weight: bold; }
-/* Fondo oscuro que bloquea la pantalla */
-.menu-flotante-overlay {
-    position: fixed;
-    top: 0;
-    left: -100%; /* Inicia oculto a la izquierda */
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.6);
-    z-index: 9999;
-    transition: left 0.3s ease;
+.lista-menu-flotante li a { 
+    display: flex; align-items: center; gap: 20px; 
+    color: #fff; text-decoration: none; 
+    font-size: 24px; /* Letra más grande */
+    padding: 15px 18px; /* Padding interno mayor para agrandar cada fila */
 }
 
-/* Clase que activaremos con JS para mostrarlo */
-.menu-flotante-overlay.open {
-    left: 0;
+/* Opción activa */
+.opcion-activa-figma { 
+    background-color: #d4b483; 
+    border-radius: 15px; 
 }
-
-/* El panel color vino de tu imagen */
-.tarjeta-menu-flotante {
-    width: 300px;
-    height: 100%;
-    background: #581825; /* Ajusta este color al de tu diseño */
-    padding: 30px;
-    color: white;
-    border-radius: 0 20px 20px 0;
-}
-
-/* Estilo de la opción activa como en tu captura */
-.opcion-activa {
-    background: #d1c7bd;
-    border-radius: 8px;
-    padding: 10px;
+.opcion-activa-figma a { 
+    color: #000 !important; 
+    font-weight: 600;
 }

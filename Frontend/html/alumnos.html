@@ -8,22 +8,6 @@
     <link rel="stylesheet" href="../css/alumnos.css">
 </head>
 <body>
-    <div class="menu-flotante-overlay" id="sidebarOverlay">
-        <div class="tarjeta-menu-flotante">
-            <div class="btn-cerrar-flotante" id="btnCerrarSidebar">
-                <i class="fa-solid fa-xmark"></i>
-            </div>
-            <nav>
-                <ul class="lista-menu-flotante">
-                    <li><a href="inicio.html"><i class="fa-solid fa-house"></i> Inicio</a></li>
-                    <li><a href="alumnos.html"><i class="fa-solid fa-user-group"></i> Alumnos</a></li>
-                    <li><a href="alertas.html"><i class="fa-solid fa-bell"></i> Alertas</a></li>
-                    <li><a href="horarios.html"><i class="fa-solid fa-calendar-days"></i> Horarios de Docentes</a></li>
-                    <li class="opcion-activa"><a href="configuracion.html"><i class="fa-solid fa-gear"></i> Configuración</a></li>
-                </ul>
-            </nav>
-        </div>
-    </div>
 
     <header class="navbar">
         <i class="fa-solid fa-bars menu-toggle" id="btnHamburguesa" style="cursor:pointer;"></i>
@@ -229,6 +213,24 @@
         </section>
 
     </main>
+
+<div class="menu-flotante-overlay" id="sidebarOverlay">
+    <div class="btn-cerrar-flotante" id="btnCerrarSidebar">
+        <i class="fas fa-times"></i>
+    </div>
+    <div class="tarjeta-menu-flotante">
+        <ul class="lista-menu-flotante">
+            <li><a href="inicio.html"><i class="fas fa-home"></i> <span>Inicio</span></a></li>
+            <li><a href="alumnos.html"><i class="fas fa-users"></i> <span>Alumnos</span></a></li>
+            <li><a href="alertas.html"><i class="fas fa-bell"></i> <span>Alertas</span></a></li>
+            <li><a href="horarios.html"><i class="fas fa-calendar-alt"></i> <span>Horarios de Docentes</span></a></li>
+            <li class="opcion-activa-figma">
+                <a href="configuracion.html"><i class="fas fa-cog"></i> <span>Configuración</span></a>
+            </li>
+        </ul>
+    </div>
+</div>
+
     <script src="../js/alumnos.js"></script>
 </body>
 </html>
