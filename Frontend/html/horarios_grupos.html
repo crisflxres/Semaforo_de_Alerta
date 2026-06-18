@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Gestión de Grupos</title>
+    <link rel="stylesheet" href="../css/horarios_grupos.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+   <header class="main-header">
+        <div class="menu-btn" id="btnHamburguesa">☰</div>
+        <div class="logo-container">
+            <img src="../html/Logo-cecyteh.png" class="logo" alt="Logo">
+        </div>
+        <div class="user-avatar">A</div>
+    </header>
+
+    <nav class="tabs-container">
+        <div class="tabs">
+            <a href="horarios.html" class="tab-item">📅 Horarios</a>
+            <a href="horarios_grupos.html" class="tab-item active">👥 Grupos</a>
+            <a href="#" class="tab-item">👤 Docentes</a>
+            <a href="#" class="tab-item">📖 Materias</a>
+            <a href="#" class="tab-item">🚪 Aulas</a>
+        </div>
+    </nav>
+
+    <main class="contenedor-grupos">
+        <h2>Gestión de Grupos</h2>
+
+        <div class="header-grupos">
+            <input type="text" class="input-buscar" placeholder="🔍 Buscar">
+            <button class="btn-nuevo">+ Nuevo grupo</button>
+        </div>
+
+        <p class="subtitulo">Grupos Registrados</p>
+
+        <div class="grid-tarjetas">
+    <div class="tarjeta-grupo seleccionado">
+        <div class="icono-grupo bg-rosa"><i class="fa-solid fa-table-cells-large"></i></div>
+        <div class="info-grupo">
+            <h3>Grupo 1</h3>
+            <p>30 Alumnos</p>
+            <span class="etiqueta bg-rosa">Matutino</span>
+        </div>
+    </div>
+
+    <div class="tarjeta-grupo seleccionado">
+        <div class="icono-grupo bg-azul"><i class="fa-solid fa-table-cells-large"></i></div>
+        <div class="info-grupo">
+            <h3>Grupo 2</h3>
+            <p>35 Alumnos</p>
+            <span class="etiqueta bg-azul">Matutino</span>
+        </div>
+    </div>
+
+    <div class="tarjeta-grupo seleccionado">
+        <div class="icono-grupo bg-morado"><i class="fa-solid fa-table-cells-large"></i></div>
+        <div class="info-grupo">
+            <h3>Grupo 3</h3>
+            <p>40 Alumnos</p>
+            <span class="etiqueta bg-morado">Matutino</span>
+        </div>
+    </div>
+
+<div class="tarjeta-grupo seleccionado">
+        <div class="icono-grupo bg-azul_claro"><i class="fa-solid fa-table-cells-large"></i></div>
+        <div class="info-grupo">
+            <h3>Grupo 4</h3>
+            <p>38 Alumnos</p>
+            <span class="etiqueta bg-azul_claro">Matutino</span>
+        </div>
+    </div>
+
+<div class="tarjeta-grupo seleccionado">
+        <div class="icono-grupo bg-amarillo"><i class="fa-solid fa-table-cells-large"></i></div>
+        <div class="info-grupo">
+            <h3>Grupo 5</h3>
+            <p>33 Alumnos</p>
+            <span class="etiqueta bg-amarillo">Matutino</span>
+        </div>
+    </div>
+
+<div class="tarjeta-grupo seleccionado">
+        <div class="icono-grupo bg-verde"><i class="fa-solid fa-table-cells-large"></i></div>
+        <div class="info-grupo">
+            <h3>Grupo 6</h3>
+            <p>30 Alumnos</p>
+            <span class="etiqueta bg-verde">Matutino</span>
+        </div>
+    </div>
+
+<div class="tarjeta-grupo seleccionado">
+        <div class="icono-grupo bg-naranja"><i class="fa-solid fa-table-cells-large"></i></div>
+        <div class="info-grupo">
+            <h3>Grupo 7</h3>
+            <p>29 Alumnos</p>
+            <span class="etiqueta bg-naranja">Matutino</span>
+        </div>
+    </div>
+
+<div class="tarjeta-grupo seleccionado">
+        <div class="icono-grupo bg-cafe"><i class="fa-solid fa-table-cells-large"></i></div>
+        <div class="info-grupo">
+            <h3>Grupo 8</h3>
+            <p>35 Alumnos</p>
+            <span class="etiqueta bg-cafe">Matutino</span>
+        </div>
+    </div>
+
+<div class="tarjeta-grupo seleccionado">
+        <div class="icono-grupo bg-rojo"><i class="fa-solid fa-table-cells-large"></i></div>
+        <div class="info-grupo">
+            <h3>Grupo 9</h3>
+            <p>38 Alumnos</p>
+            <span class="etiqueta bg-rojo">Matutino</span>
+        </div>
+    </div>
+
+<div class="tarjeta-grupo seleccionado">
+        <div class="icono-grupo bg-gris"><i class="fa-solid fa-table-cells-large"></i></div>
+        <div class="info-grupo">
+            <h3>Grupo 10</h3>
+            <p>45 Alumnos</p>
+            <span class="etiqueta bg-gris">Matutino</span>
+        </div>
+    </div>
+
+        <div class="paginador">
+            <button>&lt;</button> 
+            <button class="active">1</button> 
+            <button>2</button> 
+            <button>3</button> 
+            <button>&gt;</button>
+        </div>
+    </main>
+
+    <div id="sideMenu" class="side-menu">...</div>
+    <div id="panelLateral" class="panel-lateral">...</div>
+
+<div class="menu-flotante-overlay" id="sidebarOverlay">
+        <div class="btn-cerrar-flotante" id="btnCerrarSidebar">
+            <i class="fa-solid fa-xmark"></i>
+        </div>
+        <nav class="tarjeta-menu-flotante">
+            <ul class="lista-menu-flotante">
+                <li><a href="inicio.html"><i class="fa-solid fa-house"></i> <span>Inicio</span></a></li>
+                <li><a href="alumnos.html"><i class="fa-solid fa-user-group"></i> <span>Alumnos</span></a></li>
+                <li><a href="alertas.html"><i class="fa-solid fa-bell"></i> <span>Alertas</span></a></li>
+                <li><a href="horarios.html"><i class="fa-solid fa-calendar-days"></i> <span>Horarios de Docentes</span></a></li>
+                <li class="opcion-activa-figma"><a href="configuracion.html"><i class="fa-solid fa-gear"></i> <span>Configuración</span></a></li>
+            </ul>
+        </nav>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const sidebar = document.getElementById("sidebarOverlay");
+            const btnAbrir = document.getElementById("btnHamburguesa");
+            const btnCerrar = document.getElementById("btnCerrarSidebar");
+
+            if (btnAbrir && sidebar && btnCerrar) {
+                btnAbrir.addEventListener("click", () => sidebar.classList.add("open"));
+                btnCerrar.addEventListener("click", () => sidebar.classList.remove("open"));
+                sidebar.addEventListener("click", (e) => {
+                    if (e.target === sidebar) sidebar.classList.remove("open");
+                });
+            }
+        });
+    </script>
+    <script src="../js/horarios_grupos.js"></script>
+</body>
+</html>

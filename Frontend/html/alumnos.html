@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CECYTE - Control de Alumnos</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/alumnos.css">
+</head>
+<body>
+
+    <header class="navbar">
+        <i class="fa-solid fa-bars menu-toggle" id="btnHamburguesa" style="cursor:pointer;"></i>
+        <img src="Logo-cecyteh.png" alt="Logo CECYTE" class="logo-img">
+        <div class="user-avatar">A</div>
+    </header>
+
+    <main class="container">
+        
+        <section class="header-section">
+            <div class="title-area">
+                <h1>Alumnos</h1>
+                <p>Consulta y administración de alumnos</p>
+            </div>
+            <button class="btn-reporte">Generar Reporte</button>
+        </section>
+
+        <section class="metrics-grid">
+            <div class="metric-card total">
+                <div class="icon-circle"><i class="fa-solid fa-users"></i></div>
+                <div class="metric-info">
+                    <h3>1400</h3>
+                    <p>Total de alumnos</p>
+                </div>
+            </div>
+            <div class="metric-card regulares">
+                <div class="icon-circle"><i class="fa-solid fa-circle-check"></i></div>
+                <div class="metric-info">
+                    <h3>980</h3>
+                    <p>Alumnos regulares</p>
+                </div>
+            </div>
+            <div class="metric-card riesgo">
+                <div class="icon-circle"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                <div class="metric-info">
+                    <h3>198</h3>
+                    <p>En riesgo</p>
+                </div>
+            </div>
+            <div class="metric-card criticos">
+                <div class="icon-circle"><i class="fa-solid fa-circle-xmark"></i></div>
+                <div class="metric-info">
+                    <h3>62</h3>
+                    <p>Críticos</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="filters-panel">
+            <div class="search-row">
+                <div class="search-container">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" class="search-input" placeholder="Buscar Alumno">
+                </div>
+                <button class="btn-limpiar">Limpiar filtros</button>
+            </div>
+            
+            <div class="selects-row">
+                <div class="filter-group">
+                    <label>Grupo</label>
+                    <select class="filter-select">
+                        <option>Todos</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Carrera</label>
+                    <select class="filter-select">
+                        <option>Todos</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Semestre</label>
+                    <select class="filter-select">
+                        <option>Todos</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Turno</label>
+                    <select class="filter-select">
+                        <option>Todos</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Estado de Alerta</label>
+                    <select class="filter-select">
+                        <option>Todos</option>
+                    </select>
+                </div>
+            </div>
+        </section>
+
+        <section class="table-container">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Foto</th>
+                        <th>Matrícula</th>
+                        <th>Nombre</th>
+                        <th>Apellidos</th>
+                        <th>Grupo</th>
+                        <th>Turno</th>
+                        <th>Semestre</th>
+                        <th>Carrera</th>
+                        <th>PAC</th>
+                        <th>Estado</th>
+                        <th>Materias reprobadas</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="avatar-cell"><i class="fa-solid fa-circle-user"></i></td>
+                        <td>12345679</td>
+                        <td>José</td>
+                        <td>Ramírez López</td>
+                        <td>38M</td>
+                        <td>Matutino</td>
+                        <td>4to</td>
+                        <td>Programación</td>
+                        <td>8.6</td>
+                        <td><span class="status-badge regular">Regular</span></td>
+                        <td class="numeric-cell">0</td>
+                        <td>
+                            <a href="seguimiento_alumno.html?matricula=12345679&nombre=José&apellidos=Ramírez%20López&estado=Regular" style="text-decoration: none;">
+                                <button class="btn-action"><i class="fa-solid fa-chevron-right"></i></button>
+                            </a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="avatar-cell"><i class="fa-solid fa-circle-user"></i></td>
+                        <td>12345678</td>
+                        <td>Rosa</td>
+                        <td>De La Cruz López</td>
+                        <td>28M</td>
+                        <td>Vespertino</td>
+                        <td>5to</td>
+                        <td>Soporte</td>
+                        <td>7.2</td>
+                        <td><span class="status-badge riesgo">En riesgo</span></td>
+                        <td class="numeric-cell">2</td>
+                        <td>
+                            <a href="seguimiento_alumno.html?matricula=12345678&nombre=Rosa&apellidos=De%20La%20Cruz%20López&estado=En%20riesgo" style="text-decoration: none;">
+                                <button class="btn-action"><i class="fa-solid fa-chevron-right"></i></button>
+                            </a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="avatar-cell"><i class="fa-solid fa-circle-user"></i></td>
+                        <td>12345677</td>
+                        <td>Azul</td>
+                        <td>Rodríguez Castillo</td>
+                        <td>48M</td>
+                        <td>Matutino</td>
+                        <td>6to</td>
+                        <td>Programación</td>
+                        <td>5.1</td>
+                        <td><span class="status-badge critico">Crítico</span></td>
+                        <td class="numeric-cell">3</td>
+                        <td>
+                            <a href="seguimiento_alumno.html?matricula=12345677&nombre=Azul&apellidos=Rodríguez%20Castillo&estado=Crítico" style="text-decoration: none;">
+                                <button class="btn-action"><i class="fa-solid fa-chevron-right"></i></button>
+                            </a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="avatar-cell"><i class="fa-solid fa-circle-user"></i></td>
+                        <td>12345676</td>
+                        <td>Juan</td>
+                        <td>Peréz López</td>
+                        <td>45M</td>
+                        <td>Matutino</td>
+                        <td>4to</td>
+                        <td>Mecatrónica</td>
+                        <td>6.3</td>
+                        <td><span class="status-badge riesgo">En riesgo</span></td>
+                        <td class="numeric-cell">2</td>
+                        <td>
+                            <a href="seguimiento_alumno.html?matricula=12345676&nombre=Juan&apellidos=Peréz%20López&estado=En%20riesgo" style="text-decoration: none;">
+                                <button class="btn-action"><i class="fa-solid fa-chevron-right"></i></button>
+                            </a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="avatar-cell"><i class="fa-solid fa-circle-user"></i></td>
+                        <td>12345675</td>
+                        <td>Luis</td>
+                        <td>López Ortiz</td>
+                        <td>18M</td>
+                        <td>Vespertino</td>
+                        <td>4to</td>
+                        <td>PGA</td>
+                        <td>9.1</td>
+                        <td><span class="status-badge regular">Regular</span></td>
+                        <td class="numeric-cell">0</td>
+                        <td>
+                            <a href="seguimiento_alumno.html?matricula=12345675&nombre=Luis&apellidos=López%20Ortiz&estado=Regular" style="text-decoration: none;">
+                                <button class="btn-action"><i class="fa-solid fa-chevron-right"></i></button>
+                            </a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+    </main>
+
+<div class="menu-flotante-overlay" id="sidebarOverlay">
+    <div class="btn-cerrar-flotante" id="btnCerrarSidebar">
+        <i class="fas fa-times"></i>
+    </div>
+    <div class="tarjeta-menu-flotante">
+        <ul class="lista-menu-flotante">
+            <li><a href="inicio.html"><i class="fas fa-home"></i> <span>Inicio</span></a></li>
+            <li><a href="alumnos.html"><i class="fas fa-users"></i> <span>Alumnos</span></a></li>
+            <li><a href="alertas.html"><i class="fas fa-bell"></i> <span>Alertas</span></a></li>
+            <li><a href="horarios.html"><i class="fas fa-calendar-alt"></i> <span>Horarios de Docentes</span></a></li>
+            <li class="opcion-activa-figma">
+                <a href="configuracion.html"><i class="fas fa-cog"></i> <span>Configuración</span></a>
+            </li>
+        </ul>
+    </div>
+</div>
+
+    <script src="../js/alumnos.js"></script>
+</body>
+</html>

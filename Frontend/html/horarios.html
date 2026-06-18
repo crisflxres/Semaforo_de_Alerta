@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Horarios</title>
+    <link rel="stylesheet" href="../css/horarios.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <header class="main-header">
+        <div class="menu-btn" id="btnHamburguesa">☰</div>
+        <div class="logo-container">
+            <img src="../html/Logo-cecyteh.png" class="logo" alt="Logo">
+        </div>
+        <div class="user-avatar">A</div>
+    </header>
+
+    <nav class="tabs-container">
+        <div class="tabs">
+            <a href="horarios.html" class="tab-item active">📅 Horarios</a>
+            <a href="horarios_grupos.html" class="tab-item">👥 Grupos</a>
+            <a href="#" class="tab-item">👤 Docentes</a>
+            <a href="#" class="tab-item">📖 Materias</a>
+            <a href="#" class="tab-item">🚪 Aulas</a>
+        </div>
+    </nav>
+        
+    <div class="contenedor-horarios">
+        <div class="filtros-container">
+            <div class="filtro-item">Docente <select><option>...</option></select></div>
+            <div class="filtro-item">Grupo <select><option>...</option></select></div>
+            <div class="filtro-item">Materias <select><option>...</option></select></div>
+            <div class="filtro-item">Aulas <select><option>...</option></select></div>
+        </div>
+
+        <main class="grid-horarios">
+            <div class="header">Hora</div>
+            <div class="header">Lunes</div>
+            <div class="header">Martes</div>
+            <div class="header">Miércoles</div>
+            <div class="header">Jueves</div>
+            <div class="header">Viernes</div>
+
+            <div class="celda-hora">07:00 - 8:00</div>
+            <div class="celda-btn" onclick="abrirPanel()">+</div>
+            <div class="celda-btn" onclick="abrirPanel()">+</div>
+            <div class="celda-btn" onclick="abrirPanel()">+</div>
+            <div class="celda-btn" onclick="abrirPanel()">+</div>
+            <div class="celda-btn" onclick="abrirPanel()">+</div>
+
+            <div class="celda-hora">8:00 - 9:00</div>
+            <div class="celda-btn" onclick="abrirPanel()">+</div>
+            <div class="celda-btn" onclick="abrirPanel()">+</div>
+            <div class="celda-btn" onclick="abrirPanel()">+</div>
+            <div class="celda-btn" onclick="abrirPanel()">+</div>
+            <div class="celda-btn" onclick="abrirPanel()">+</div>
+            
+            <div class="celda-hora">9:00 - 10:00</div>
+            <div class="celda-btn" onclick="abrirPanel()">+</div>
+            <div class="celda-btn" onclick="abrirPanel()">+</div>
+            <div class="celda-btn" onclick="abrirPanel()">+</div>
+            <div class="celda-btn" onclick="abrirPanel()">+</div>
+            <div class="celda-btn" onclick="abrirPanel()">+</div>
+
+            <div class="celda-hora">10:00 - 11:00</div>
+            <div class="celda-btn" onclick="abrirPanel()">+</div>
+            <div class="celda-btn" onclick="abrirPanel()">+</div>
+            <div class="celda-btn" onclick="abrirPanel()">+</div>
+            <div class="celda-btn" onclick="abrirPanel()">+</div>
+            <div class="celda-btn" onclick="abrirPanel()">+</div>
+
+            <div class="celda-hora">11:00 - 12:00</div>
+            <div class="celda-btn" onclick="abrirPanel()">+</div>
+            <div class="celda-btn" onclick="abrirPanel()">+</div>
+            <div class="celda-btn" onclick="abrirPanel()">+</div>
+            <div class="celda-btn" onclick="abrirPanel()">+</div>
+            <div class="celda-btn" onclick="abrirPanel()">+</div>
+
+            <div class="celda-hora">12:50 - 13:40</div>
+            <div class="celda-btn" onclick="abrirPanel()">+</div>
+            <div class="celda-btn" onclick="abrirPanel()">+</div>
+            <div class="celda-btn" onclick="abrirPanel()">+</div>
+            <div class="celda-btn" onclick="abrirPanel()">+</div>
+            <div class="celda-btn" onclick="abrirPanel()">+</div>
+
+            <div class="celda-hora">13:40 - 14:30</div>
+            <div class="celda-btn" onclick="abrirPanel()">+</div>
+            <div class="celda-btn" onclick="abrirPanel()">+</div>
+            <div class="celda-btn" onclick="abrirPanel()">+</div>
+            <div class="celda-btn" onclick="abrirPanel()">+</div>
+            <div class="celda-btn" onclick="abrirPanel()">+</div>
+
+            <div class="celda-hora">14:30 - 15:20</div>
+            <div class="celda-btn" onclick="abrirPanel()">+</div>
+            <div class="celda-btn" onclick="abrirPanel()">+</div>
+            <div class="celda-btn" onclick="abrirPanel()">+</div>
+            <div class="celda-btn" onclick="abrirPanel()">+</div>
+            <div class="celda-btn" onclick="abrirPanel()">+</div>
+
+            <div class="celda-hora">15:20 - 16:10</div>
+            <div class="celda-btn" onclick="abrirPanel()">+</div>
+            <div class="celda-btn" onclick="abrirPanel()">+</div>
+            <div class="celda-btn" onclick="abrirPanel()">+</div>
+            <div class="celda-btn" onclick="abrirPanel()">+</div>
+            <div class="celda-btn" onclick="abrirPanel()">+</div>
+
+            <div class="celda-hora">16:10 - 17:00</div>
+            <div class="celda-btn" onclick="abrirPanel()">+</div>
+            <div class="celda-btn" onclick="abrirPanel()">+</div>
+            <div class="celda-btn" onclick="abrirPanel()">+</div>
+            <div class="celda-btn" onclick="abrirPanel()">+</div>
+            <div class="celda-btn" onclick="abrirPanel()">+</div>
+
+            <div class="celda-hora">17:15 - 18:05</div>
+            <div class="celda-btn" onclick="abrirPanel()">+</div>
+            <div class="celda-btn" onclick="abrirPanel()">+</div>
+            <div class="celda-btn" onclick="abrirPanel()">+</div>
+            <div class="celda-btn" onclick="abrirPanel()">+</div>
+            <div class="celda-btn" onclick="abrirPanel()">+</div>
+
+            <div class="celda-hora">18:05 - 18:55</div>
+            <div class="celda-btn" onclick="abrirPanel()">+</div>
+            <div class="celda-btn" onclick="abrirPanel()">+</div>
+            <div class="celda-btn" onclick="abrirPanel()">+</div>
+            <div class="celda-btn" onclick="abrirPanel()">+</div>
+            <div class="celda-btn" onclick="abrirPanel()">+</div>
+
+            <div class="celda-hora">18:55 - 19:45</div>
+            <div class="celda-btn" onclick="abrirPanel()">+</div>
+            <div class="celda-btn" onclick="abrirPanel()">+</div>
+            <div class="celda-btn" onclick="abrirPanel()">+</div>
+            <div class="celda-btn" onclick="abrirPanel()">+</div>
+            <div class="celda-btn" onclick="abrirPanel()">+</div>
+
+            <div class="celda-hora">19:45 - 20:35</div>
+            <div class="celda-btn" onclick="abrirPanel()">+</div>
+            <div class="celda-btn" onclick="abrirPanel()">+</div>
+            <div class="celda-btn" onclick="abrirPanel()">+</div>
+            <div class="celda-btn" onclick="abrirPanel()">+</div>
+            <div class="celda-btn" onclick="abrirPanel()">+</div>
+
+        </main>
+    </div>
+
+    <div id="sideMenu" class="side-menu">...</div>
+    <div id="panelLateral" class="panel-lateral">...</div>
+
+
+<div class="menu-flotante-overlay" id="sidebarOverlay">
+        <div class="btn-cerrar-flotante" id="btnCerrarSidebar">
+            <i class="fa-solid fa-xmark"></i>
+        </div>
+        <nav class="tarjeta-menu-flotante">
+            <ul class="lista-menu-flotante">
+                <li><a href="inicio.html"><i class="fa-solid fa-house"></i> <span>Inicio</span></a></li>
+                <li><a href="alumnos.html"><i class="fa-solid fa-user-group"></i> <span>Alumnos</span></a></li>
+                <li><a href="alertas.html"><i class="fa-solid fa-bell"></i> <span>Alertas</span></a></li>
+                <li><a href="horarios.html"><i class="fa-solid fa-calendar-days"></i> <span>Horarios de Docentes</span></a></li>
+                <li class="opcion-activa-figma"><a href="configuracion.html"><i class="fa-solid fa-gear"></i> <span>Configuración</span></a></li>
+            </ul>
+        </nav>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const sidebar = document.getElementById("sidebarOverlay");
+            const btnAbrir = document.getElementById("btnHamburguesa");
+            const btnCerrar = document.getElementById("btnCerrarSidebar");
+
+            if (btnAbrir && sidebar && btnCerrar) {
+                btnAbrir.addEventListener("click", () => sidebar.classList.add("open"));
+                btnCerrar.addEventListener("click", () => sidebar.classList.remove("open"));
+                sidebar.addEventListener("click", (e) => {
+                    if (e.target === sidebar) sidebar.classList.remove("open");
+                });
+            }
+        });
+    </script>
+    <script src="../js/horarios.js"></script>
+</body>
+</html>
