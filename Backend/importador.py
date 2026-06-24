@@ -1,27 +1,5 @@
 import pandas as pd
 
-# Leer el archivo
-TACA = pd.read_html(r"C:\Users\crisf\OneDrive\Documentos\UPT\SEXTO CUATRIMESTRE_SERVICIO_SOCIAL_(TSU)\Proyecto_Documentacion\TACA_03AJ6L.xls")
-
-# Ver cuántas tablas encontró
-print("Tablas encontradas:", len(TACA))
-
-# Tomar la primera hoja del TACA
-hoja = TACA[0]
-
-# Ver cuántas filas y columnas tiene
-print("Filas y columnas:", hoja.shape)
-
-# Ver las primeras 5 filas de la tabla
-print(hoja.head())
-
-pd.set_option('display.max_columns', 10)
-pd.set_option('display.width', 200)
-
-#imprimir fila por fila con su numero 
-for i, fila in hoja.iterrows():
-    print(f"Fila {i}: {fila[0]}")
-
 def importar_alumnos (hoja):
     alumnos:list =[]
     
@@ -39,7 +17,7 @@ def importar_alumnos (hoja):
     return alumnos
 
 def importar_materias(hoja):
-    materias = []
+    materias:list = []
     
     ultimo = None #Guarda el valor del ultimo nombre de la materia registrado
     
@@ -102,16 +80,37 @@ def importar_calificaciones(hoja, materias):
                 calificaciones.append(calificacion)
     return calificaciones
 
-alumnos = importar_alumnos(hoja)
-print("Total alumnos: ",len(alumnos))
-for a in alumnos:
-    print(a)
+if __name__== "__main__":
+    # Leer el archivo
+    TACA = pd.read_html(r"C:\Users\crisf\OneDrive\Documentos\UPT\SEXTO CUATRIMESTRE_SERVICIO_SOCIAL_(TSU)\Proyecto_Documentacion\TACA_03AJ6L.xls")
+    print("Tablas encontradas:", len(TACA))
+    # Ver cuántas tablas encontró
+    # Tomar la primera hoja del TACA
+    hoja = TACA[0]
 
-materias = importar_materias(hoja)
-for m in materias:
-    print(m)
+    # Ver cuántas filas y columnas tiene
+    print("Filas y columnas:", hoja.shape)
 
-calificaciones = importar_calificaciones( hoja, materias)
-print("Total calificaciones:", len(calificaciones))
-for c in calificaciones:
-    print(c)
+    # Ver las primeras 5 filas de la tabla
+    print(hoja.head())
+
+    pd.set_option('display.max_columns', 10)
+    pd.set_option('display.width', 200)
+
+    #imprimir fila por fila con su numero 
+    for i, fila in hoja.iterrows():
+        print(f"Fila {i}: {fila[0]}")
+
+    alumnos = importar_alumnos(hoja)
+    print("Total alumnos: ",len(alumnos))
+    for a in alumnos:
+        print(a)
+
+    materias = importar_materias(hoja)
+    for m in materias:
+        print(m)
+
+    calificaciones = importar_calificaciones( hoja, materias)
+    print("Total calificaciones:", len(calificaciones))
+    for c in calificaciones:
+        print(c)
