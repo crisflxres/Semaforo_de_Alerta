@@ -1,0 +1,229 @@
+/* 1. VARIABLES DE COLOR Y CONFIGURACIÓN GENERAL*/
+:root {
+    --color-guinda: #6A1B29;      
+    --color-guinda-suave: #F4EBEF;
+    --color-crema: #fffcf9;       
+    --color-texto: #333333;
+    --color-texto-secundario: #666666;
+    --color-gris-borde: #DCDCDC;
+    --color-fondo-global: #F5F7FA;
+    --color-verde-estado: #3AD24B; 
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body { background-color: var(--color-fondo-global); color: var(--color-texto); }
+.contenedor { max-width: 1200px; margin: 30px auto; padding: 0 20px; }
+.bienvenida h1 { color: var(--color-guinda); font-size: 32px; margin-bottom: 24px; font-weight: 500; }
+
+/* 2. HEADER / ENCABEZADO GLOBAL UNIFICADO */
+.header-global-sistema {
+    background-color: #561224; 
+    height: 70px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 30px; 
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+    position: relative;
+    z-index: 999;
+}
+
+/* Botón del menú de tres líneas */
+.menu-btn-global {
+    background: none;
+    border: none;
+    color: #ffffff;
+    font-size: 26px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 45px;
+    height: 45px;
+    transition: transform 0.2s ease;
+}
+
+.menu-btn-global:hover {
+    transform: scale(1.05);
+}
+
+/* Contenedor del Logo */
+.logo-contenedor-global {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.logo-contenedor-global img {
+    height: 45px; 
+    width: auto;
+    object-fit: contain;
+}
+
+/* Círculo de Perfil */
+.perfil-avatar-global {
+    width: 44px;
+    height: 44px;
+    background-color: #cbb393; 
+    border-radius: 50%;
+    color: #000000;
+    font-size: 18px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    user-select: none;
+}
+/* Contenedor padre del avatar */
+.contenedor-avatar {
+    position: relative;
+    cursor: pointer;
+}
+
+/* Contenedor del menú desplegable */
+.menu-perfil-desplegable {
+    display: none; 
+    position: absolute;
+    top: 100%; 
+    right: 0;
+    margin-top: 15px;
+    background-color: #6A1B29;
+    border-radius: 8px;
+    padding: 12px 16px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+}
+
+/* El párrafo único de Cerrar Sesión */
+.menu-perfil-desplegable a {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: #ffffff;
+    text-decoration: none;
+    font-family: sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    white-space: nowrap; 
+    transition: opacity 0.2s;
+}
+
+/* Efecto suave al pasar el mouse */
+.menu-perfil-desplegable a:hover {
+    opacity: 0.8;
+}
+
+/* 3. RESUMEN ACADÉMICO */
+.resumen-academico { background-color: var(--color-guinda-suave); border: 1px solid rgba(106, 27, 41, 0.2); border-radius: 16px; padding: 20px; margin-bottom: 30px; }
+.resumen-academico h3 { color: var(--color-guinda); font-size: 16px; margin-bottom: 15px; font-weight: 600; }
+.resumen-contenido { background-color: var(--color-crema); border: 1px solid var(--color-gris-borde); border-radius: 12px; display: flex; align-items: center; justify-content: space-around; padding: 20px; }
+.card-resumen { display: flex; align-items: center; gap: 20px; flex: 1; justify-content: center; }
+.info h2 { font-size: 18px; color: #111; margin-bottom: 2px; }
+.info p { font-size: 12px; color: var(--color-texto-secundario); }
+.linea { width: 2px; height: 50px; background-color: var(--color-guinda); opacity: 0.8; }
+
+.circulo {
+    width: 65px; height: 65px;
+    background-color: #f4e6e5;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px; font-weight: bold; color: #111;
+}
+.circulo.estado { background-color: var(--color-verde-estado); border: 4px solid #E2F6E5; }
+
+/* 4. DISTRIBUCIÓN EN COLUMNAS (BLOQUES BASE) */
+.contenido-inferior { display: grid; grid-template-columns: 1.4fr 1fr; gap: 24px; }
+.alumno, .tutor { background-color: var(--color-guinda-suave); border: 1px solid rgba(106, 27, 41, 0.2); border-radius: 16px; padding: 20px; display: flex; flex-direction: column; }
+.alumno h3 { color: var(--color-guinda); font-size: 14px; margin-bottom: 15px; font-weight: 600; }
+
+.card-alumno, .card-tutor { 
+    background-color: var(--color-crema); 
+    border: 1px solid var(--color-gris-borde); 
+    border-radius: 12px; 
+    flex: 1; 
+}
+
+/* 5. SUB-BLOQUE: ALUMNO */
+.card-alumno { display: flex; gap: 30px; align-items: center; padding: 24px; }
+.foto-alumno { width: 130px; height: 130px; flex-shrink: 0; border-radius: 50%; overflow: hidden; border: 3px solid var(--color-guinda); background-color: #E9ECEF; display: flex; align-items: center; justify-content: center; }
+.foto-alumno img { width: 100%; height: 100%; object-fit: cover; color: transparent; text-indent: -10000px; }
+.datos-alumno { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+.datos-alumno h2 { color: var(--color-guinda); font-size: 24px; margin-bottom: 2px; font-weight: 600; }
+.datos-alumno p { font-size: 14px; color: var(--color-texto-secundario); margin-bottom: 8px; }
+
+/* 6. SUB-BLOQUE: TUTOR */
+.titulo-tutor { display: flex; align-items: center; gap: 16px; color: var(--color-guinda); margin-bottom: 20px; }
+.titulo-tutor h2 { font-size: 22px; font-weight: 600; }
+.titulo-tutor i { font-size: 24px; color: white; background-color: var(--color-guinda); width: 55px; height: 55px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.card-tutor {  border: 1.5px solid var(--color-guinda);  padding: 10px 24px; display: flex; flex-direction: column; justify-content: stretch; }
+.card-tutor .dato { flex: 1; border-bottom: 1.5px solid var(--color-guinda); padding: 0; }
+
+/* 7. COMPONENTES COMPARTIDOS (FILAS, COMPORTAMIENTO DE DATOS) */
+.dato { display: flex; align-items: center; gap: 16px; padding: 10px 0; border-bottom: 1.5px solid #D1D5DB; font-size: 15px; }
+.card-alumno .dato:last-child, .card-tutor .dato:last-child { border-bottom: none; }
+.dato span { color: #333; }
+.dato a { color: #3b71ca; text-decoration: none; }
+.fila { display: flex; gap: 20px; }
+.fila .dato { flex: 1; }
+/* Iconos */
+.dato i { color: var(--color-guinda); background-color: #F4EBEF; font-size: 14px; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;}
+
+/* MENÚ FLOTANTE */
+.menu-flotante-overlay {
+    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+    background-color: rgba(0,0,0,0.4); z-index: 1000;
+    opacity: 0; pointer-events: none; transition: opacity 0.25s ease;
+}
+
+.menu-flotante-overlay.open { opacity: 1; pointer-events: auto; }
+
+.btn-cerrar-flotante {
+    position: absolute; top: 15px; left: 25px;
+    width: 55px; height: 55px; 
+    background-color: #cbb393; 
+    border-radius: 50%; border: 2px solid #000;
+    display: flex; align-items: center; justify-content: center;
+    line-height: 0; padding-bottom: 4px; 
+    font-size: 28px; color: #000; cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+.tarjeta-menu-flotante {
+    position: absolute; top: 85px; left: 25px; width: 295px;
+    background-color: #4a1222;
+    border-radius: 24px;
+    padding: 25px 22px; 
+    box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+    transform: translateY(-20px); transition: transform 0.3s ease;
+}
+
+.menu-flotante-overlay.open .tarjeta-menu-flotante { transform: translateY(0); }
+.lista-menu-flotante { list-style: none; display: flex; flex-direction: column; gap: 18px; }
+.lista-menu-flotante li a {  display: flex; align-items: center; gap: 15px;  color: #ffffff; text-decoration: none; font-size: 19px; }
+.lista-menu-flotante li a span { text-decoration: underline; }
+.lista-menu-flotante .opcion-activa-figma {  background-color: #cbb393;  border-radius: 16px; padding: 6px 12px; }
+.lista-menu-flotante .opcion-activa-figma a span { text-decoration: none !important; color: #000; font-weight: 600; }
+.lista-menu-flotante .opcion-activa-figma a i { color: #000; }
+  
+/* 8. RESPONSIVE DESIGN (MÓVILES) */
+@media (max-width: 768px) {
+    .resumen-contenido { flex-direction: column; gap: 20px; }
+    .linea { width: 80%; height: 2px; }
+    .contenido-inferior { grid-template-columns: 1fr; }
+    .card-alumno { flex-direction: column; text-align: center; }
+    .dato { justify-content: center; }
+    .header-global-sistema { padding: 0 15px; }
+    .logo-contenedor-global img { height: 38px; }
+}

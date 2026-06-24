@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="alumno_inicio.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <title>Inicio Alumno</title>
+</head>
+
+<body>
+    <div class="menu-flotante-overlay" id="sidebarMenu">
+        <button class="btn-cerrar-flotante" id="btnCerrar">&times;</button>
+        <div class="tarjeta-menu-flotante">
+            <ul class="lista-menu-flotante">
+                <li class="opcion-activa-figma"><a href="#"><i class="fas fa-home"></i> <span>Inicio</span></a></li>
+                <li><a href="../Alertas/alertas_alumno.html"><i class="fas fa-bell"></i> <span>Alertas</span></a></li>
+                <li><a href="../Seguimiento/seguimiento_alumno.html"><i class="fas fa-chart-line"></i> <span>Seguimiento</span></a></li>
+            </ul>
+        </div>
+    </div>
+
+    <header class="header-global-sistema">
+        <button class="menu-btn-global" id="btnAbrirMenu">
+            <i class="fas fa-bars"></i>
+        </button>
+        
+        <div class="logo-contenedor-global">
+            <img src="../../html/Logo-cecyteh.png" alt="Logo CECyTE Hidalgo">
+        </div>
+        
+        <div class="perfil-avatar-global contenedor-avatar" id="btnAvatar">
+            A
+            <div class="menu-perfil-desplegable" id="menuPerfil">
+                <a href="../../html/index.html">
+                    <i class="fas fa-sign-out-alt"></i> Cerrar sesión
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main class="contenedor">
+        <section class="bienvenida">
+            <h1>¡Bienvenido!</h1>
+        </section>
+
+        <section class="resumen-academico">
+            <h3>Resumen Académico</h3>
+            <div class="resumen-contenido">
+                <div class="card-resumen">
+                    <div class="circulo" id="promedio-academico">--</div>
+                    <div class="info">
+                        <h2>PAC</h2>
+                        <p>Promedio académico</p>
+                    </div>
+                </div>
+
+                <div class="linea"></div>
+
+                <div class="card-resumen">
+                    <div class="circulo estado" id="estado-academico"></div>
+                    <div class="info">
+                        <h2>Estado</h2>
+                        <p>Tu rendimiento actual</p>
+                    </div>
+                </div>
+
+                <div class="linea"></div>
+
+                <div class="card-resumen">
+                    <div class="circulo" id="materias-reprobadas">0</div>
+                    <div class="info">
+                        <h2>Materias Reprobadas</h2>
+                        <p>Materias reprobadas en el ciclo actual</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="contenido-inferior">
+            <div class="alumno">
+                <h3>INFORMACIÓN DEL ALUMNO</h3>
+                <div class="card-alumno">
+                    <div class="foto-alumno">
+                        <img id="img-alumno" src="img/alumno.png" alt="Alumno">
+                    </div>
+
+                    <div class="datos-alumno">
+                        <h2 id="nombre-alumno">Cargando...</h2>
+                        <p><strong>Matrícula:</strong> <span id="matricula-alumno"></span></p>
+
+                        <div class="dato">
+                            <i class="fa-regular fa-envelope"></i>
+                            <span id="email-alumno"></span>
+                        </div>
+
+                        <div class="dato">
+                            <i class="fa-solid fa-graduation-cap"></i>
+                            <span id="carrera-alumno"></span>
+                        </div>
+
+                        <div class="fila">
+                            <div class="dato">
+                                <i class="fa-solid fa-table-cells"></i>
+                                <span id="grupo-alumno"></span>
+                            </div>
+                            <div class="dato">
+                                <i class="fa-regular fa-clock"></i>
+                                <span id="turno-alumno"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tutor">
+                <div class="titulo-tutor">
+                    <i class="fa-solid fa-user-group"></i>
+                    <h2>Tutor / Padre de familia</h2>
+                </div>
+
+                <div class="card-tutor">
+                    <div class="dato">
+                        <i class="fa-regular fa-address-card"></i>
+                        <span id="nombre-tutor"></span>
+                    </div>
+                    <div class="dato">
+                        <i class="fa-regular fa-envelope"></i>
+                        <span id="email-tutor"></span>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="alumno_inicio.js"></script>
+</body>
+</html>

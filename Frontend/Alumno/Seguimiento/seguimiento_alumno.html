@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="seguimiento_alumno.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <title>Seguimiento Académico</title>
+</head>
+<body>
+
+    <div class="menu-flotante-overlay" id="sidebarMenu">
+        <button class="btn-cerrar-flotante" id="btnCerrar">&times;</button>
+        <div class="tarjeta-menu-flotante">
+            <ul class="lista-menu-flotante">
+                <li><a href="../Inicio/alumno_inicio.html"><i class="fas fa-home"></i> <span>Inicio</span></a></li>
+                <li><a href="../Alertas/alertas_alumno.html"><i class="fas fa-bell"></i> <span>Alertas</span></a></li>
+                <li class="opcion-activa-figma"><a href="#"><i class="fas fa-chart-line"></i> <span>Seguimiento</span></a></li>
+            </ul>
+        </div>
+    </div>
+
+    <header class="header-global-sistema">
+        <button class="menu-btn-global" id="btnAbrirMenu">
+            <i class="fas fa-bars"></i>
+        </button>
+        
+        <div class="logo-contenedor-global">
+            <img src="../../html/Logo-cecyteh.png" alt="Logo CECyTE Hidalgo">
+        </div>
+        
+        <div class="perfil-avatar-global contenedor-avatar" id="btnAvatar">
+            A
+            <div class="menu-perfil-desplegable" id="menuPerfil">
+                <a href="../../html/index.html">
+                    <i class="fas fa-sign-out-alt"></i> Cerrar sesión
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main class="contenedor-seguimiento">
+        <div class="encabezado-seguimiento">
+            <h1>SEGUIMIENTO</h1>
+            <p class="subtitulo">Desempeño por materia</p>
+        </div>
+
+        <section class="tarjeta-blanca-contenedor">
+            <div class="resumen-materia-indicadores">
+                <div class="indicador"><span id="total-materias">Total de materias: 0</span><div class="linea-indicador"></div></div>
+                <div class="indicador"><span id="materias-reprobadas">Materias reprobadas: 0</span><div class="linea-indicador"></div></div>
+                <div class="indicador"><span id="estado-desempeño">Estado: --</span><div class="linea-indicador"></div></div>
+            </div>
+
+            <div class="tabla-responsiva-contenedor">
+                <div class="cabecera-botones-grid">
+                    <div>Materia</div>
+                    <div>P1</div>
+                    <div>P2</div>
+                    <div>P3</div>
+                    <div>PR</div>
+                </div>
+
+                <div class="cuerpo-tabla-calificaciones" id="cuerpo-tabla-seguimiento">
+                    </div>
+
+                <div class="pie-tabla-calificaciones">
+                    <div class="espacio-vacio"></div>
+                    <div class="celda-rosada"></div>
+                    <div class="celda-rosada"></div>
+                    <div class="celda-rosada"></div>
+                    <div class="celda-pac">PAC</div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="seguimiento_alumno.js"></script>
+</body>
+</html>

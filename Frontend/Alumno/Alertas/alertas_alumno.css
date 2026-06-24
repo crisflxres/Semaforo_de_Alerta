@@ -1,0 +1,354 @@
+/* 1. VARIABLES Y CONFIGURACIÓN GENERAL */
+:root {
+    --color-bg: #f4f6f9;
+    --color-blanco: #ffffff;
+    --color-texto-principal: #111111;
+    --color-texto-secundario: #666666;
+    --guinda-header: #561224;
+    --guinda-menu: #6b2136;
+    --dorado-detalle: #cbb393;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: var(--color-bg);
+    color: var(--color-texto-principal);
+    overflow-x: hidden;
+}
+
+/* 2. HEADER GLOBAL UNIFICADO*/
+.header-global-sistema {
+    background-color: #561224;
+    height: 70px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 30px; 
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+    position: relative;
+    z-index: 999;
+}
+
+/* Botón del menú de tres líneas */
+.menu-btn-global {
+    background: none;
+    border: none;
+    color: #ffffff;
+    font-size: 26px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 45px;
+    height: 45px;
+    transition: transform 0.2s ease;
+}
+
+.menu-btn-global:hover {
+    transform: scale(1.05);
+}
+
+/* Contenedor del Logo */
+.logo-contenedor-global {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.logo-contenedor-global img {
+    height: 45px; 
+    width: auto;
+    object-fit: contain;
+}
+
+/* Círculo de Perfil */
+.perfil-avatar-global {
+    width: 44px;
+    height: 44px;
+    background-color: #cbb393; 
+    border-radius: 50%;
+    color: #000000;
+    font-size: 18px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    user-select: none;
+}
+.contenedor-avatar {
+    position: relative;
+    cursor: pointer;
+}
+
+/* Contenedor del menú desplegable */
+.menu-perfil-desplegable {
+    display: none; 
+    position: absolute;
+    top: 100%; 
+    right: 0;
+    margin-top: 15px; 
+    background-color: #6A1B29;
+    border-radius: 8px;
+    padding: 12px 16px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+}
+
+/* Cerrar Sesión */
+.menu-perfil-desplegable a {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: #ffffff;
+    text-decoration: none;
+    font-family: sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    white-space: nowrap; 
+    transition: opacity 0.2s;
+}
+
+/* Efecto suave al pasar el mouse */
+.menu-perfil-desplegable a:hover {
+    opacity: 0.8;
+}
+/* 3. ESTRUCTURA DE LA PÁGINA DE ALERTAS*/
+.contenedor-alertas {
+    max-width: 1100px;
+    margin: 30px auto;
+    padding: 0 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.titulo-pagina {
+    font-size: 26px;
+    color: #561224;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+/* 4. SECCIÓN DE FILTROS */
+.seccion-filtros {
+    background-color: #fcf8f9; 
+    border: 1px solid #6b2136;
+    border-radius: 20px;
+    padding: 20px 30px;
+    display: flex;
+    align-items: center;
+}
+
+.filtro-grupo-estado { display: flex; flex-direction: column; flex: 2; }
+.filtro-etiqueta { font-size: 16px; color: #6a2131; font-weight: 600; margin-bottom: 5px; }
+.botones-filtro { display: flex; gap: 12px; }
+
+.btn-filtro {
+    background-color: transparent;
+    border: 1px solid #a04054;
+    color: #6a2131;
+    padding: 8px 24px;
+    border-radius: 12px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+/* Solo una definición para activo */
+.btn-filtro.activo {
+    background-color: #6b2136; 
+    color: white;
+    border-color: #6b2136;
+}
+
+.linea-divisora-filtros { width: 1px; height: 50px; background-color: #6b2136; margin: 0 35px; }
+.filtro-grupo-fecha { display: flex; flex-direction: column; flex: 1; }
+
+.input-fecha-contenedor {
+    background-color: white;
+    border: 1px solid #a04054;
+    border-radius: 12px;
+    padding: 8px 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    max-width: 180px;
+}
+
+.fecha-input-invisible {
+    border: none;
+    background: transparent;
+    font-family: inherit;
+    color: #333;
+    width: 100%;
+    outline: none;
+}
+
+/*5. LISTA DE ALERTAS  */
+.lista-alertas-scroll {
+    border: 1px solid #d4c2c6;
+    border-radius: 20px;
+    padding: 25px;
+    background-color: #fdfafb;
+    max-height: 580px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Estilos de la Scrollbar Interna */
+.lista-alertas-scroll::-webkit-scrollbar { width: 8px;}
+.lista-alertas-scroll::-webkit-scrollbar-track { background: transparent;}
+.lista-alertas-scroll::-webkit-scrollbar-thumb { background: #561224; border-radius: 10px;}
+
+/* Tarjeta Base */
+.tarjeta-alerta {
+    background-color: var(--color-blanco);
+    border-radius: 18px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 25px;
+    overflow: hidden;
+    position: relative;
+}
+
+.barra-lateral {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 14px;
+    border-top-left-radius: 18px;
+    border-bottom-left-radius: 18px;
+}
+
+.barra-lateral.verde { background-color: #4cd964; }
+.barra-lateral.amarillo { background-color: #ffcc00; }
+.barra-lateral.rojo { background-color: #ff3b30; }
+
+.alerta-contenido {
+    flex: 1;
+    padding-left: 15px;
+    padding-right: 30px;
+}
+
+.alerta-encabezado {
+    display: flex;
+    align-items: baseline;
+    gap: 25px;
+    margin-bottom: 12px;
+}
+
+.alerta-encabezado h2 {
+    font-size: 19px;
+    font-weight: 600;
+    color: #222;
+}
+
+.alerta-fecha {
+    font-size: 13px;
+    color: var(--color-texto-secundario);
+}
+
+.alerta-descripcion {
+    font-size: 14px;
+    line-height: 1.5;
+    color: #444;
+}
+
+.variable-texto {
+    color: #0076ff;
+}
+
+.btn-detail, .btn-detalle {
+    background: none;
+    border: 1px solid #a04054;
+    color: #a04054;
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s;
+    white-space: nowrap;
+}
+
+.btn-detalle:hover {
+    background-color: #fdf0f2;
+}
+
+/* 6.  MENÚ FLOTANTE  */
+.menu-flotante-overlay {
+    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+    background-color: rgba(0,0,0,0.4); z-index: 1000;
+    opacity: 0; pointer-events: none; transition: opacity 0.25s ease;
+}
+
+.menu-flotante-overlay.open { opacity: 1; pointer-events: auto; }
+
+.btn-cerrar-flotante {
+    position: absolute; top: 15px; left: 25px;
+    width: 55px; height: 55px; 
+    background-color: var(--dorado-detalle);
+    border-radius: 50%; border: 2px solid #000;
+    display: flex; align-items: center; justify-content: center;
+    line-height: 0; padding-bottom: 4px; 
+    font-size: 28px; color: #000; cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+.tarjeta-menu-flotante {
+    position: absolute; top: 85px; left: 25px; width: 295px;
+    background-color: #4a1222; 
+    border-radius: 24px;
+    padding: 25px 22px; 
+    box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+    transform: translateY(-20px); transition: transform 0.3s ease;
+}
+
+.menu-flotante-overlay.open .tarjeta-menu-flotante { transform: translateY(0); }
+.lista-menu-flotante { list-style: none; display: flex; flex-direction: column; gap: 18px; }
+.lista-menu-flotante li a { display: flex; align-items: center; gap: 15px;  color: #ffffff;  text-decoration: none; font-size: 19px; }
+.lista-menu-flotante li a span { text-decoration: underline; }
+.lista-menu-flotante .opcion-activa-figma {  background-color: var(--dorado-detalle); border-radius: 16px; padding: 6px 12px; }
+.lista-menu-flotante .opcion-activa-figma a span { text-decoration: none !important; color: #000; font-weight: 600; }
+.lista-menu-flotante .opcion-activa-figma a i { color: #000; }
+
+/* 7. RESPONSIVO PARA MÓVILES (MEDIA QUERY)*/
+@media (max-width: 768px) {
+    .header-global-sistema { padding: 0 15px; }
+    .logo-contenedor-global img { height: 38px; }
+    .contenedor-alertas { margin: 15px auto; padding: 0 12px; gap: 15px;}
+    .titulo-pagina { font-size: 22px; text-align: center; }
+    .seccion-filtros { flex-direction: column; align-items: stretch; padding: 15px 20px; gap: 15px; }
+    .linea-divisora-filtros { width: 100%; height: 1px; background-color: #e5d5d8; margin: 5px 0;}
+    .botones-filtro { flex-wrap: wrap; gap: 8px;}
+    .btn-filtro {flex: 1 1 calc(50% - 8px);  padding: 8px 12px; font-size: 13px; text-align: center;}
+    .filtro-grupo-fecha { align-items: stretch;}
+    .input-fecha-contenedor { max-width: 100%; justify-content: center;}
+    .lista-alertas-scroll { padding: 15px; max-height: calc(100vh - 290px);}
+    .tarjeta-alerta { flex-direction: column; align-items: stretch; padding: 18px 15px 15px 22px; gap: 15px;}
+    .barra-lateral { width: 8px; }
+    .alerta-contenido { padding-left: 0; padding-right: 0;}
+    .alerta-encabezado { flex-direction: column; align-items: flex-start; gap: 4px; margin-bottom: 8px;}
+    .alerta-encabezado h2 { font-size: 16px;}
+    .alerta-fecha { font-size: 11px;}
+    .alerta-descripcion { font-size: 13px;}
+    .btn-detalle { width: 100%; text-align: center; padding: 12px; font-size: 14px;}
+    .btn-cerrar-flotante { top: 12px; left: 15px; width: 50px; height: 50px; font-size: 26px;}
+    .tarjeta-menu-flotante { top: 75px; left: 15px; width: calc(100vw - 30px); max-width: 295px;}
+}
