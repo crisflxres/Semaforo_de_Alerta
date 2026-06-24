@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="alertas_alumno.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <title>Alertas Académicas</title>
+</head>
+<body>
+
+    <div class="menu-flotante-overlay" id="sidebarMenu">
+        <button class="btn-cerrar-flotante" id="btnCerrar">&times;</button>
+        <div class="tarjeta-menu-flotante">
+            <ul class="lista-menu-flotante">
+                <li><a href="../Inicio/alumno_inicio.html"><i class="fas fa-home"></i> <span>Inicio</span></a></li>
+                <li class="opcion-activa-figma"><a href="#"><i class="fas fa-bell"></i> <span>Alertas</span></a></li>
+                <li><a href="../Seguimiento/seguimiento_alumno.html"><i class="fas fa-chart-line"></i> <span>Seguimiento</span></a></li>
+            </ul>
+        </div>
+    </div>
+
+    <header class="header-global-sistema">
+        <button class="menu-btn-global" id="btnAbrirMenu"><i class="fas fa-bars"></i></button>
+        <div class="logo-contenedor-global"><img src="../../html/Logo-cecyteh.png" alt="Logo CECyTE Hidalgo"></div>
+        <div class="perfil-avatar-global contenedor-avatar" id="btnAvatar">
+            A
+            <div class="menu-perfil-desplegable" id="menuPerfil">
+                <a href="../../html/index.html"><i class="fas fa-sign-out-alt"></i> Cerrar sesión</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="contenedor-alertas">
+        <h1 class="titulo-pagina">ALERTAS ACADEMICAS</h1>
+
+        <section class="seccion-filtros">
+            <div class="filtro-grupo-estado">
+                <span class="filtro-etiqueta">Filtrar por</span>
+                <span class="filtro-subetiqueta">Estado</span>
+                <div class="botones-filtro">
+                    <button class="btn-filtro activo" data-filtro="todas">Todas</button>
+                    <button class="btn-filtro" data-filtro="regulares">Regulares</button>
+                    <button class="btn-filtro" data-filtro="en-riesgo">En riesgo</button>
+                    <button class="btn-filtro" data-filtro="criticas">Críticas</button>
+                </div>
+            </div>
+            <div class="linea-divisora-filtros"></div>
+            <div class="filtro-grupo-fecha">
+                <span class="filtro-subetiqueta">Rango de fecha</span>
+                <div class="input-fecha-contenedor">
+                    <i class="fa-regular fa-calendar-days"></i>
+                    <input type="date" id="inputFecha" class="fecha-input-invisible">
+                </div>
+            </div>
+        </section>
+
+        <section class="lista-alertas-scroll" id="contenedor-alertas">
+            </section>
+
+    </main>
+
+    <script src="alertas_alumno.js"></script>
+</body>
+</html>
