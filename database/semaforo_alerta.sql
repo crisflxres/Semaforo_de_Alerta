@@ -1,11 +1,9 @@
-CREATE DATABASE IF NOT EXISTS semaforo_academico;
-USE semaforo_academico; materias
 -- phpMyAdmin SQL Dump
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 10-06-2026 a las 19:52:06
+-- Tiempo de generación: 29-06-2026 a las 09:44:28
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -50,7 +48,7 @@ CREATE TABLE `alumnos` (
   `Nombre` varchar(100) NOT NULL,
   `Apellidos` varchar(150) NOT NULL,
   `Id_Grupo` smallint(5) UNSIGNED NOT NULL,
-  `Foto` varchar(255) DEFAULT NULL,
+  `Foto` varchar(500) DEFAULT NULL,
   `Email` varchar(150) DEFAULT NULL,
   `Activo` tinyint(1) NOT NULL DEFAULT 1,
   `Id_Usuario` int(10) UNSIGNED NOT NULL
@@ -79,7 +77,7 @@ CREATE TABLE `calificaciones` (
   `Matricula` varchar(20) NOT NULL,
   `Id_Materia` smallint(5) UNSIGNED NOT NULL,
   `Id_Importacion` int(10) UNSIGNED NOT NULL,
-  `Periodo` varchar(20) NOT NULL,
+  `Periodo` varchar(35) NOT NULL,
   `P1` decimal(4,2) DEFAULT NULL,
   `P2` decimal(4,2) DEFAULT NULL,
   `P3` decimal(4,2) DEFAULT NULL,
@@ -108,7 +106,7 @@ CREATE TABLE `carreras` (
 CREATE TABLE `grupos` (
   `Id_Grupo` smallint(5) UNSIGNED NOT NULL,
   `Nombre` varchar(30) NOT NULL,
-  `Semestre` tinyint(3) UNSIGNED NOT NULL,
+  `Semestre` varchar(25) NOT NULL,
   `Id_Carrera` smallint(5) UNSIGNED NOT NULL,
   `Turno` enum('Matutino','Vespertino') NOT NULL DEFAULT 'Matutino'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_spanish_ci;
@@ -139,7 +137,7 @@ CREATE TABLE `horarios` (
 CREATE TABLE `importaciones` (
   `id_importacion` int(10) UNSIGNED NOT NULL,
   `id_grupo` smallint(5) UNSIGNED NOT NULL,
-  `periodo` varchar(20) NOT NULL,
+  `periodo` varchar(35) NOT NULL,
   `archivo` varchar(255) DEFAULT NULL,
   `importado_por` int(10) UNSIGNED DEFAULT NULL,
   `fecha` datetime NOT NULL DEFAULT current_timestamp()
@@ -154,11 +152,10 @@ CREATE TABLE `importaciones` (
 CREATE TABLE `materias` (
   `Id_Materia` smallint(5) UNSIGNED NOT NULL,
   `Nombre` varchar(200) NOT NULL,
-  `Clave` varchar(30) DEFAULT NULL,
   `Semestre` tinyint(3) UNSIGNED NOT NULL,
   `Id_Carrera` smallint(5) UNSIGNED NOT NULL,
-  `Periodo` varchar(20) NOT NULL,
-  `Tipo` enum('basica','optativa','modulo') NOT NULL DEFAULT 'basica'
+  `Periodo` varchar(35) NOT NULL,
+  `Tipo` enum('basica','optativa','modulo','submodulo') NOT NULL DEFAULT 'basica'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_spanish_ci;
 
 -- --------------------------------------------------------
@@ -261,7 +258,7 @@ CREATE TABLE `tutor_grupo` (
   `Id_Tutor_Grupo` int(10) UNSIGNED NOT NULL,
   `Id_Usuario` int(10) UNSIGNED NOT NULL,
   `Id_Grupo` smallint(5) UNSIGNED NOT NULL,
-  `Periodo` varchar(20) NOT NULL
+  `Periodo` varchar(35) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_spanish_ci;
 
 -- --------------------------------------------------------
@@ -465,36 +462,6 @@ ALTER TABLE `materias`
   MODIFY `Id_Materia` smallint(5) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT de la tabla `niveles_alerta`
---
-ALTER TABLE `niveles_alerta`
-  MODIFY `Id_Nivel` tinyint(3) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
-
---
--- AUTO_INCREMENT de la tabla `notificaciones`
---
-ALTER TABLE `notificaciones`
-  MODIFY `Id_Notificacion` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT de la tabla `observaciones`
---
-ALTER TABLE `observaciones`
-  MODIFY `Id_Observacion` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT de la tabla `padre_alumno`
---
-ALTER TABLE `padre_alumno`
-  MODIFY `Id_Padre_Alumno` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT de la tabla `roles`
---
-ALTER TABLE `roles`
-  MODIFY `Id_Rol` tinyint(3) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
-
---
 -- AUTO_INCREMENT de la tabla `tutor_grupo`
 --
 ALTER TABLE `tutor_grupo`
@@ -505,94 +472,6 @@ ALTER TABLE `tutor_grupo`
 --
 ALTER TABLE `usuarios`
   MODIFY `Id_Usuario` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
-
---
--- Restricciones para tablas volcadas
---
-
---
--- Filtros para la tabla `alertas`
---
-ALTER TABLE `alertas`
-  ADD CONSTRAINT `FK_Alerta_Alumno` FOREIGN KEY (`Matricula`) REFERENCES `alumnos` (`Matricula`),
-  ADD CONSTRAINT `FK_Alerta_Nivel` FOREIGN KEY (`Id_Nivel`) REFERENCES `niveles_alerta` (`Id_Nivel`);
-
---
--- Filtros para la tabla `alumnos`
---
-ALTER TABLE `alumnos`
-  ADD CONSTRAINT `FK_Alumno_Grupo` FOREIGN KEY (`Id_Grupo`) REFERENCES `grupos` (`Id_Grupo`),
-  ADD CONSTRAINT `FK_Alumno_Usuario` FOREIGN KEY (`Id_Usuario`) REFERENCES `usuarios` (`Id_Usuario`);
-
---
--- Filtros para la tabla `calificaciones`
---
-ALTER TABLE `calificaciones`
-  ADD CONSTRAINT `FK_Cal_Importacion` FOREIGN KEY (`Id_Importacion`) REFERENCES `importaciones` (`id_importacion`),
-  ADD CONSTRAINT `FK_Cal_Materia` FOREIGN KEY (`Id_Materia`) REFERENCES `materias` (`Id_Materia`),
-  ADD CONSTRAINT `FK_Calificacion_Alumno` FOREIGN KEY (`Matricula`) REFERENCES `alumnos` (`Matricula`);
-
---
--- Filtros para la tabla `grupos`
---
-ALTER TABLE `grupos`
-  ADD CONSTRAINT `FK_Grupo_Carrera` FOREIGN KEY (`Id_Carrera`) REFERENCES `carreras` (`Id_Carrera`);
-
---
--- Filtros para la tabla `horarios`
---
-ALTER TABLE `horarios`
-  ADD CONSTRAINT `FK_Horario_Aula` FOREIGN KEY (`Id_Aula`) REFERENCES `aulas` (`Id_Aula`),
-  ADD CONSTRAINT `FK_Horario_Grupo` FOREIGN KEY (`Id_Grupo`) REFERENCES `grupos` (`Id_Grupo`),
-  ADD CONSTRAINT `FK_Horario_Materia` FOREIGN KEY (`Id_Materia`) REFERENCES `materias` (`Id_Materia`),
-  ADD CONSTRAINT `FK_Horario_Usuario` FOREIGN KEY (`Id_Usuario`) REFERENCES `usuarios` (`Id_Usuario`);
-
---
--- Filtros para la tabla `importaciones`
---
-ALTER TABLE `importaciones`
-  ADD CONSTRAINT `fk_importacion_grupo` FOREIGN KEY (`id_grupo`) REFERENCES `grupos` (`Id_Grupo`),
-  ADD CONSTRAINT `fk_importacion_usuario` FOREIGN KEY (`importado_por`) REFERENCES `usuarios` (`Id_Usuario`);
-
---
--- Filtros para la tabla `materias`
---
-ALTER TABLE `materias`
-  ADD CONSTRAINT `FK_Materia_Carrera` FOREIGN KEY (`Id_Carrera`) REFERENCES `carreras` (`Id_Carrera`);
-
---
--- Filtros para la tabla `notificaciones`
---
-ALTER TABLE `notificaciones`
-  ADD CONSTRAINT `FK_Notificacion_Alerta` FOREIGN KEY (`Id_Alerta`) REFERENCES `alertas` (`Id_Alerta`),
-  ADD CONSTRAINT `FK_Notificacion_Alumno` FOREIGN KEY (`Matricula`) REFERENCES `alumnos` (`Matricula`);
-
---
--- Filtros para la tabla `observaciones`
---
-ALTER TABLE `observaciones`
-  ADD CONSTRAINT `FK_Observacion_Alumno` FOREIGN KEY (`Matricula`) REFERENCES `alumnos` (`Matricula`),
-  ADD CONSTRAINT `FK_Observacion_Usuario` FOREIGN KEY (`Id_Usuario`) REFERENCES `usuarios` (`Id_Usuario`);
-
---
--- Filtros para la tabla `padre_alumno`
---
-ALTER TABLE `padre_alumno`
-  ADD CONSTRAINT `FK_PadreAlumno_Alumno` FOREIGN KEY (`Matricula`) REFERENCES `alumnos` (`Matricula`),
-  ADD CONSTRAINT `FK_PadreAlumno_Usuario` FOREIGN KEY (`Id_Usuario`) REFERENCES `usuarios` (`Id_Usuario`);
-
---
--- Filtros para la tabla `tutor_grupo`
---
-ALTER TABLE `tutor_grupo`
-  ADD CONSTRAINT `FK_TutorGrupo_Grupo` FOREIGN KEY (`Id_Grupo`) REFERENCES `grupos` (`Id_Grupo`),
-  ADD CONSTRAINT `FK_TutorGrupo_Usuario` FOREIGN KEY (`Id_Usuario`) REFERENCES `usuarios` (`Id_Usuario`);
-
---
--- Filtros para la tabla `usuarios`
---
-ALTER TABLE `usuarios`
-  ADD CONSTRAINT `FK_Usuario_Rol` FOREIGN KEY (`Id_Rol`) REFERENCES `roles` (`Id_Rol`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

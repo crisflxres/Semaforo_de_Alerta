@@ -83,6 +83,7 @@ def importar_calificaciones(hoja, materias):
 if __name__== "__main__":
     # Leer el archivo
     TACA = pd.read_html(r"C:\Users\crisf\OneDrive\Documentos\UPT\SEXTO CUATRIMESTRE_SERVICIO_SOCIAL_(TSU)\Proyecto_Documentacion\TACA_03AJ6L.xls")
+    
     print("Tablas encontradas:", len(TACA))
     # Ver cuántas tablas encontró
     # Tomar la primera hoja del TACA
