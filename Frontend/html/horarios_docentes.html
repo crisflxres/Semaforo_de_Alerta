@@ -2,12 +2,13 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Gestión de Grupos</title>
-    <link rel="stylesheet" href="../css/horarios_grupos.css">
+    <title>Docentes</title>
+    <link rel="stylesheet" href="../css/horarios_docentes.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
 
+    <!-- HEADER IGUAL QUE AULAS -->
     <header class="main-header">
         <div class="menu-btn" id="btnHamburguesa">☰</div>
         <div class="logo-container">
@@ -16,50 +17,49 @@
         <div class="user-avatar">A</div>
     </header>
 
+    <!-- PESTAÑAS IGUAL QUE AULAS -->
     <nav class="tabs-container">
         <div class="tabs">
             <a href="horarios.html" class="tab-item">📅 Horarios</a>
-            <a href="horarios_grupos.html" class="tab-item active">👥 Grupos</a>
-            <a href="horarios_docentes.html" class="tab-item">👤 Docentes</a>
+            <a href="horarios_grupos.html" class="tab-item">👥 Grupos</a>
+            <a href="horarios_docentes.html" class="tab-item active">👤 Docentes</a>
             <a href="horarios_materias.html" class="tab-item">📖 Materias</a>
             <a href="horarios_aulas.html" class="tab-item">🚪 Aulas</a>
         </div>
     </nav>
 
-    <main class="contenedor-grupos">
-        <h2>Gestión de Grupos</h2>
+    <!-- TODO LO DE ABAJO SIN CAMBIOS -->
+    <main class="container">
+        <section class="controls">
+            <input type="text" id="buscador" placeholder="Buscar docente..." class="search-bar">
+            <button class="btn-primary" id="btnNuevoDocente">+ Nuevo docente</button>
+        </section>
 
-        <div class="header-grupos">
-            <input type="text" class="input-buscar" placeholder="🔍 Buscar">
-            <button class="btn-nuevo">+ Nuevo grupo</button>
-        </div>
-
-        <p class="subtitulo">Grupos Registrados</p>
-
-        <!-- Layout dos columnas: tarjetas izquierda, panel derecha -->
         <div class="main-layout">
-
-            <div class="grupos-container">
-                <div class="grid-tarjetas" id="contenedorTarjetas"></div>
-                <div class="contenedor-paginacion" id="paginacion"></div>
+            <div class="left-side">
+                <div id="listaDocentes"></div>
+                <div id="paginacion"></div>
             </div>
 
-            <!-- Panel oculto por defecto, aparece al presionar + Nuevo grupo o Editar -->
             <div id="panelRegistro" class="hidden">
-                <h3>Registro de Grupo</h3>
-                <input type="text" id="inputNombreGrupo" placeholder="Nombre del grupo">
-                <input type="number" id="inputAlumnos" placeholder="Número de alumnos">
-                <input type="text" id="inputTurno" placeholder="Turno (Matutino / Vespertino)">
+                <h3>Registro</h3>
+                <input type="text" id="inputNombre" placeholder="Nombre completo">
+                <input type="email" id="inputEmail" placeholder="Correo electrónico">
+                <input type="text" id="inputTelefono" placeholder="Número de teléfono">
+                <input type="text" id="inputRol" placeholder="Rol">
                 <input type="hidden" id="indiceEdicion" value="-1">
                 <div class="panel-actions">
-                    <button id="btnGuardar" class="btn-nuevo">Guardar</button>
-                    <button id="btnCancelar" class="btn-cancelar">Cancelar</button>
+                    <button id="btnGuardar" class="btn-primary">Guardar</button>
+                    <button id="btnCancelar" class="btn-secondary">Cancelar</button>
                 </div>
             </div>
-
         </div>
     </main>
 
+    <div id="sideMenu" class="side-menu">...</div>
+    <div id="panelLateral" class="panel-lateral">...</div>
+
+    <!-- MENÚ FLOTANTE IGUAL QUE AULAS -->
     <div class="menu-flotante-overlay" id="sidebarOverlay">
         <div class="btn-cerrar-flotante" id="btnCerrarSidebar">
             <i class="fa-solid fa-xmark"></i>
@@ -75,6 +75,6 @@
         </nav>
     </div>
 
-    <script src="../js/horarios_grupos.js"></script>
+    <script src="../js/horarios_docentes.js"></script>
 </body>
 </html>
