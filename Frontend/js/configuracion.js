@@ -65,3 +65,37 @@ function agregarHistorial(nombre, fecha, hora, registros, tipo, urlArchivo, nomb
 function actualizarVacio() {
     document.getElementById('historialVacio').style.display = document.getElementById('cuerpoHistorial').rows.length === 0 ? 'block' : 'none';
 }
+
+/* ==========================================================================
+   LÓGICA INTERACTIVA DEL DROPDOWN DE PERFIL (CONECTADA AL CSS COMPLETAMENTE)
+   ========================================================================== */
+const avatarUsuario = document.getElementById('avatarUsuario');
+const dropdownPerfil = document.getElementById('dropdownPerfil');
+
+if (avatarUsuario && dropdownPerfil) {
+    // Al dar clic al avatar, se abre/cierra la cajita usando la clase '.show'
+    avatarUsuario.addEventListener('click', (e) => {
+        e.stopPropagation();
+        dropdownPerfil.classList.toggle('show');
+    });
+
+    // Cerrar el menú si das clic fuera del dropdown
+    document.addEventListener('click', (e) => {
+        if (!dropdownPerfil.contains(e.target) && e.target !== avatarUsuario) {
+            dropdownPerfil.classList.remove('show');
+        }
+    });
+}
+
+/* ==========================================================================
+   CERRAR SESIÓN: borra los datos guardados del login y redirige
+   ========================================================================== */
+const btnCerrarSesion = document.getElementById('btnCerrarSesion');
+if (btnCerrarSesion) {
+    btnCerrarSesion.addEventListener('click', (e) => {
+        e.preventDefault();
+        localStorage.removeItem('rolUsuario');
+        localStorage.removeItem('nombreUsuario');
+        window.location.href = 'index.html';
+    });
+}

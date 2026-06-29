@@ -1,9 +1,15 @@
-// 1. Lógica del Menú Lateral (Sidebar)
+// 1. Lógica del Menú Lateral (Sidebar) y Dropdown de Perfil
 document.addEventListener('DOMContentLoaded', () => {
+    // Elementos del Sidebar
     const btnHamburguesa = document.getElementById("btnHamburguesa");
     const btnCerrar = document.getElementById("btnCerrarSidebar");
     const overlay = document.getElementById("sidebarOverlay");
 
+    // Elementos del Dropdown de Perfil
+    const avatarUsuario = document.getElementById('avatarUsuario');
+    const dropdownPerfil = document.getElementById('dropdownPerfil');
+
+    // --- LÓGICA DEL SIDEBAR ---
     if (btnHamburguesa) {
         btnHamburguesa.addEventListener("click", () => overlay.classList.add("open"));
     }
@@ -15,6 +21,33 @@ document.addEventListener('DOMContentLoaded', () => {
     if (overlay) {
         overlay.addEventListener("click", (e) => {
             if (e.target === overlay) overlay.classList.remove("open");
+        });
+    }
+
+    // --- LÓGICA DEL DROPDOWN DE PERFIL ---
+    if (avatarUsuario && dropdownPerfil) {
+        // Al dar clic en el avatar, abre o cierra el menú mini
+        avatarUsuario.addEventListener('click', (e) => {
+            e.stopPropagation(); // Evita que el clic cierre el menú inmediatamente
+            dropdownPerfil.classList.toggle('open');
+        });
+
+        // Cierra el menú si el usuario da clic en cualquier otra parte de la pantalla
+        document.addEventListener('click', (e) => {
+            if (!dropdownPerfil.contains(e.target) && e.target !== avatarUsuario) {
+                dropdownPerfil.classList.remove('open');
+            }
+        });
+    }
+
+    // --- CERRAR SESIÓN: borra los datos del login y redirige ---
+    const btnCerrarSesion = document.getElementById('btnCerrarSesion');
+    if (btnCerrarSesion) {
+        btnCerrarSesion.addEventListener('click', (e) => {
+            e.preventDefault();
+            localStorage.removeItem('rolUsuario');
+            localStorage.removeItem('nombreUsuario');
+            window.location.href = 'index.html';
         });
     }
 

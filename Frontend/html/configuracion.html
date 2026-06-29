@@ -25,7 +25,28 @@
     <header class="header-institucional">
         <div class="menu-hamburguesa" id="btnHamburguesa"><i class="fa-solid fa-bars"></i></div>
         <div class="logo-centro"><img src="Logo-cecyteh.png" alt="Logo CECyTEH"></div>
-        <div class="perfil-usuario"><div class="avatar">A</div></div>
+        
+        <div class="perfil-usuario" id="contenedorPerfil">
+            <div class="avatar" id="avatarUsuario">A</div>
+            
+            <div class="dropdown-perfil" id="dropdownPerfil">
+                <ul class="lista-dropdown-perfil">
+                    <li>
+                        <a href="perfil.html">
+                            <i class="fa-solid fa-user"></i> 
+                            <span>Ver perfil</span>
+                        </a>
+                    </li>
+                    <li class="divisor-dropdown"></li>
+                    <li>
+                        <a href="index.html" id="btnCerrarSesion">
+                            <i class="fa-solid fa-right-from-bracket"></i> 
+                            <span>Cerrar sesión</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
     </header>
 
     <main class="contenido-principal">

@@ -17,9 +17,9 @@
             <ul class="lista-menu-flotante">
                 <li><a href="inicio.html"><i class="fa-solid fa-house"></i> <span>Inicio</span></a></li>
                 <li><a href="alumnos.html"><i class="fa-solid fa-user-group"></i> <span>Alumnos</span></a></li>
-                <li><a href="alertas.html"><i class="fa-solid fa-bell"></i> <span>Alertas</span></a></li>
+                <li class="opcion-activa-figma"><a href="alertas.html"><i class="fa-solid fa-bell"></i> <span>Alertas</span></a></li>
                 <li><a href="horarios.html"><i class="fa-solid fa-calendar-days"></i> <span>Horarios de Docentes</span></a></li>
-                <li class="opcion-activa-figma"><a href="configuracion.html"><i class="fa-solid fa-gear"></i> <span>Configuración</span></a></li>
+                <li><a href="configuracion.html"><i class="fa-solid fa-gear"></i> <span>Configuración</span></a></li>
             </ul>
         </nav>
     </div>
@@ -31,8 +31,27 @@
         <div class="logo-centro">
             <img src="Logo-cecyteh.png" alt="Logo CECyTEH">
         </div>
-        <div class="perfil-usuario">
-            <div class="avatar" id="btnPerfil">V</div>
+        
+        <div class="perfil-usuario" id="contenedorPerfil">
+            <div class="avatar" id="avatarUsuario">V</div>
+            
+            <div class="dropdown-perfil" id="dropdownPerfil">
+                <ul class="lista-dropdown-perfil">
+                    <li>
+                        <a href="perfil.html">
+                            <i class="fa-solid fa-user"></i> 
+                            <span>Ver perfil</span>
+                        </a>
+                    </li>
+                    <li class="divisor-dropdown"></li>
+                    <li>
+                        <a href="index.html" id="btnCerrarSesion">
+                            <i class="fa-solid fa-right-from-bracket"></i> 
+                            <span>Cerrar sesión</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
         </div>
     </header>
 
@@ -47,7 +66,6 @@
                     <h3>Selecciona el tipo de Alerta</h3>
                     <div class="selector-tipo-alerta">
 
-                        <!-- Botón Verde -->
                         <button type="button" class="btn-tipo" id="btnVerde">
                             <div class="icono-semaforo icono-verde">
                                 <i class="fa-solid fa-circle-check"></i>
@@ -55,7 +73,6 @@
                             Regulares
                         </button>
 
-                        <!-- Botón Amarillo -->
                         <button type="button" class="btn-tipo" id="btnAmarillo">
                             <div class="icono-semaforo icono-amarillo">
                                 <i class="fa-solid fa-triangle-exclamation"></i>
@@ -63,7 +80,6 @@
                             En Riesgo
                         </button>
 
-                        <!-- Botón Rojo -->
                         <button type="button" class="btn-tipo" id="btnRojo">
                             <div class="icono-semaforo icono-rojo">
                                 <i class="fa-solid fa-circle-exclamation"></i>
@@ -232,7 +248,6 @@
         </aside>
     </main>
 
-    <!-- MODAL INSERTAR ENLACE / IMAGEN -->
     <div id="modalEditor" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.45); z-index:9999; align-items:center; justify-content:center;">
         <div style="background:#fff; border-radius:14px; padding:30px; width:420px; max-width:90vw; box-shadow:0 10px 40px rgba(0,0,0,0.2);">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
@@ -240,7 +255,6 @@
                 <button onclick="cerrarModal()" style="background:none; border:none; font-size:22px; cursor:pointer; color:#666;">&times;</button>
             </div>
 
-            <!-- Sección archivo (solo imagen) -->
             <div id="seccionArchivo" style="margin-bottom:16px;">
                 <label style="font-size:13px; font-weight:600; color:#444; display:block; margin-bottom:8px;">Seleccionar desde tu computadora</label>
                 <label style="display:flex; align-items:center; gap:10px; border:2px dashed #cccccc; border-radius:8px; padding:14px 16px; cursor:pointer; color:#666; font-size:14px; transition: border-color 0.2s;" 
@@ -253,7 +267,6 @@
                 <div style="text-align:center; color:#aaa; font-size:13px; margin:12px 0;">— o —</div>
             </div>
 
-            <!-- Sección URL -->
             <div id="seccionUrl" style="margin-bottom:20px;">
                 <label style="font-size:13px; font-weight:600; color:#444; display:block; margin-bottom:8px;">Pegar URL</label>
                 <input type="text" id="modalInputUrl" style="width:100%; padding:10px 14px; border:1px solid #ccc; border-radius:8px; font-size:14px; outline:none;"
