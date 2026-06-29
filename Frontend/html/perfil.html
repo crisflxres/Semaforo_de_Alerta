@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perfil - CECyTEH</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/perfil.css">
+</head>
+<body>
+
+    <div class="menu-flotante-overlay" id="sidebarOverlay">
+        <div class="btn-cerrar-flotante" id="btnCerrarSidebar">
+            <i class="fa-solid fa-xmark"></i>
+        </div>
+        <nav class="tarjeta-menu-flotante">
+            <ul class="lista-menu-flotante">
+                <li><a href="inicio.html"><i class="fa-solid fa-house"></i> <span>Inicio</span></a></li>
+                <li><a href="alumnos.html"><i class="fa-solid fa-user-group"></i> <span>Alumnos</span></a></li>
+                <li><a href="alertas.html"><i class="fa-solid fa-bell"></i> <span>Alertas</span></a></li>
+                <li><a href="horarios.html"><i class="fa-solid fa-calendar-days"></i> <span>Horarios de Docentes</span></a></li>
+                <li><a href="configuracion.html"><i class="fa-solid fa-gear"></i> <span>Configuración</span></a></li>
+            </ul>
+        </nav>
+    </div>
+
+    <header class="header-institucional">
+        <div class="menu-hamburguesa" id="btnHamburguesa">
+            <i class="fa-solid fa-bars"></i>
+        </div>
+        <div class="logo-centro">
+            <img src="Logo-cecyteh.png" alt="Logo CECyTEH">
+        </div>
+        
+        <div class="perfil-usuario" id="contenedorPerfil">
+            <div class="avatar" id="avatarUsuario">A</div>
+            
+            <div class="dropdown-perfil" id="dropdownPerfil">
+                <ul class="lista-dropdown-perfil">
+                    <li>
+                        <a href="index.html" id="btnCerrarSesion">
+                            <i class="fa-solid fa-right-from-bracket"></i> 
+                            <span>Cerrar sesión</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </header>
+
+    <main class="contenido-principal">
+        
+        <div class="barra-navegacion-perfil">
+            <button class="btn-regresar-perfil" onclick="window.history.back();">
+                <i class="fa-solid fa-chevron-left"></i>
+            </button>
+            <div class="banner-titulo-perfil">
+                Perfil de Administrador
+            </div>
+        </div>
+
+        <div class="tarjeta-datos-usuario">
+            
+            <div class="bloque-perfil-izquierdo">
+                <div class="contenedor-avatar-imagen">
+                    <div class="silueta-avatar-figma">
+                        <i class="fa-solid fa-user"></i>
+                    </div>
+                </div>
+                <h2 class="nombre-completo-usuario">JUAN PÉREZ LÓPEZ</h2>
+                <p class="matricula-usuario">Matricula: <span>12345678</span></p>
+            </div>
+
+            <div class="divisor-vertical-tarjeta"></div>
+
+            <div class="bloque-perfil-derecho">
+                
+                <div class="item-dato-perfil">
+                    <i class="fa-regular fa-envelope icono-dato"></i>
+                    <div class="info-texto">
+                        <span class="etiqueta-dato">Correo electrónico:</span>
+                        <a href="mailto:juanlopez@gmail.com" class="enlace-dato">juanlopez@gmail.com</a>
+                    </div>
+                </div>
+
+                <div class="item-dato-perfil">
+                    <i class="fa-solid fa-phone icono-dato"></i>
+                    <div class="info-texto">
+                        <span class="etiqueta-dato">Teléfono:</span>
+                        <span class="valor-dato">771 123 4567</span>
+                    </div>
+                </div>
+
+                <div class="item-dato-perfil">
+                    <i class="fa-solid fa-id-badge icono-dato"></i>
+                    <div class="info-texto">
+                        <span class="etiqueta-dato">Cargo:</span>
+                        <span class="valor-dato">Subdirectora Académica</span>
+                    </div>
+                </div>
+
+                <div class="item-dato-perfil">
+                    <i class="fa-solid fa-building icono-dato"></i>
+                    <div class="info-texto">
+                        <span class="etiqueta-dato">Departamento:</span>
+                        <span class="valor-dato">Dirección Académica</span>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </main>
+
+    <script src="../js/perfil.js"></script>
+</body>
+</html>
