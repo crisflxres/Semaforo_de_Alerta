@@ -1,4 +1,7 @@
-from importador import importar_alumnos, importar_materias, importar_calificaciones
+from importador_TACA import importar_alumnos, importar_materias, importar_calificaciones
+from importador_Contactos import importar_correos_electronicos
+from importador_fotos import importar_fotos
+from importador_Tutores import importar_tutores
 from app import obtener_conexion
 import pandas as pd
 import bcrypt
@@ -14,16 +17,13 @@ def insertar_materia(cursor, materia, id_carrera, semestre, periodo):
         materia["tipo"]
     )
     cursor.execute(sql, valores)
-    if cursor.lastrowid == 0:
-        cursor.execute ("SELECT Id_Materia FROM materias WHERE Nombre = %s AND Id_Carrera = %s AND Periodo = %s", (materia["nombre"], id_carrera, periodo))
-        resultado = cursor.fetchone()
-        return resultado[0]
-    return cursor.lastrowid
-
+    cursor.execute("SELECT Id_Materia FROM materias WHERE Nombre = %s AND Id_Carrera = %s AND Periodo = %s", (materia["nombre"], id_carrera, periodo))
+    resultado = cursor.fetchone()
+    return resultado[0]
 
 def insertar_alumnos_usuarios(cursor, alumno):
     password = bcrypt.hashpw(alumno["matricula"].encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
-    sql = "INSERT IGNORE INTO usuarios (Id_Rol, Nombre, Apellidos, Email, Password) VALUES (%s, %s, %s, %s, %s)"
+    sql = "INSERT INTO usuarios (Id_Rol, Nombre, Apellidos, Email, Password) VALUES (%s, %s, %s, %s, %s)"
     apellidos = alumno["apellido.p"] + " " + alumno["apellido.m"]
     valores = (
         5,
@@ -33,11 +33,9 @@ def insertar_alumnos_usuarios(cursor, alumno):
         password
     )
     cursor.execute(sql, valores)
-    if cursor.lastrowid == 0:
-        cursor.execute ("SELECT Id_Usuario FROM usuarios WHERE Email = %s", (alumno["matricula"],))
-        resultado = cursor.fetchone()
-        return resultado[0]
-    return cursor.lastrowid
+    cursor.execute("SELECT Id_Usuario FROM usuarios WHERE Email = %s", (alumno["matricula"],))
+    resultado = cursor.fetchone()
+    return resultado[0]
 
 def insertar_alumnos(cursor, alumno, id_grupo, id_usuario):
     sql = "INSERT IGNORE INTO alumnos (Matricula, Nombre, Apellidos, Id_Grupo, Foto, Email, id_usuario) VALUES(%s, %s, %s, %s, %s, %s, %s)"
@@ -52,11 +50,9 @@ def insertar_alumnos(cursor, alumno, id_grupo, id_usuario):
         id_usuario,
     )
     cursor.execute(sql,valores)
-    if cursor.lastrowid == 0:
-        cursor.execute ("SELECT Matricula FROM alumnos WHERE Matricula = %s", (alumno["matricula"],))
-        resultado = cursor.fetchone()
-        return resultado[0]
-    return cursor.lastrowid
+    cursor.execute("SELECT Matricula FROM alumnos WHERE Matricula = %s", (alumno["matricula"],))
+    resultado = cursor.fetchone()
+    return resultado[0]
 
 def insertar_importacion(cursor, id_grupo, periodo, archivo,importador_por):
     sql = "INSERT INTO importaciones (Id_grupo, Periodo, archivo, importado_por) VALUES (%s, %s, %s, %s)"
@@ -84,14 +80,77 @@ def insertar_calificaciones(cursor, calificacion, id_materia, id_importacion, pe
     )
     cursor.execute(sql, valores)
     return cursor.lastrowid
-    
+
+def actualizar_correo(cursor, contacto):
+    sql = "UPDATE alumnos SET Email = %s WHERE Matricula = %s"
+    valores = (
+        contacto["correo"], 
+        contacto["matricula"]
+    )
+    cursor.execute(sql,valores)
+    return cursor.rowcount
+
+def actualizar_fotos(cursor, matricula, ruta):
+    sql = "UPDATE alumnos SET Foto= %s WHERE Matricula = %s"
+    valores = (
+        ruta,
+        matricula
+    )
+    cursor.execute(sql,valores)
+    return cursor.rowcount
+
+def insertar_tutores_usuarios(cursor, tutor):
+    partes = tutor["tutor"].split(" ")
+    nombre = " ".join(partes[:2])
+    apellidos = " ".join(partes[2:])
+
+    cursor.execute("SELECT Id_Usuario FROM usuarios WHERE Nombre = %s AND Apellidos = %s LIMIT 1", (nombre, apellidos))
+    resultado = cursor.fetchone()
+    if resultado:
+        return resultado[0]
+    password = bcrypt.hashpw(tutor["tutor"].encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
+    sql = "INSERT INTO usuarios (Id_Rol, Nombre, Apellidos, Password) VALUES (%s, %s, %s, %s)"
+    valores = (
+        3,
+        nombre,
+        apellidos,
+        password
+    )
+    cursor.execute(sql, valores)
+    return cursor.lastrowid
+
+def obtener_mapa_grupos(cursor):
+    cursor.execute("SELECT Id_Grupo, Nombre FROM grupos")
+    return {nombre: id_grupo for (id_grupo, nombre) in cursor.fetchall()}
+
+def insertar_tutor_grupo(cursor, id_usuario, id_grupo, periodo):
+    sql = "INSERT IGNORE INTO tutor_grupo (Id_Usuario, Id_Grupo, Periodo) VALUES (%s, %s, %s)"
+    valores = (
+        id_usuario,
+        id_grupo,
+        periodo
+    )
+    cursor.execute(sql, valores)
+    return cursor.lastrowid
+
 TACA = pd.read_html(r"C:\Users\crisf\OneDrive\Documentos\UPT\SEXTO CUATRIMESTRE_SERVICIO_SOCIAL_(TSU)\Proyecto_Documentacion\TACA_03AL4I.xls")
 
+Contactos = pd.read_excel(r"C:\Users\crisf\OneDrive\Documentos\UPT\SEXTO CUATRIMESTRE_SERVICIO_SOCIAL_(TSU)\Proyecto_Documentacion\proyecto 2026\Matricula_Actual(2).xls")
+
+fotos = importar_fotos(r"C:\Users\crisf\OneDrive\Documentos\UPT\SEXTO CUATRIMESTRE_SERVICIO_SOCIAL_(TSU)\Proyecto_Documentacion\Matricula Total")
+
+hoja3 = pd.read_excel(r"C:\Users\crisf\OneDrive\Documentos\UPT\SEXTO CUATRIMESTRE_SERVICIO_SOCIAL_(TSU)\Proyecto_Documentacion\Datos Programa.xlsx", skiprows= 8)
+
 hoja = TACA[0]
+hoja2 = Contactos
 
 materias = importar_materias(hoja)
 alumnos = importar_alumnos(hoja)
 calificaciones = importar_calificaciones(hoja, materias)
+contactos = importar_correos_electronicos(hoja2)
+tutores = importar_tutores(hoja3)
+
+
 
 conexion = obtener_conexion()
 cursor = conexion.cursor()
@@ -111,5 +170,21 @@ for calificacion in calificaciones:
     id_materia = mapa_materias [calificacion["materia"]]
     insertar_calificaciones(cursor, calificacion, id_materia, id_importacion, "FEBRERO - JULIO 2026", calificacion["aprobado"])
 
+for contacto in contactos:
+    actualizar_correo(cursor, contacto)
+
+for foto in fotos:
+    actualizar_fotos(cursor, foto["matricula"], foto["ruta"])
+
+mapa_grupos = obtener_mapa_grupos(cursor)
+
+for tutor in tutores:
+    id_usuario = insertar_tutores_usuarios(cursor, tutor)
+    id_grupo = mapa_grupos.get(tutor["grupo"])
+    if id_grupo is None:
+        print(f"Aviso: el grupo '{tutor['grupo']}' del tutor {tutor['tutor']} no existe en la tabla grupos. Se omite.")
+        continue
+    insertar_tutor_grupo(cursor, id_usuario, id_grupo, "FEBRERO - JULIO 2026")
+    
 conexion.commit()
 conexion.close()

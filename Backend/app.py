@@ -9,13 +9,17 @@ CORS(app)
 
 # 1. FUNCIÓN DE CONEXIÓN A TU MYSQL WORKBENCH (CONFIGURADA PARA XAMPP)
 def obtener_conexion():
-    return mysql.connector.connect(
+    conn = mysql.connector.connect(
         host="localhost",
         port=3306,
         user="root",
-        password="", 
-        database="semaforo_academico"  
+        password="",
+        database="semaforo_alerta"
     )
+    cursor = conn.cursor()
+    cursor.execute("SET SQL_MODE = ''")
+    cursor.close()
+    return conn
 
 # 2. RUTA DE PRUEBA: Para verificar en el navegador que el servidor esté encendido
 @app.route('/', methods=['GET'])
