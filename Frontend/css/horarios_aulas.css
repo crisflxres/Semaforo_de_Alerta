@@ -56,7 +56,7 @@ body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #fcfcfc; }
 
 /* --- 5. LAYOUT DOS COLUMNAS --- */
 .main-layout { display: flex; gap: 20px; align-items: flex-start; margin-top: 20px; }
-.grupos-container { flex: 3; }
+.aulas-container { flex: 3; }
 
 /* --- 6. PANEL REGISTRO (oculto por defecto) --- */
 #panelRegistro {
@@ -91,29 +91,20 @@ body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #fcfcfc; }
     align-items: center; gap: 14px;
     border: 2px solid #98002E;
     box-shadow: 0 4px 6px rgba(0,0,0,0.08);
-    position: relative; min-height: 120px;
+    position: relative; min-height: 110px;
 }
 
-/* Ícono circular */
 .icono-grupo {
     width: 65px; height: 65px; border-radius: 50%;
     display: flex; align-items: center; justify-content: center;
     font-size: 24px; flex-shrink: 0;
 }
 
-/* Columna de texto vertical */
 .info-grupo { display: flex; flex-direction: column; gap: 8px; }
 
 .info-grupo h3 { font-size: 1rem; font-weight: bold; color: #1a1a1a; line-height: 1.2; }
 
-.info-grupo p { font-size: 0.85rem; color: #555; }
-
-/* Etiqueta de turno */
-.etiqueta {
-    display: inline-block; padding: 4px 14px;
-    border-radius: 20px; font-size: 0.78rem;
-    font-weight: bold; width: fit-content;
-}
+.info-id { font-size: 0.82rem; color: #888; }
 
 /* --- 9. TRES PUNTOS Y MENÚ --- */
 .contenedor-menu { position: absolute; top: 8px; right: 8px; }

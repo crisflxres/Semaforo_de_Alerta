@@ -14,37 +14,19 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // --- 2. DATOS ---
-    const gruposPorPagina = 12;
+    const itemsPorPagina = 12;
     let paginaActual  = 1;
     let textoBusqueda = "";
 
-    const todosLosGrupos = [
-        { nombre: "Grupo 1",  alumnos: 30, turno: "Matutino",   color: "bg-rosa"       },
-        { nombre: "Grupo 2",  alumnos: 35, turno: "Matutino",   color: "bg-azul"       },
-        { nombre: "Grupo 3",  alumnos: 40, turno: "Matutino",   color: "bg-morado"     },
-        { nombre: "Grupo 4",  alumnos: 38, turno: "Matutino",   color: "bg-azul_claro" },
-        { nombre: "Grupo 5",  alumnos: 33, turno: "Matutino",   color: "bg-amarillo"   },
-        { nombre: "Grupo 6",  alumnos: 30, turno: "Matutino",   color: "bg-verde"      },
-        { nombre: "Grupo 7",  alumnos: 29, turno: "Matutino",   color: "bg-naranja"    },
-        { nombre: "Grupo 8",  alumnos: 35, turno: "Matutino",   color: "bg-cafe"       },
-        { nombre: "Grupo 9",  alumnos: 38, turno: "Matutino",   color: "bg-rojo"       },
-        { nombre: "Grupo 10", alumnos: 45, turno: "Matutino",   color: "bg-gris"       },
-        { nombre: "Grupo 11", alumnos: 27, turno: "Matutino",   color: "bg-rosa"       },
-        { nombre: "Grupo 12", alumnos: 34, turno: "Matutino",   color: "bg-azul"       },
-        { nombre: "Grupo 13", alumnos: 40, turno: "Vespertino", color: "bg-morado"     },
-        { nombre: "Grupo 14", alumnos: 40, turno: "Vespertino", color: "bg-azul_claro" },
-        { nombre: "Grupo 15", alumnos: 40, turno: "Vespertino", color: "bg-amarillo"   },
-        { nombre: "Grupo 16", alumnos: 40, turno: "Vespertino", color: "bg-verde"      },
-        { nombre: "Grupo 17", alumnos: 40, turno: "Vespertino", color: "bg-naranja"    },
-        { nombre: "Grupo 18", alumnos: 40, turno: "Vespertino", color: "bg-cafe"       },
-        { nombre: "Grupo 19", alumnos: 40, turno: "Vespertino", color: "bg-rojo"       },
-        { nombre: "Grupo 20", alumnos: 40, turno: "Vespertino", color: "bg-gris"       },
-        { nombre: "Grupo 21", alumnos: 40, turno: "Vespertino", color: "bg-rosa"       },
-        { nombre: "Grupo 22", alumnos: 40, turno: "Vespertino", color: "bg-azul"       },
-        { nombre: "Grupo 23", alumnos: 40, turno: "Vespertino", color: "bg-morado"     },
-        { nombre: "Grupo 24", alumnos: 40, turno: "Vespertino", color: "bg-azul_claro" },
-        { nombre: "Grupo 25", alumnos: 40, turno: "Vespertino", color: "bg-amarillo"   },
-        { nombre: "Grupo 26", alumnos: 40, turno: "Vespertino", color: "bg-verde"      }
+    const todasLasAulas = [
+        { nombre: "Aula 10",                  id: 1, color: "bg-rosa"       },
+        { nombre: "Aula 14",                  id: 2, color: "bg-azul"       },
+        { nombre: "Aula 17",                  id: 3, color: "bg-morado"     },
+        { nombre: "Aula 23",                  id: 4, color: "bg-azul_claro" },
+        { nombre: "Laboratorio de Cómputo 1", id: 5, color: "bg-amarillo"   },
+        { nombre: "Submódulo 3",              id: 6, color: "bg-verde"      },
+        { nombre: "Submódulo 1",              id: 7, color: "bg-naranja"    },
+        { nombre: "Submódulo 2",              id: 8, color: "bg-cafe"       }
     ];
 
     // --- 3. PANEL ---
@@ -53,13 +35,12 @@ document.addEventListener("DOMContentLoaded", () => {
     const btnGuardar       = document.getElementById("btnGuardar");
     const btnCancelarPanel = document.getElementById("btnCancelar");
 
-    // Solo aparece al presionar + Nuevo grupo
+    // Solo aparece al presionar + Nueva aula
     btnNuevo.addEventListener("click", () => {
         cerrarTodosLosMenus();
-        document.getElementById("indiceEdicion").value   = "-1";
-        document.getElementById("inputNombreGrupo").value = "";
-        document.getElementById("inputAlumnos").value    = "";
-        document.getElementById("inputTurno").value      = "";
+        document.getElementById("indiceEdicion").value  = "-1";
+        document.getElementById("inputNombreAula").value = "";
+        document.getElementById("inputIdAula").value    = "";
         panelRegistro.classList.remove("hidden");
     });
 
@@ -70,19 +51,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
     btnGuardar.addEventListener("click", () => {
         const indice = parseInt(document.getElementById("indiceEdicion").value);
-        const nombre  = document.getElementById("inputNombreGrupo").value.trim();
-        const alumnos = parseInt(document.getElementById("inputAlumnos").value) || 0;
-        const turno   = document.getElementById("inputTurno").value.trim();
+        const nombre = document.getElementById("inputNombreAula").value.trim();
+        const id     = parseInt(document.getElementById("inputIdAula").value) || 0;
 
-        if (!nombre) { alert("El nombre del grupo es obligatorio."); return; }
+        if (!nombre) { alert("El nombre del aula es obligatorio."); return; }
 
         if (indice > -1) {
-            todosLosGrupos[indice].nombre  = nombre;
-            todosLosGrupos[indice].alumnos = alumnos;
-            todosLosGrupos[indice].turno   = turno;
+            todasLasAulas[indice].nombre = nombre;
+            todasLasAulas[indice].id     = id;
         } else {
             const colores = ["bg-rosa","bg-azul","bg-amarillo","bg-verde","bg-naranja","bg-morado","bg-azul_claro","bg-cafe"];
-            todosLosGrupos.push({ nombre, alumnos, turno, color: colores[Math.floor(Math.random() * colores.length)] });
+            todasLasAulas.push({ nombre, id, color: colores[Math.floor(Math.random() * colores.length)] });
         }
 
         renderizar();
@@ -106,15 +85,15 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!contenedor) return;
         contenedor.innerHTML = "";
 
-        const filtrados = todosLosGrupos.filter(g =>
-            g.nombre.toLowerCase().includes(textoBusqueda)
+        const filtrados = todasLasAulas.filter(a =>
+            a.nombre.toLowerCase().includes(textoBusqueda)
         );
 
-        const inicio  = (paginaActual - 1) * gruposPorPagina;
-        const mostrar = filtrados.slice(inicio, inicio + gruposPorPagina);
+        const inicio  = (paginaActual - 1) * itemsPorPagina;
+        const mostrar = filtrados.slice(inicio, inicio + itemsPorPagina);
 
-        mostrar.forEach((g) => {
-            const idx = todosLosGrupos.indexOf(g);
+        mostrar.forEach((a) => {
+            const idx = todasLasAulas.indexOf(a);
             contenedor.innerHTML += `
                 <div class="tarjeta-grupo">
                     <div class="contenedor-menu">
@@ -123,18 +102,17 @@ document.addEventListener("DOMContentLoaded", () => {
                         </button>
                         <div class="menu-desplegable" id="menu-${idx}">
                             <button onclick="window.abrirEditar(${idx})">✏️ Editar</button>
-                            <button class="btn-eliminar" onclick="window.eliminarGrupo(${idx})">🗑️ Eliminar</button>
+                            <button class="btn-eliminar" onclick="window.eliminarAula(${idx})">🗑️ Eliminar</button>
                         </div>
                     </div>
 
-                    <div class="icono-grupo ${g.color}">
-                        <i class="fa-solid fa-table-cells-large"></i>
+                    <div class="icono-grupo ${a.color}">
+                        <i class="fa-solid fa-door-open"></i>
                     </div>
 
                     <div class="info-grupo">
-                        <h3>${g.nombre}</h3>
-                        <p>${g.alumnos} Alumnos</p>
-                        <span class="etiqueta ${g.color}">${g.turno}</span>
+                        <h3>${a.nombre}</h3>
+                        <p class="info-id">ID: ${a.id}</p>
                     </div>
                 </div>`;
         });
@@ -144,13 +122,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // --- 6. PAGINACIÓN ---
     function renderizarPaginacion(totalFiltrados) {
-        const totalPaginas = Math.ceil(totalFiltrados / gruposPorPagina);
+        const totalPaginas = Math.ceil(totalFiltrados / itemsPorPagina);
         const paginacion   = document.getElementById("paginacion");
         if (!paginacion) return;
         paginacion.innerHTML = "";
         if (totalPaginas <= 1) return;
 
-        // Botón anterior
         const prev = document.createElement("a");
         prev.innerHTML = '<i class="fa-solid fa-chevron-left"></i>';
         prev.className = "btn-pag";
@@ -170,7 +147,6 @@ document.addEventListener("DOMContentLoaded", () => {
             paginacion.appendChild(btn);
         }
 
-        // Botón siguiente
         const next = document.createElement("a");
         next.innerHTML = '<i class="fa-solid fa-chevron-right"></i>';
         next.className = "btn-pag";
@@ -200,19 +176,18 @@ document.addEventListener("DOMContentLoaded", () => {
     // --- 8. EDITAR ---
     window.abrirEditar = (index) => {
         cerrarTodosLosMenus();
-        const g = todosLosGrupos[index];
-        document.getElementById("inputNombreGrupo").value = g.nombre;
-        document.getElementById("inputAlumnos").value    = g.alumnos;
-        document.getElementById("inputTurno").value      = g.turno;
-        document.getElementById("indiceEdicion").value   = index;
+        const a = todasLasAulas[index];
+        document.getElementById("inputNombreAula").value = a.nombre;
+        document.getElementById("inputIdAula").value    = a.id;
+        document.getElementById("indiceEdicion").value  = index;
         panelRegistro.classList.remove("hidden");
     };
 
     // --- 9. ELIMINAR ---
-    window.eliminarGrupo = (index) => {
+    window.eliminarAula = (index) => {
         cerrarTodosLosMenus();
-        if (confirm("¿Eliminar este grupo?")) {
-            todosLosGrupos.splice(index, 1);
+        if (confirm("¿Eliminar esta aula?")) {
+            todasLasAulas.splice(index, 1);
             renderizar();
         }
     };

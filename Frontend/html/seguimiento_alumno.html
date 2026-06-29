@@ -9,12 +9,16 @@
 </head>
 <body>
 
-    <div class="navbar">
-        <span class="menu-toggle"><i class="fas fa-bars"></i></span>
-        <img src="Logo-cecyteh.png" alt="Logo" class="logo-img">
+    <!-- HEADER IGUAL QUE AULAS -->
+    <header class="main-header">
+        <div class="menu-btn" id="btnHamburguesa">☰</div>
+        <div class="logo-container">
+            <img src="../html/Logo-cecyteh.png" class="logo" alt="Logo">
+        </div>
         <div class="user-avatar">A</div>
-    </div>
+    </header>
 
+    <!-- TODO LO DE ABAJO SIN CAMBIOS -->
     <div class="container">
         <div class="back-container">
             <a href="alumnos.html" class="btn-back">
@@ -50,7 +54,6 @@
                 <div class="tutor-details">
                     <h4>Datos del tutor</h4>
                     <p><strong>Nombre:</strong> Juana Pérez López</p>
-                    <p><strong>Relación:</strong> Madre</p>
                     <br>
                     <p><strong>Correo electrónico:</strong> <span class="link-text-tutor">juanlopez@gmail.com</span></p>
                 </div>
@@ -72,83 +75,59 @@
                 <tbody>
                     <tr>
                         <td>Inglés IV</td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
+                        <td></td><td></td><td></td><td></td>
                         <td class="sidebar-cell" rowspan="8"></td>
                     </tr>
                     <tr>
-                        <td>Relaciones quimicas: conservacion de la materia en la formación de nuevas sustancias</td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
+                        <td>Relaciones Químicas: conservación de la materia en la formación de nuevas sustancias</td>
+                        <td></td><td></td><td></td><td></td>
                     </tr>
                     <tr>
-                        <td>Temas selectos de matematicas 1</td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
+                        <td>Temas selectos de matemáticas 1</td>
+                        <td></td><td></td><td></td><td></td>
                     </tr>
                     <tr>
                         <td>Ciencias sociales III</td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
+                        <td></td><td></td><td></td><td></td>
                     </tr>
                     <tr>
                         <td>Conciencia histórica I. Perspectivas del México antiguo en los contextos globales</td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
+                        <td></td><td></td><td></td><td></td>
                     </tr>
                     <tr>
                         <td>Submódulo 1 Controla entradas y salidas de almacén</td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
+                        <td></td><td></td><td></td><td></td>
                     </tr>
                     <tr>
                         <td>Submódulo 2 Elabora inventarios de almacén</td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
+                        <td></td><td></td><td></td><td></td>
                     </tr>
                     <tr>
                         <td>Submódulo 3 Maneja materiales, partes y productos terminados</td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
+                        <td></td><td></td><td></td><td></td>
                     </tr>
                 </tbody>
             </table>
         </div>
     </div>
 
-
-  <div class="menu-flotante-overlay" id="sidebarOverlay">
-    <div class="btn-cerrar-flotante" id="btnCerrarSidebar">
-        <i class="fas fa-times"></i>
+    <!-- MENÚ FLOTANTE IGUAL QUE AULAS -->
+    <div class="menu-flotante-overlay" id="sidebarOverlay">
+        <div class="btn-cerrar-flotante" id="btnCerrarSidebar">
+            <i class="fas fa-times"></i>
+        </div>
+        <div class="tarjeta-menu-flotante">
+            <ul class="lista-menu-flotante">
+                <li><a href="inicio.html"><i class="fas fa-home"></i> <span>Inicio</span></a></li>
+                <li><a href="alumnos.html"><i class="fas fa-users"></i> <span>Alumnos</span></a></li>
+                <li><a href="alertas.html"><i class="fas fa-bell"></i> <span>Alertas</span></a></li>
+                <li><a href="horarios.html"><i class="fas fa-calendar-alt"></i> <span>Horarios de Docentes</span></a></li>
+                <li class="opcion-activa-figma">
+                    <a href="configuracion.html"><i class="fas fa-cog"></i> <span>Configuración</span></a>
+                </li>
+            </ul>
+        </div>
     </div>
-    <div class="tarjeta-menu-flotante">
-        <ul class="lista-menu-flotante">
-            <li><a href="inicio.html"><i class="fas fa-home"></i> <span>Inicio</span></a></li>
-            <li><a href="alumnos.html"><i class="fas fa-users"></i> <span>Alumnos</span></a></li>
-            <li><a href="alertas.html"><i class="fas fa-bell"></i> <span>Alertas</span></a></li>
-            <li><a href="horarios.html"><i class="fas fa-calendar-alt"></i> <span>Horarios de Docentes</span></a></li>
-            <li class="opcion-activa-figma">
-                <a href="configuracion.html"><i class="fas fa-cog"></i> <span>Configuración</span></a>
-            </li>
-        </ul>
-    </div>
-</div>
 
     <script src="../js/seguimiento_alumno.js"></script>
 </body>
