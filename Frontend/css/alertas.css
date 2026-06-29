@@ -1,6 +1,7 @@
 :root {
     --guinda-principal: #6c1d35;
     --guinda-oscuro: #4a1222;
+    --vino-oscuro: #4A0A18;   
     --dorado-detalle: #bc955c;
     --texto-oscuro: #333333;
     --texto-mutado: #666666;
@@ -30,20 +31,20 @@ body {
 /* HEADER */
 .header-institucional {
     position: relative;
-    background-color: var(--guinda-principal);
+    background-color: var(--vino-oscuro); 
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 10px 40px;
     box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    height: 70px;
+    height: 64px;
 }
 
 .menu-hamburguesa {
-    font-size: 24px;
+    font-size: 18px;
     color: var(--blanco);
     cursor: pointer;
-    width: 40px;
+    width: 33px;
     z-index: 2;
 }
 
@@ -58,33 +59,110 @@ body {
 }
 
 .logo-centro img {
-    height: 48px;
+    height: 40px;
     width: auto;
     object-fit: contain;
     display: block;
 }
 
+/* CONTENEDOR Y AVATAR DE USUARIO */
 .perfil-usuario {
-    width: 40px;
+    position: relative;
+    width: 37px;
+    height: 37px;
     display: flex;
     justify-content: flex-end;
+    align-items: center;
     z-index: 2;
 }
 
 .perfil-usuario .avatar {
     background-color: #bc955c;
     color: var(--texto-oscuro);
-    width: 40px;
-    height: 40px;
+    width: 38px;
+    height: 38px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: bold;
     cursor: pointer;
+    user-select: none;
+    transition: transform 0.2s ease;
 }
 
-/* MENÚ FLOTANTE */
+.perfil-usuario .avatar:active {
+    transform: scale(0.95);
+}
+
+/* DROPDOWN DE PERFIL INTERACTIVO */
+.dropdown-perfil {
+    position: absolute;
+    top: 55px;
+    right: 0;
+    background-color: var(--guinda-oscuro);
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+    width: 200px;
+    padding: 8px 0;
+    z-index: 1000;
+    display: none;
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+/* Clase de activación por JS */
+.dropdown-perfil.show {
+    display: block;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.lista-dropdown-perfil {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.lista-dropdown-perfil li a {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 18px;
+    color: var(--blanco);
+    text-decoration: none;
+    font-size: 14.5px;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.lista-dropdown-perfil li a i {
+    width: 18px;
+    text-align: center;
+    font-size: 15px;
+    color: var(--dorado-detalle);
+}
+
+.lista-dropdown-perfil li a:hover {
+    background-color: #5d1a2d;
+    color: var(--blanco);
+}
+
+.lista-dropdown-perfil li a:hover i {
+    color: var(--dorado-detalle);
+}
+
+/* Divisor estético dentro del menú */
+.divisor-dropdown {
+    height: 1px;
+    background-color: rgba(255, 255, 255, 0.15);
+    margin: 6px 0;
+}
+
+/* MENÚ FLOTANTE NAVEGACIÓN LATERAL */
 .menu-flotante-overlay {
     position: fixed;
     top: 0;
@@ -94,13 +172,13 @@ body {
     background-color: rgba(0, 0, 0, 0.4);
     z-index: 1000;
     opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.25s ease;
+    visibility: hidden; /* CORRECCIÓN: Evita clics fantasmas mientras está oculto */
+    transition: opacity 0.25s ease, visibility 0.25s ease;
 }
 
 .menu-flotante-overlay.open {
     opacity: 1;
-    pointer-events: auto;
+    visibility: visible;
 }
 
 .btn-cerrar-flotante {
@@ -119,6 +197,11 @@ body {
     color: #000000;
     cursor: pointer;
     box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    transition: transform 0.2s ease;
+}
+
+.btn-cerrar-flotante:hover {
+    transform: scale(1.05);
 }
 
 .tarjeta-menu-flotante {
@@ -126,14 +209,16 @@ body {
     top: 85px;
     left: 25px;
     width: 295px;
-    background-color: var(--guinda-oscuro);
+   background-color: var(--vino-oscuro);
     border-radius: 24px;
     padding: 25px 22px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
-    transform: translateY(-20px);
-    transition: transform 0.3s ease;
+    /* CORRECCIÓN ANIMACIÓN: Inicia replegado hacia arriba */
+    transform: translateY(-30px); 
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); /* Caída más fluida tipo Figma */
 }
 
+/* Cuando se abre el overlay, gatilla la caída de la tarjeta */
 .menu-flotante-overlay.open .tarjeta-menu-flotante {
     transform: translateY(0);
 }
@@ -223,7 +308,7 @@ body {
     gap: 20px;
 }
 
-/* ---- BOTONES SEMÁFORO NUEVOS ---- */
+/* ---- BOTONES SEMÁFORO ---- */
 .btn-tipo {
     background: var(--blanco);
     border: 2px solid #cccccc;
@@ -273,7 +358,6 @@ body {
     border: 2px solid var(--rojo-alerta) !important;
     color: #842029 !important;
 }
-/* --------------------------------- */
 
 .selector-destinatarios {
     display: grid;
