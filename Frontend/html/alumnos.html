@@ -9,7 +9,6 @@
 </head>
 <body>
 
-    <!-- HEADER IGUAL QUE AULAS -->
     <header class="main-header">
         <div class="menu-btn" id="btnHamburguesa">☰</div>
         <div class="logo-container">
@@ -18,7 +17,6 @@
         <div class="user-avatar">A</div>
     </header>
 
-    <!-- TODO LO DE ABAJO SIN CAMBIOS -->
     <main class="container">
         
         <section class="header-section">
@@ -29,22 +27,35 @@
             <button class="btn-reporte">Generar Reporte</button>
         </section>
 
+        <!-- Métricas con barras dinámicas integradas -->
         <section class="metrics-grid">
             <div class="metric-card total">
                 <div class="icon-circle"><i class="fa-solid fa-users"></i></div>
-                <div class="metric-info"><h3>1400</h3><p>Total de alumnos</p></div>
+                <div class="metric-info">
+                    <h3 id="count-total">0</h3><p>Total de alumnos</p>
+                </div>
+                <div class="progress-bar-bg"><div id="bar-total" class="progress-bar-fill" style="width: 100%;"></div></div>
             </div>
             <div class="metric-card regulares">
                 <div class="icon-circle"><i class="fa-solid fa-circle-check"></i></div>
-                <div class="metric-info"><h3>980</h3><p>Alumnos regulares</p></div>
+                <div class="metric-info">
+                    <h3 id="count-regulares">0</h3><p>Alumnos regulares</p>
+                </div>
+                <div class="progress-bar-bg"><div id="bar-regulares" class="progress-bar-fill" style="width: 0%;"></div></div>
             </div>
             <div class="metric-card riesgo">
                 <div class="icon-circle"><i class="fa-solid fa-triangle-exclamation"></i></div>
-                <div class="metric-info"><h3>198</h3><p>En riesgo</p></div>
+                <div class="metric-info">
+                    <h3 id="count-riesgo">0</h3><p>En riesgo</p>
+                </div>
+                <div class="progress-bar-bg"><div id="bar-riesgo" class="progress-bar-fill" style="width: 0%;"></div></div>
             </div>
             <div class="metric-card criticos">
                 <div class="icon-circle"><i class="fa-solid fa-circle-xmark"></i></div>
-                <div class="metric-info"><h3>62</h3><p>Críticos</p></div>
+                <div class="metric-info">
+                    <h3 id="count-criticos">0</h3><p>Críticos</p>
+                </div>
+                <div class="progress-bar-bg"><div id="bar-criticos" class="progress-bar-fill" style="width: 0%;"></div></div>
             </div>
         </section>
 
@@ -74,67 +85,21 @@
                         <th>PAC</th><th>Estado</th><th>Materias reprobadas</th><th></th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr>
-                        <td class="avatar-cell"><i class="fa-solid fa-circle-user"></i></td>
-                        <td>12345679</td><td>José</td><td>Ramírez López</td>
-                        <td>38M</td><td>Matutino</td><td>4to</td><td>Programación</td><td>8.6</td>
-                        <td><span class="status-badge regular">Regular</span></td>
-                        <td class="numeric-cell">0</td>
-                        <td><a href="seguimiento_alumno.html?matricula=12345679" style="text-decoration:none;"><button class="btn-action"><i class="fa-solid fa-chevron-right"></i></button></a></td>
-                    </tr>
-                    <tr>
-                        <td class="avatar-cell"><i class="fa-solid fa-circle-user"></i></td>
-                        <td>12345678</td><td>Rosa</td><td>De La Cruz López</td>
-                        <td>28M</td><td>Vespertino</td><td>5to</td><td>Soporte</td><td>7.2</td>
-                        <td><span class="status-badge riesgo">En riesgo</span></td>
-                        <td class="numeric-cell">2</td>
-                        <td><a href="seguimiento_alumno.html?matricula=12345678" style="text-decoration:none;"><button class="btn-action"><i class="fa-solid fa-chevron-right"></i></button></a></td>
-                    </tr>
-                    <tr>
-                        <td class="avatar-cell"><i class="fa-solid fa-circle-user"></i></td>
-                        <td>12345677</td><td>Azul</td><td>Rodríguez Castillo</td>
-                        <td>48M</td><td>Matutino</td><td>6to</td><td>Programación</td><td>5.1</td>
-                        <td><span class="status-badge critico">Crítico</span></td>
-                        <td class="numeric-cell">3</td>
-                        <td><a href="seguimiento_alumno.html?matricula=12345677" style="text-decoration:none;"><button class="btn-action"><i class="fa-solid fa-chevron-right"></i></button></a></td>
-                    </tr>
-                    <tr>
-                        <td class="avatar-cell"><i class="fa-solid fa-circle-user"></i></td>
-                        <td>12345676</td><td>Juan</td><td>Peréz López</td>
-                        <td>45M</td><td>Matutino</td><td>4to</td><td>Mecatrónica</td><td>6.3</td>
-                        <td><span class="status-badge riesgo">En riesgo</span></td>
-                        <td class="numeric-cell">2</td>
-                        <td><a href="seguimiento_alumno.html?matricula=12345676" style="text-decoration:none;"><button class="btn-action"><i class="fa-solid fa-chevron-right"></i></button></a></td>
-                    </tr>
-                    <tr>
-                        <td class="avatar-cell"><i class="fa-solid fa-circle-user"></i></td>
-                        <td>12345675</td><td>Luis</td><td>López Ortiz</td>
-                        <td>18M</td><td>Vespertino</td><td>4to</td><td>PGA</td><td>9.1</td>
-                        <td><span class="status-badge regular">Regular</span></td>
-                        <td class="numeric-cell">0</td>
-                        <td><a href="seguimiento_alumno.html?matricula=12345675" style="text-decoration:none;"><button class="btn-action"><i class="fa-solid fa-chevron-right"></i></button></a></td>
-                    </tr>
+                <tbody id="tabla-alumnos-body">
                 </tbody>
             </table>
         </section>
-
     </main>
 
-    <!-- MENÚ FLOTANTE IGUAL QUE AULAS -->
     <div class="menu-flotante-overlay" id="sidebarOverlay">
-        <div class="btn-cerrar-flotante" id="btnCerrarSidebar">
-            <i class="fas fa-times"></i>
-        </div>
+        <div class="btn-cerrar-flotante" id="btnCerrarSidebar"><i class="fas fa-times"></i></div>
         <div class="tarjeta-menu-flotante">
             <ul class="lista-menu-flotante">
                 <li><a href="inicio.html"><i class="fas fa-home"></i> <span>Inicio</span></a></li>
                 <li><a href="alumnos.html"><i class="fas fa-users"></i> <span>Alumnos</span></a></li>
                 <li><a href="alertas.html"><i class="fas fa-bell"></i> <span>Alertas</span></a></li>
                 <li><a href="horarios.html"><i class="fas fa-calendar-alt"></i> <span>Horarios de Docentes</span></a></li>
-                <li class="opcion-activa-figma">
-                    <a href="configuracion.html"><i class="fas fa-cog"></i> <span>Configuración</span></a>
-                </li>
+                <li class="opcion-activa-figma"><a href="configuracion.html"><i class="fas fa-cog"></i> <span>Configuración</span></a></li>
             </ul>
         </div>
     </div>

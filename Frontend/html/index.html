@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">    
+<html lang="es">    
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Iniciar Sesion -  Semaforo de Alerta Academica</title>
+    <title>Iniciar Sesión - Semáforo de Alerta Académica</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link rel="stylesheet" href="../css/login.css">
 </head>
@@ -21,14 +21,14 @@
     <main class="login-wrapper">
         <section class="info-lado">
             <h1 class="titulo-sistema">
-                Semaforo de <br>
-                <span>Alerta Academica</span>
+                Semáforo de <br>
+                <span>Alerta Académica</span>
             </h1>
         </section>
         <section class="formulario-lado">
             <div class="tarjeta-login">
                 <h2>Bienvenidos</h2>
-                <p class="subtitulo">Ingresa tus credencilaes para acceder al sistema</p>
+                <p class="subtitulo">Ingresa tus credenciales para acceder al sistema</p>
                 <form id="formLogin">
                     <div class="grupo-input">
                         <div class="input-icono-wrapper">
@@ -39,20 +39,20 @@
                     <div class="grupo-input">
                         <div class="input-icono-wrapper">
                             <i class="fa-solid fa-lock"></i>
-                            <input type="password" id="matricula" placeholder="Matricula" required autocomplete="current-password">
+                            <!-- ID corregido a 'password' para que coincida con tu JS -->
+                            <input type="password" id="password" placeholder="Contraseña" required autocomplete="current-password">
                         </div>
                     </div>
                     <div class="olvido-contraseña">
                         <a href="#">¿Olvidaste tu contraseña?</a>
                     </div>
                     <div class="grupo-botones">
-                        <!-- Se dejó únicamente el botón de inicio de sesión obligatorio -->
                         <button type="submit" class="btn-iniciar">Iniciar Sesión</button>
                     </div>
                 </form>
             </div>
         </section>
-        <!-- Cambiado de login.js a index.js para enlazar correctamente tu archivo real -->
+        <!-- Asegúrate de que la ruta hacia tu index.js sea correcta -->
         <script src="../js/index.js"></script>
     </main>
 </body>
