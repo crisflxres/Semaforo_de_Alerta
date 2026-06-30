@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // --- 1. LÓGICA DEL MENÚ FLOTANTE ---
+    // --- 1. LÓGICA DEL MENÚ FLOTANTE (HAMBURGUESA) ---
     const btnHamburguesa = document.getElementById('btnHamburguesa');
     const overlay = document.getElementById('sidebarOverlay');
     const btnCerrar = document.getElementById('btnCerrarSidebar');
@@ -7,6 +7,31 @@ document.addEventListener('DOMContentLoaded', () => {
     if (btnHamburguesa && overlay) btnHamburguesa.addEventListener('click', () => overlay.classList.add('open'));
     if (btnCerrar) btnCerrar.addEventListener('click', () => overlay.classList.remove('open'));
     if (overlay) overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.classList.remove('open'); });
+
+    // --- 1.1 LÓGICA DEL DROPDOWN DE PERFIL ---
+    const avatarUsuario = document.getElementById('avatarUsuario');
+    const dropdownPerfil = document.getElementById('dropdownPerfil');
+    const btnCerrarSesion = document.getElementById('btnCerrarSesion');
+
+    if (avatarUsuario && dropdownPerfil) {
+        avatarUsuario.addEventListener('click', (e) => {
+            e.stopPropagation();
+            dropdownPerfil.classList.toggle('show');
+        });
+    }
+
+    document.addEventListener('click', () => {
+        if (dropdownPerfil) dropdownPerfil.classList.remove('show');
+    });
+
+    if (btnCerrarSesion) {
+        btnCerrarSesion.addEventListener('click', (e) => {
+            e.preventDefault();
+            localStorage.removeItem('rolUsuario');
+            localStorage.removeItem('nombreUsuario');
+            window.location.href = 'index.html';
+        });
+    }
 
     // --- 2. CARGA DE DATOS DESDE BD ---
     async function cargarDatosAlumnos() {
@@ -47,7 +72,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Configurar clics después de renderizar
             configurarClicsSeguimiento();
-            
+
+            // Poblar los selects de filtros con los valores reales de la BD
+            poblarFiltros(data.lista);
+
         } catch (error) {
             console.error("Error al cargar alumnos:", error);
         }
@@ -67,16 +95,60 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- 4. FILTROS ---
     const inputBuscar = document.querySelector('.search-input');
     const btnLimpiar = document.querySelector('.btn-limpiar');
+    const selects = document.querySelectorAll('.filter-select');
+
+    function llenarSelect(select, valores) {
+        select.innerHTML = '<option value="Todos">Todos</option>';
+        valores.forEach(valor => {
+            const option = document.createElement('option');
+            option.value = valor;
+            option.textContent = valor;
+            select.appendChild(option);
+        });
+    }
+
+    function poblarFiltros(lista) {
+        const grupos    = [...new Set(lista.map(a => a.grupo))].sort();
+        const carreras  = [...new Set(lista.map(a => a.carrera))].sort();
+        const semestres = [...new Set(lista.map(a => a.semestre))].sort();
+        const turnos    = [...new Set(lista.map(a => a.turno))].sort();
+        const estados   = [...new Set(lista.map(a => a.estado_alerta))].sort();
+
+        llenarSelect(document.getElementById('filtro-grupo'), grupos);
+        llenarSelect(document.getElementById('filtro-carrera'), carreras);
+        llenarSelect(document.getElementById('filtro-semestre'), semestres);
+        llenarSelect(document.getElementById('filtro-turno'), turnos);
+        llenarSelect(document.getElementById('filtro-estado'), estados);
+    }
 
     function filtrarTabla() {
         const texto = inputBuscar.value.toLowerCase();
+        const grupo = document.getElementById('filtro-grupo').value;
+        const carrera = document.getElementById('filtro-carrera').value;
+        const semestre = document.getElementById('filtro-semestre').value;
+        const turno = document.getElementById('filtro-turno').value;
+        const estado = document.getElementById('filtro-estado').value;
+
         document.querySelectorAll('#tabla-alumnos-body tr').forEach(fila => {
-            fila.style.display = fila.textContent.toLowerCase().includes(texto) ? '' : 'none';
+            const celdas = fila.children;
+            const coincideTexto    = fila.textContent.toLowerCase().includes(texto);
+            const coincideGrupo    = grupo === 'Todos'    || celdas[4].textContent.trim() === grupo;
+            const coincideTurno    = turno === 'Todos'    || celdas[5].textContent.trim() === turno;
+            const coincideSemestre = semestre === 'Todos' || celdas[6].textContent.trim() === semestre;
+            const coincideCarrera  = carrera === 'Todos'  || celdas[7].textContent.trim() === carrera;
+            const coincideEstado   = estado === 'Todos'   || celdas[9].textContent.trim() === estado;
+
+            fila.style.display = (coincideTexto && coincideGrupo && coincideTurno && coincideSemestre && coincideCarrera && coincideEstado) ? '' : 'none';
         });
     }
 
     if (inputBuscar) inputBuscar.addEventListener('input', filtrarTabla);
-    if (btnLimpiar) btnLimpiar.addEventListener('click', () => { inputBuscar.value = ''; filtrarTabla(); });
+    selects.forEach(select => select.addEventListener('change', filtrarTabla));
+    if (btnLimpiar) btnLimpiar.addEventListener('click', () => {
+        inputBuscar.value = '';
+        selects.forEach(select => select.value = 'Todos');
+        filtrarTabla();
+    });
 
     // Inicializar
     cargarDatosAlumnos();
