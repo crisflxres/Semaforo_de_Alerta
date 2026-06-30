@@ -46,7 +46,10 @@
                 <input type="text" id="inputNombre" placeholder="Nombre completo">
                 <input type="email" id="inputEmail" placeholder="Correo electrónico">
                 <input type="text" id="inputTelefono" placeholder="Número de teléfono">
-                <input type="text" id="inputRol" placeholder="Rol">
+                <select id="inputRol">
+                    <option value="2">Docente</option>
+                    <option value="3">Tutor</option>
+                </select>
                 <input type="hidden" id="indiceEdicion" value="-1">
                 <div class="panel-actions">
                     <button id="btnGuardar" class="btn-primary">Guardar</button>
@@ -69,8 +72,8 @@
                 <li><a href="inicio.html"><i class="fa-solid fa-house"></i> <span>Inicio</span></a></li>
                 <li><a href="alumnos.html"><i class="fa-solid fa-user-group"></i> <span>Alumnos</span></a></li>
                 <li><a href="alertas.html"><i class="fa-solid fa-bell"></i> <span>Alertas</span></a></li>
-                <li><a href="horarios.html"><i class="fa-solid fa-calendar-days"></i> <span>Horarios de Docentes</span></a></li>
-                <li class="opcion-activa-figma"><a href="configuracion.html"><i class="fa-solid fa-gear"></i> <span>Configuración</span></a></li>
+                <li class="opcion-activa-figma"><a href="horarios.html"><i class="fa-solid fa-calendar-days"></i> <span>Horarios de Docentes</span></a></li>
+                <li><a href="configuracion.html"><i class="fa-solid fa-gear"></i> <span>Configuración</span></a></li>
             </ul>
         </nav>
     </div>

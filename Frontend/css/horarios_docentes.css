@@ -93,7 +93,30 @@ body { background-color: #f4f7f6; }
     color: #fff; text-decoration: none;
     font-size: 18px; padding: 8px 10px;
 }
+.lista-menu-flotante li a span { text-decoration: underline; }
+.opcion-activa-figma a span { text-decoration: none !important; }
 
 .opcion-activa-figma { background-color: #d4b483; border-radius: 12px; }
 .opcion-activa-figma a { color: #000 !important; font-weight: 600; padding: 10px 15px !important; }
 .opcion-activa-figma a i { color: #000; }
+/* --- 7. PAGINACIÓN --- */
+#paginacion { display: flex; justify-content: center; gap: 8px; margin-top: 20px; margin-bottom: 10px; }
+.btn-pagina { padding: 8px 15px; border: 1px solid #ccc; background-color: white; cursor: pointer; border-radius: 6px; color: #333; font-weight: bold; }
+.btn-pagina.activa { background-color: #731a23; color: white; border-color: #731a23; }
+#inputRol {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: white;
+    color: #333;
+    font-size: 14px;
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath fill='%23731a23' d='M0 0l6 8 6-8z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+}
+
+#inputRol:focus { outline: none; border-color: #731a23;}
