@@ -1,25 +1,18 @@
 from flask import Flask, request, jsonify
+
+# 1. FUNCIÓN DE CONEXIÓN A TU MYSQL WORKBENCH (CONFIGURADA PARA XAMPP) EN conexion_db.py
+from conexion_db import obtener_conexion
+
+from Modulo_materias.routes_materias import materias_bp
 from flask_cors import CORS
 import mysql.connector
 import bcrypt
 
 app = Flask(__name__)
 # Permitimos CORS para que tus archivos HTML y JS del frontend puedan comunicarse con Python
-CORS(app) 
+CORS(app)
+app.register_blueprint(materias_bp)
 
-# 1. FUNCIÓN DE CONEXIÓN A TU MYSQL WORKBENCH (CONFIGURADA PARA XAMPP)
-def obtener_conexion():
-    conn = mysql.connector.connect(
-        host="localhost",
-        port=3306,
-        user="root",
-        password="",
-        database="semaforo_alerta"
-    )
-    cursor = conn.cursor()
-    cursor.execute("SET SQL_MODE = ''")
-    cursor.close()
-    return conn
 
 # 2. RUTA DE PRUEBA: Para verificar en el navegador que el servidor esté encendido
 @app.route('/', methods=['GET'])
@@ -89,7 +82,7 @@ def registro():
         cursor = conexion.cursor()
 
         query = """INSERT INTO usuarios (Id_Rol, Nombre, Apellidos, Email, Password) 
-                   VALUES (%s, %s, %s, %s, %s)"""
+                VALUES (%s, %s, %s, %s, %s)"""
         valores = (id_rol, nombre, apellidos, email, password_encriptada)
 
         cursor.execute(query, valores)

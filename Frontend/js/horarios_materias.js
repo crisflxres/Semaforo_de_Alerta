@@ -13,21 +13,33 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // --- 2. DATOS ---
-    const itemsPorPagina = 12;
-    let paginaActual  = 1;
-    let textoBusqueda = "";
+// --- 2. DATOS ---
+const itemsPorPagina = 12;
+let paginaActual  = 1;
+let textoBusqueda = "";
 
-    const todasLasMaterias = [
-        { id: "ID: MAT001", nombre: "Inglés IV",                       tipo: "Tipo: Básica",   color: "bg-rosa"       },
-        { id: "ID: MAT002", nombre: "Reacciones Químicas",             tipo: "Tipo: Avanzada", color: "bg-azul"       },
-        { id: "ID: MAT003", nombre: "Temas selectos de matemáticas I", tipo: "Tipo: Básica",   color: "bg-morado"     },
-        { id: "ID: MAT004", nombre: "Ciencias Sociales III",           tipo: "Tipo: Básica",   color: "bg-azul_claro" },
-        { id: "ID: MAT005", nombre: "Conciencia Histórica I",          tipo: "Tipo: Básica",   color: "bg-amarillo"   },
-        { id: "ID: MAT006", nombre: "Submódulo 3",                     tipo: "Tipo: Avanzada", color: "bg-verde"      },
-        { id: "ID: MAT007", nombre: "Submódulo 1",                     tipo: "Tipo: Básica",   color: "bg-naranja"    },
-        { id: "ID: MAT008", nombre: "Submódulo 2",                     tipo: "Tipo: Básica",   color: "bg-cafe"       }
-    ];
+let todasLasMaterias = [];
+const colores = ["bg-rosa","bg-azul","bg-amarillo","bg-verde","bg-naranja","bg-morado","bg-azul_claro","bg-cafe"];
+
+async function obtenerMaterias() {
+    const respuesta = await fetch("http://127.0.0.1:5000/api/materias");
+    const datos = await respuesta.json();
+
+    todasLasMaterias = datos.map(m => ({
+        id_materia: m.Id_Materia,
+        nombre: m.Nombre,
+        semestre: m.Semestre,
+        clave_carrera: m.Id_Carrera,
+        periodo: m.Periodo,
+        tipo_materia: m.Tipo,
+        color: colores[Math.floor(Math.random() * colores.length)]  // resolvemos esto en un momento
+    }));
+}
+
+async function iniciar() {
+    await obtenerMaterias();
+    renderizar();
+}
 
     // --- 3. PANEL ---
     const panelRegistro    = document.getElementById("panelRegistro");
@@ -39,9 +51,11 @@ document.addEventListener("DOMContentLoaded", () => {
     btnNuevo.addEventListener("click", () => {
         cerrarTodosLosMenus();
         document.getElementById("indiceEdicion").value      = "-1";
-        document.getElementById("inputIdMateria").value     = "";
-        document.getElementById("inputTipoMateria").value   = "";
-        document.getElementById("inputNombreMateria").value = "";
+        document.getElementById("inputNombreMateria").value     = "";
+        document.getElementById("inputSemestreMateria").value   = "";
+        document.getElementById("inputClave_Carrera").value = "";
+        document.getElementById("inputPeriodo").value = "";
+        document.getElementById("inputTipoMateria").value = "";
         panelRegistro.classList.remove("hidden");
     });
 
@@ -50,24 +64,45 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("indiceEdicion").value = "-1";
     });
 
-    btnGuardar.addEventListener("click", () => {
+    btnGuardar.addEventListener("click", async () => {
         const indice = parseInt(document.getElementById("indiceEdicion").value);
-        const id     = document.getElementById("inputIdMateria").value.trim();
-        const tipo   = document.getElementById("inputTipoMateria").value.trim();
         const nombre = document.getElementById("inputNombreMateria").value.trim();
+        const semestre   = document.getElementById("inputSemestreMateria").value.trim();
+        const clave_carrera = document.getElementById("inputClave_Carrera").value.trim();
+        const periodo = document.getElementById("inputPeriodo").value.trim();
+        const tipo_materia = document.getElementById("inputTipoMateria").value.trim();
 
         if (!nombre) { alert("El nombre de la materia es obligatorio."); return; }
 
-        if (indice > -1) {
-            todasLasMaterias[indice].id     = id;
-            todasLasMaterias[indice].tipo   = tipo;
-            todasLasMaterias[indice].nombre = nombre;
+        if(indice === -1) {
+            await fetch("http://127.0.0.1:5000/api/materias", {
+                method: "POST",
+                headers: { "Content-Type":     "application/json"},
+                    body: JSON.stringify({
+                        Nombre: nombre,
+                        Semestre: semestre,
+                        Clave_Carrera: clave_carrera,
+                        Periodo: periodo,
+                        Tipo: tipo_materia
+                    })
+            });
         } else {
-            const colores = ["bg-rosa","bg-azul","bg-amarillo","bg-verde","bg-naranja","bg-morado","bg-azul_claro","bg-cafe"];
-            todasLasMaterias.push({ id, tipo, nombre, color: colores[Math.floor(Math.random() * colores.length)] });
+            await fetch("http://127.0.0.1:5000/api/materias", {
+                method: "PUT",
+                headers: { "Content-Type": "application/json"},
+                body: JSON.stringify({
+                    Id_Materia: todasLasMaterias[indice].id_materia,
+                    Nombre: nombre,
+                    Semestre: semestre,
+                    Clave_Carrera: clave_carrera,
+                    Periodo: periodo,
+                    Tipo: tipo_materia
+                })
+            });
         }
-
+        await obtenerMaterias();
         renderizar();
+
         panelRegistro.classList.add("hidden");
         document.getElementById("indiceEdicion").value = "-1";
     });
@@ -117,8 +152,8 @@ document.addEventListener("DOMContentLoaded", () => {
                     <!-- Info vertical: nombre → ID → etiqueta -->
                     <div class="info-grupo">
                         <h3>${m.nombre}</h3>
-                        <p class="info-id">${m.id || ""}</p>
-                        <span class="etiqueta-tipo ${m.color}">${m.tipo || ""}</span>
+                        <p class="info-id">${m.semestre ? "Semestre: " + m.semestre : ""}</p>
+                        <span class="etiqueta-tipo ${m.color}">${m.tipo_materia || ""}</span>
                     </div>
                 </div>`;
         });
@@ -163,21 +198,31 @@ document.addEventListener("DOMContentLoaded", () => {
     window.abrirEditar = (index) => {
         cerrarTodosLosMenus();
         const m = todasLasMaterias[index];
-        document.getElementById("inputIdMateria").value     = m.id   || "";
-        document.getElementById("inputTipoMateria").value   = m.tipo || "";
-        document.getElementById("inputNombreMateria").value = m.nombre;
+        document.getElementById("inputNombreMateria").value     = m.nombre || "";
+        document.getElementById("inputSemestreMateria").value   = m.semestre || "";
+        document.getElementById("inputClave_Carrera").value = m.clave_carrera || "";
+        document.getElementById("inputPeriodo").value = m.periodo || "";
+        document.getElementById("inputTipoMateria").value = m.tipo_materia || "";
         document.getElementById("indiceEdicion").value      = index;
         panelRegistro.classList.remove("hidden");
     };
 
     // --- 9. ELIMINAR ---
-    window.eliminarMateria = (index) => {
-        cerrarTodosLosMenus();
-        if (confirm("¿Eliminar esta materia?")) {
-            todasLasMaterias.splice(index, 1);
-            renderizar();
-        }
-    };
+    window.eliminarMateria = async (index) => {
+    cerrarTodosLosMenus();
+    if (confirm("¿Eliminar esta materia?")) {
+        await fetch("http://127.0.0.1:5000/api/materias", {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                Id_Materia: todasLasMaterias[index].id_materia
+            })
+        });
 
-    renderizar();
+        await obtenerMaterias();
+        renderizar();
+    }
+};
+
+    iniciar();
 });

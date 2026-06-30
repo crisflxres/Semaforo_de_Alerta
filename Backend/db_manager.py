@@ -2,7 +2,7 @@ from importador_TACA import importar_alumnos, importar_materias, importar_califi
 from importador_Contactos import importar_correos_electronicos
 from importador_fotos import importar_fotos
 from importador_Tutores import importar_tutores
-from app import obtener_conexion
+from conexion_db import obtener_conexion
 import pandas as pd
 import bcrypt
 import os
@@ -133,7 +133,7 @@ def insertar_tutor_grupo(cursor, id_usuario, id_grupo, periodo):
     cursor.execute(sql, valores)
     return cursor.lastrowid
 
-TACA = pd.read_html(r"C:\Users\crisf\OneDrive\Documentos\UPT\SEXTO CUATRIMESTRE_SERVICIO_SOCIAL_(TSU)\Proyecto_Documentacion\TACA_03AL4I.xls")
+TACA = pd.read_html(r"C:\Users\crisf\OneDrive\Documentos\UPT\SEXTO CUATRIMESTRE_SERVICIO_SOCIAL_(TSU)\Proyecto_Documentacion\TACA_03U2A.xls")
 
 Contactos = pd.read_excel(r"C:\Users\crisf\OneDrive\Documentos\UPT\SEXTO CUATRIMESTRE_SERVICIO_SOCIAL_(TSU)\Proyecto_Documentacion\proyecto 2026\Matricula_Actual(2).xls")
 
