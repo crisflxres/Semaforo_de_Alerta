@@ -14,6 +14,7 @@ app = Flask(__name__)
 # Permitimos CORS para que tus archivos HTML y JS del frontend puedan comunicarse con Python
 CORS(app)
 app.register_blueprint(alumnos_bp)
+app.register_blueprint(materias_bp)
 
 
 # 2. RUTA DE PRUEBA: Para verificar en el navegador que el servidor esté encendido
