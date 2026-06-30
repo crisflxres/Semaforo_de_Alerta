@@ -8,6 +8,7 @@ from Modulo_Alumnos.routes_alumnos import alumnos_bp
 app = Flask(__name__)
 CORS(app)
 app.register_blueprint(alumnos_bp)
+app.register_blueprint(materias_bp)
 
 @app.route('/', methods=['GET'])
 def inicio():
