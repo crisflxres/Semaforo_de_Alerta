@@ -1,11 +1,15 @@
 const API = 'http://127.0.0.1:5000';
 
-// 1. PROCESAR EL INICIO DE SESIÓN
 document.getElementById('formLogin').addEventListener('submit', async (e) => {
-    e.preventDefault(); 
+    e.preventDefault();
 
-    const correo = document.getElementById('usuario').value;
-    const password = document.getElementById('matricula').value;
+    const usuario = document.getElementById('usuario').value.trim();
+    const password = document.getElementById('password').value.trim();
+
+    if (!usuario || !password) {
+        alert('Completa usuario y contraseña.');
+        return;
+    }
 
     try {
         const respuesta = await fetch(`${API}/login`, {
@@ -14,7 +18,7 @@ document.getElementById('formLogin').addEventListener('submit', async (e) => {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                correo: correo,
+                correo: usuario,
                 password: password
             })
         });
@@ -22,18 +26,18 @@ document.getElementById('formLogin').addEventListener('submit', async (e) => {
         const resultado = await respuesta.json();
 
         if (resultado.success) {
-            alert(`¡Bienvenido de nuevo, ${resultado.nombre}!`);
-            
+            alert(`Bienvenido, ${resultado.nombre}`);
+
             localStorage.setItem('rolUsuario', resultado.rol);
             localStorage.setItem('nombreUsuario', resultado.nombre);
 
-            window.location.href = 'inicio.html'; 
+            window.location.href = 'inicio.html';
         } else {
-            alert("Error: " + resultado.message);
+            alert('Error: ' + resultado.message);
         }
 
     } catch (error) {
-        console.error("Error en la conexión:", error);
-        alert("No se pudo conectar con el servidor de Python. Verifica que la terminal esté corriendo.");
+        console.error('Error en la conexión:', error);
+        alert('No se pudo conectar con el servidor. Verifica que app.py esté corriendo en el puerto 5000.');
     }
 });
