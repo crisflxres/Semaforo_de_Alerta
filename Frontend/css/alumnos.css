@@ -57,11 +57,27 @@ body { background-color: var(--bg-main); color: var(--text-dark); padding-bottom
 .metric-card.criticos .icon-circle { background-color: var(--bg-critico); color: var(--alert-red); }
 .metric-info h3 { font-size: 26px; font-weight: 700; color: #111; }
 .metric-info p { font-size: 13px; color: var(--text-muted); font-weight: 500; }
-.metric-card::after { content: ''; position: absolute; bottom: 12px; left: 20px; right: 20px; height: 5px; border-radius: 5px; background-color: #e0e0e0; }
-.metric-card.total::after    { background-color: var(--brand-maroon); width: 60%; }
-.metric-card.regulares::after { background-color: var(--brand-green); width: 45%; }
-.metric-card.riesgo::after   { background-color: var(--alert-yellow); width: 35%; }
-.metric-card.criticos::after { background-color: var(--alert-red); width: 25%; }
+
+/* --- BARRAS DE PROGRESO (ahora dinámicas, controladas por JS) --- */
+.progress-bar-bg {
+    position: absolute;
+    bottom: 12px;
+    left: 20px;
+    right: 20px;
+    height: 5px;
+    border-radius: 5px;
+    background-color: #e0e0e0;
+    overflow: hidden;
+}
+.progress-bar-fill {
+    height: 100%;
+    border-radius: 5px;
+    transition: width 0.4s ease;
+}
+.metric-card.total .progress-bar-fill      { background-color: var(--brand-maroon); }
+.metric-card.regulares .progress-bar-fill  { background-color: var(--brand-green); }
+.metric-card.riesgo .progress-bar-fill     { background-color: var(--alert-yellow); }
+.metric-card.criticos .progress-bar-fill   { background-color: var(--alert-red); }
 
 /* --- FILTROS (sin cambios) --- */
 .filters-panel { background-color: var(--white); border-radius: 12px; padding: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.04); margin-bottom: 25px; border: 1px solid #000000; }

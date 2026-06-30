@@ -2,7 +2,7 @@ from importador_TACA import importar_alumnos, importar_materias, importar_califi
 from importador_Contactos import importar_correos_electronicos
 from importador_fotos import importar_fotos
 from importador_Tutores import importar_tutores
-from app import obtener_conexion
+from conexion_db import obtener_conexion
 import pandas as pd
 import bcrypt
 import os

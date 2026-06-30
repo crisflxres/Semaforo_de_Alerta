@@ -4,134 +4,80 @@ document.addEventListener('DOMContentLoaded', () => {
     const overlay = document.getElementById('sidebarOverlay');
     const btnCerrar = document.getElementById('btnCerrarSidebar');
 
-    if (btnHamburguesa && overlay) {
-        btnHamburguesa.addEventListener('click', () => {
-            overlay.classList.add('open');
+    if (btnHamburguesa && overlay) btnHamburguesa.addEventListener('click', () => overlay.classList.add('open'));
+    if (btnCerrar) btnCerrar.addEventListener('click', () => overlay.classList.remove('open'));
+    if (overlay) overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.classList.remove('open'); });
+
+    // --- 2. CARGA DE DATOS DESDE BD ---
+    async function cargarDatosAlumnos() {
+        try {
+            const response = await fetch('http://127.0.0.1:5000/api/alumnos');
+            const data = await response.json();
+
+            // Actualizar números en tarjetas
+            document.getElementById('count-total').textContent = data.total;
+            document.getElementById('count-regulares').textContent = data.regulares;
+            document.getElementById('count-riesgo').textContent = data.riesgo;
+            document.getElementById('count-criticos').textContent = data.criticos;
+
+            // Actualizar barras de progreso
+            const total = data.total || 1;
+            document.getElementById('bar-total').style.width = "100%";
+            document.getElementById('bar-regulares').style.width = ((data.regulares / total) * 100) + "%";
+            document.getElementById('bar-riesgo').style.width = ((data.riesgo / total) * 100) + "%";
+            document.getElementById('bar-criticos').style.width = ((data.criticos / total) * 100) + "%";
+
+            // Llenar tabla
+            const tbody = document.getElementById('tabla-alumnos-body');
+            tbody.innerHTML = '';
+            data.lista.forEach(alumno => {
+                const tr = document.createElement('tr');
+                const estadoClase = alumno.estado_alerta.toLowerCase().replace(' ', '-');
+                tr.innerHTML = `
+                    <td class="avatar-cell"><i class="fa-solid fa-circle-user"></i></td>
+                    <td>${alumno.matricula}</td><td>${alumno.nombre}</td><td>${alumno.apellidos}</td>
+                    <td>${alumno.grupo}</td><td>${alumno.turno}</td><td>${alumno.semestre}</td>
+                    <td>${alumno.carrera}</td><td>${alumno.pac}</td>
+                    <td><span class="status-badge ${estadoClase}">${alumno.estado_alerta}</span></td>
+                    <td class="numeric-cell">${alumno.materias_reprobadas}</td>
+                    <td><button class="btn-action" data-matricula="${alumno.matricula}"><i class="fa-solid fa-chevron-right"></i></button></td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            // Configurar clics después de renderizar
+            configurarClicsSeguimiento();
+            
+        } catch (error) {
+            console.error("Error al cargar alumnos:", error);
+        }
+    }
+
+    // --- 3. NAVEGACIÓN ---
+    function configurarClicsSeguimiento() {
+        document.querySelectorAll('.btn-action').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const matricula = e.target.closest('button').dataset.matricula;
+                localStorage.setItem('matriculaSeleccionada', matricula);
+                window.location.href = "seguimiento_alumno.html";
+            });
         });
     }
 
-    if (btnCerrar) {
-        btnCerrar.addEventListener('click', () => {
-            overlay.classList.remove('open');
-        });
-    }
-
-    if (overlay) {
-        overlay.addEventListener('click', (e) => {
-            if (e.target === overlay) {
-                overlay.classList.remove('open');
-            }
-        });
-    }
-
-    // --- 2. LÓGICA DE FILTROS Y TABLA ---
+    // --- 4. FILTROS ---
     const inputBuscar = document.querySelector('.search-input');
     const btnLimpiar = document.querySelector('.btn-limpiar');
-    const selects = document.querySelectorAll('.filter-select');
-    const filasTabla = document.querySelectorAll('.data-table tbody tr');
-
-    // Mapeo de columnas para los filtros
-    const mapeoColumnas = { 0: 4, 1: 7, 2: 6, 3: 5, 4: 9 };
-
-    function inicializarFiltrosDinamicos() {
-        const opcionesPorFiltro = { 0: new Set(), 1: new Set(), 2: new Set(), 3: new Set(), 4: new Set() };
-
-        filasTabla.forEach(fila => {
-            const celdas = fila.getElementsByTagName('td');
-            if (celdas.length < 10) return;
-
-            Object.keys(mapeoColumnas).forEach(index => {
-                const numColumna = mapeoColumnas[index];
-                const texto = celdas[numColumna].textContent.trim();
-                if (texto) opcionesPorFiltro[index].add(texto);
-            });
-        });
-
-        selects.forEach((select, index) => {
-            const opcionesUnicas = Array.from(opcionesPorFiltro[index]).sort();
-            select.innerHTML = '<option>Todos</option>';
-            opcionesUnicas.forEach(opcion => {
-                const elOption = document.createElement('option');
-                elOption.textContent = opcion;
-                select.appendChild(elOption);
-            });
-        });
-    }
 
     function filtrarTabla() {
-        const textoBusqueda = inputBuscar.value.toLowerCase().trim();
-
-        filasTabla.forEach(fila => {
-            const celdas = fila.getElementsByTagName('td');
-            if (celdas.length < 10) return; 
-
-            const matricula = celdas[1].textContent.trim().toLowerCase();
-            const nombre = celdas[2].textContent.trim().toLowerCase();
-            const apellidos = celdas[3].textContent.trim().toLowerCase();
-            const nombreCompleto = `${nombre} ${apellidos}`;
-
-            const coincideBusqueda = textoBusqueda === '' || 
-                                     matricula.includes(textoBusqueda) || 
-                                     nombre.includes(textoBusqueda) || 
-                                     apellidos.includes(textoBusqueda) ||
-                                     nombreCompleto.includes(textoBusqueda);
-
-            let coincideSelects = true;
-            selects.forEach((select, index) => {
-                const valorSeleccionado = select.value.trim().toLowerCase();
-                if (valorSeleccionado !== 'todos') {
-                    const numeroColumna = mapeoColumnas[index];
-                    const textoCelda = celdas[numeroColumna].textContent.trim().toLowerCase();
-                    if (textoCelda !== valorSeleccionado) coincideSelects = false;
-                }
-            });
-
-            fila.style.display = (coincideBusqueda && coincideSelects) ? '' : 'none';
+        const texto = inputBuscar.value.toLowerCase();
+        document.querySelectorAll('#tabla-alumnos-body tr').forEach(fila => {
+            fila.style.display = fila.textContent.toLowerCase().includes(texto) ? '' : 'none';
         });
     }
-
-    // --- 3. LÓGICA DE NAVEGACIÓN A SEGUIMIENTO ---
-    function CONFIGURAR_CLICS_SEGUIMIENTO() {
-        filasTabla.forEach(fila => {
-            const enlace = fila.querySelector('a');
-            if (enlace) {
-                enlace.addEventListener('click', (e) => {
-                    e.preventDefault(); 
-                    
-                    const celdas = fila.querySelectorAll('td');
-                    const badgeEstado = fila.querySelector('.status-badge');
-                    
-                    const datosAlumno = {
-                        matricula: celdas[1].textContent.trim(),
-                        nombre: celdas[2].textContent.trim(),
-                        apellidos: celdas[3].textContent.trim(),
-                        grupo: celdas[4].textContent.trim(),
-                        turno: celdas[5].textContent.trim(),
-                        semestre: celdas[6].textContent.trim(),
-                        carrera: celdas[7].textContent.trim(),
-                        estado: badgeEstado ? badgeEstado.textContent.trim() : 'Regular',
-                        reprobadas: celdas[10].textContent.trim()
-                    };
-                    
-                    localStorage.setItem('alumnoSeleccionado', JSON.stringify(datosAlumno));
-                    window.location.href = "seguimiento_alumno.html";
-                });
-            }
-        });
-    }
-
-    // Inicialización general
-    inicializarFiltrosDinamicos();
-    CONFIGURAR_CLICS_SEGUIMIENTO();
 
     if (inputBuscar) inputBuscar.addEventListener('input', filtrarTabla);
-    selects.forEach(select => select.addEventListener('change', filtrarTabla));
+    if (btnLimpiar) btnLimpiar.addEventListener('click', () => { inputBuscar.value = ''; filtrarTabla(); });
 
-    if (btnLimpiar) {
-        btnLimpiar.addEventListener('click', () => {
-            inputBuscar.value = ''; 
-            selects.forEach(select => select.selectedIndex = 0);
-            filtrarTabla(); 
-        });
-    }
+    // Inicializar
+    cargarDatosAlumnos();
 });
