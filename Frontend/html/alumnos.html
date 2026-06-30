@@ -9,12 +9,50 @@
 </head>
 <body>
 
-    <header class="main-header">
-        <div class="menu-btn" id="btnHamburguesa">☰</div>
-        <div class="logo-container">
-            <img src="../html/Logo-cecyteh.png" class="logo" alt="Logo CECYTE">
+    <div class="menu-flotante-overlay" id="sidebarOverlay">
+        <div class="btn-cerrar-flotante" id="btnCerrarSidebar">
+            <i class="fa-solid fa-xmark"></i>
         </div>
-        <div class="user-avatar">A</div>
+        <nav class="tarjeta-menu-flotante" id="sidebarNav">
+            <ul class="lista-menu-flotante">
+                <li><a href="inicio.html"><i class="fa-solid fa-house"></i> <span>Inicio</span></a></li>
+                <li class="opcion-activa-figma"><a href="alumnos.html"><i class="fa-solid fa-user-group"></i> <span>Alumnos</span></a></li>
+                <li><a href="alertas.html"><i class="fa-solid fa-bell"></i> <span>Alertas</span></a></li>
+                <li><a href="horarios.html"><i class="fa-solid fa-calendar-days"></i> <span>Horarios de Docentes</span></a></li>
+                <li><a href="configuracion.html"><i class="fa-solid fa-gear"></i> <span>Configuración</span></a></li>
+            </ul>
+        </nav>
+    </div>
+
+    <header class="header-institucional">
+        <div class="menu-hamburguesa" id="btnHamburguesa">
+            <i class="fa-solid fa-bars"></i>
+        </div>
+        <div class="logo-centro">
+            <img src="../html/Logo-cecyteh.png" alt="Logo CECyTEH">
+        </div>
+
+        <div class="perfil-usuario" id="contenedorPerfil">
+            <div class="avatar" id="avatarUsuario">A</div>
+
+            <div class="dropdown-perfil" id="dropdownPerfil">
+                <ul class="lista-dropdown-perfil">
+                    <li>
+                        <a href="perfil.html">
+                            <i class="fa-solid fa-user"></i>
+                            <span>Ver perfil</span>
+                        </a>
+                    </li>
+                    <li class="divisor-dropdown"></li>
+                    <li>
+                        <a href="index.html" id="btnCerrarSesion">
+                            <i class="fa-solid fa-right-from-bracket"></i>
+                            <span>Cerrar sesión</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
     </header>
 
     <main class="container">
@@ -68,11 +106,11 @@
                 <button class="btn-limpiar">Limpiar filtros</button>
             </div>
             <div class="selects-row">
-                <div class="filter-group"><label>Grupo</label><select class="filter-select"><option>Todos</option></select></div>
-                <div class="filter-group"><label>Carrera</label><select class="filter-select"><option>Todos</option></select></div>
-                <div class="filter-group"><label>Semestre</label><select class="filter-select"><option>Todos</option></select></div>
-                <div class="filter-group"><label>Turno</label><select class="filter-select"><option>Todos</option></select></div>
-                <div class="filter-group"><label>Estado de Alerta</label><select class="filter-select"><option>Todos</option></select></div>
+                <div class="filter-group"><label>Grupo</label><select id="filtro-grupo" class="filter-select"><option value="Todos">Todos</option></select></div>
+                <div class="filter-group"><label>Carrera</label><select id="filtro-carrera" class="filter-select"><option value="Todos">Todos</option></select></div>
+                <div class="filter-group"><label>Semestre</label><select id="filtro-semestre" class="filter-select"><option value="Todos">Todos</option></select></div>
+                <div class="filter-group"><label>Turno</label><select id="filtro-turno" class="filter-select"><option value="Todos">Todos</option></select></div>
+                <div class="filter-group"><label>Estado de Alerta</label><select id="filtro-estado" class="filter-select"><option value="Todos">Todos</option></select></div>
             </div>
         </section>
 
@@ -90,19 +128,6 @@
             </table>
         </section>
     </main>
-
-    <div class="menu-flotante-overlay" id="sidebarOverlay">
-        <div class="btn-cerrar-flotante" id="btnCerrarSidebar"><i class="fas fa-times"></i></div>
-        <div class="tarjeta-menu-flotante">
-            <ul class="lista-menu-flotante">
-                <li><a href="inicio.html"><i class="fas fa-home"></i> <span>Inicio</span></a></li>
-                <li><a href="alumnos.html"><i class="fas fa-users"></i> <span>Alumnos</span></a></li>
-                <li><a href="alertas.html"><i class="fas fa-bell"></i> <span>Alertas</span></a></li>
-                <li><a href="horarios.html"><i class="fas fa-calendar-alt"></i> <span>Horarios de Docentes</span></a></li>
-                <li class="opcion-activa-figma"><a href="configuracion.html"><i class="fas fa-cog"></i> <span>Configuración</span></a></li>
-            </ul>
-        </div>
-    </div>
 
     <script src="../js/alumnos.js"></script>
 </body>
