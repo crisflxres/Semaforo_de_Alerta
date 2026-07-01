@@ -76,6 +76,17 @@ document.addEventListener('DOMContentLoaded', () => {
             // Poblar los selects de filtros con los valores reales de la BD
             poblarFiltros(data.lista);
 
+            // Aplicar filtro desde URL si viene de inicio
+            const params = new URLSearchParams(window.location.search);
+            const estadoFiltro = params.get('estado');
+            if (estadoFiltro) {
+                const filtroEstado = document.getElementById('filtro-estado');
+                if (filtroEstado) {
+                    filtroEstado.value = estadoFiltro;
+                    filtrarTabla();
+                }
+            }
+
         } catch (error) {
             console.error("Error al cargar alumnos:", error);
         }
