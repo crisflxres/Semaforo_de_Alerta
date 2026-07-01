@@ -13,11 +13,9 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- 2. DATOS DEL ALUMNO (sin cambios) ---
-    const datosGuardados = localStorage.getItem('alumnoSeleccionado');
-    if (!datosGuardados) { console.warn("No se seleccionó ningún alumno."); return; }
-
-    const alumno = JSON.parse(datosGuardados);
+  // --- 2. DATOS DEL ALUMNO ---
+    const matricula = localStorage.getItem('matriculaSeleccionada');
+    if (!matricula) { console.warn("No se seleccionó ningún alumno."); return; }
 
     const elNombre          = document.getElementById('txt-nombre');
     const elMatricula       = document.getElementById('txt-matricula');
@@ -26,22 +24,53 @@ document.addEventListener('DOMContentLoaded', () => {
     const elGrupoTurno      = document.querySelector('.student-details p:nth-of-type(3)');
     const elBadgeReprobadas = document.querySelector('.badge-reprobadas');
 
-    if (elNombre    && alumno.nombre)    elNombre.textContent = `${alumno.nombre} ${alumno.apellidos}`.toUpperCase();
-    if (elMatricula && alumno.matricula) elMatricula.textContent = alumno.matricula;
-    if (elCarrera   && alumno.carrera)   elCarrera.innerHTML = `<strong>Carrera:</strong> ${alumno.carrera}`;
+    fetch('http://localhost:5000/api/alumnos')
+        .then(res => res.json())
+        .then(data => {
+            const alumno = data.lista.find(a => a.matricula === matricula);
+            if (!alumno) return;
 
-    if (elGrupoTurno && alumno.grupo && alumno.turno)
-        elGrupoTurno.innerHTML = `<strong>Grupo:</strong> ${alumno.grupo} &nbsp;&nbsp;&nbsp;&nbsp; <strong>Turno:</strong> ${alumno.turno}`;
+            if (elNombre)    elNombre.textContent = `${alumno.nombre} ${alumno.apellidos}`.toUpperCase();
+            if (elMatricula) elMatricula.textContent = alumno.matricula;
+            if (elCarrera)   elCarrera.innerHTML = `<strong>Carrera:</strong> ${alumno.carrera}`;
+            if (elGrupoTurno) elGrupoTurno.innerHTML = `<strong>Grupo:</strong> ${alumno.grupo} &nbsp;&nbsp;&nbsp;&nbsp; <strong>Turno:</strong> ${alumno.turno}`;
+            if (elBadgeReprobadas) elBadgeReprobadas.textContent = `Materias reprobadas: ${alumno.materias_reprobadas}`;
 
-    if (elBadgeReprobadas && alumno.reprobadas)
-        elBadgeReprobadas.textContent = `Materias reprobadas: ${alumno.reprobadas}`;
+            if (elEstado) {
+                elEstado.textContent = `Estado: ${alumno.estado_alerta}`;
+                elEstado.className = '';
+                const estadoLimpio = alumno.estado_alerta.toLowerCase().trim();
+                if      (estadoLimpio.includes('regular'))  elEstado.classList.add('badge-estado-regular');
+                else if (estadoLimpio.includes('riesgo'))   elEstado.classList.add('badge-estado-riesgo');
+                else if (estadoLimpio.includes('critico'))  elEstado.classList.add('badge-estado-critico');
+            }
+        });
 
-    if (elEstado && alumno.estado) {
-        elEstado.textContent = `Estado: ${alumno.estado}`;
-        elEstado.className = '';
-        const estadoLimpio = alumno.estado.toLowerCase().trim();
-        if      (estadoLimpio.includes('regular'))                              elEstado.classList.add('badge-estado-regular');
-        else if (estadoLimpio.includes('riesgo'))                               elEstado.classList.add('badge-estado-riesgo');
-        else if (estadoLimpio.includes('crítico') || estadoLimpio.includes('critico')) elEstado.classList.add('badge-estado-critico');
-    }
+    // --- 3. CALIFICACIONES DESDE FLASK ---
+    const tbody = document.querySelector('.data-table tbody');
+
+    fetch(`http://localhost:5000/calificaciones/${matricula}`)
+        .then(res => res.json())
+        .then(respuesta => {
+            if (!respuesta.success) return;
+
+            const califs = respuesta.calificaciones;
+            tbody.innerHTML = "";
+            califs.forEach((c, i) => {
+                const fila = document.createElement('tr');
+                fila.innerHTML = `
+                    <td>${c.Materia}</td>
+                    <td>${c.P1 ?? '-'}</td>
+                    <td>${c.P2 ?? '-'}</td>
+                    <td>${c.P3 ?? '-'}</td>
+                    <td>${c.PR ?? '-'}</td>
+                    ${i === 0 ? `<td class="sidebar-cell" rowspan="${califs.length}">${respuesta.pac}</td>` : ''}
+                `;
+                tbody.appendChild(fila);
+            });
+
+            if (elBadgeReprobadas)
+                elBadgeReprobadas.textContent = `Materias reprobadas: ${respuesta.reprobadas}`;
+        })
+        .catch(err => console.error("Error al cargar calificaciones:", err));
 });

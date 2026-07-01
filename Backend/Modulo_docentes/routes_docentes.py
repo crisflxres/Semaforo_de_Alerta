@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 import bcrypt
-from Modulo_docentes.conexion import obtener_conexion
+from conexion_db import obtener_conexion
 
 rutas_docentes = Blueprint('rutas_docentes', __name__)
 
