@@ -44,9 +44,16 @@ def importar_materias(hoja):
     return materias
 
 def limpiar_calificacion(valor):
-    if float(valor) == 0 or pd.isna(valor):
-        return None  #Guarda Null en lugar de 0 para que no falle la logica de aprobacion
-    return float(valor)
+    # Evitar convertir valores NA/NaN a float directamente
+    if pd.isna(valor):
+        return None  # Guarda Null en lugar de valores faltantes
+    try:
+        f = float(valor)
+    except Exception:
+        return None
+    if f == 0:
+        return None  # Guarda Null en lugar de 0 para que no falle la logica de aprobacion
+    return f
 
 def importar_calificaciones(hoja, materias):
     calificaciones:list = []
@@ -63,9 +70,13 @@ def importar_calificaciones(hoja, materias):
                     continue
                 
                 if materia["tipo"] == "submodulo":
-                    aprobado = 1 if (P1 and P1 >= 6) and (P2 and P2 >= 6) and (P3 and P3 >= 6) else 0
+                    parciales_con_valor = [p for p in [P1, P2, P3] if p is not None]
+                    if len(parciales_con_valor) == 0:
+                        aprobado = 0
+                    else:
+                        aprobado = 1 if all(p >= 6 for p in parciales_con_valor) else 0
                 else:
-                    aprobado = 1 if PR and PR >= 6 else 0 #0 significa que reprobo y uno que aprobo
+                    aprobado = 1 if (PR is not None and PR >= 6) else 0
 
                 
                 calificacion:dict = {
