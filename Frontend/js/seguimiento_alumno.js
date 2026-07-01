@@ -20,6 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const elNombre          = document.getElementById('txt-nombre');
     const elMatricula       = document.getElementById('txt-matricula');
     const elEstado          = document.getElementById('txt-estado');
+    const foto              = document.getElementById('foto-alumno');
     const elCarrera         = document.querySelector('.student-details p:nth-of-type(2)');
     const elGrupoTurno      = document.querySelector('.student-details p:nth-of-type(3)');
     const elBadgeReprobadas = document.querySelector('.badge-reprobadas');
@@ -29,6 +30,14 @@ document.addEventListener('DOMContentLoaded', () => {
         .then(data => {
             const alumno = data.lista.find(a => a.matricula === matricula);
             if (!alumno) return;
+
+            // Foto: ahora sí existe alumno
+            if (foto) {
+                foto.src = `http://127.0.0.1:5000/fotos/${alumno.matricula}`;
+                foto.onerror = function() {
+                    foto.style.display = 'none';
+                };
+            }
 
             if (elNombre)    elNombre.textContent = `${alumno.nombre} ${alumno.apellidos}`.toUpperCase();
             if (elMatricula) elMatricula.textContent = alumno.matricula;
