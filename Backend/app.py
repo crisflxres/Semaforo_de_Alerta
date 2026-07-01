@@ -1,15 +1,26 @@
 from flask import Flask, request, jsonify
+
+# 1. FUNCIÓN DE CONEXIÓN A TU MYSQL WORKBENCH (CONFIGURADA PARA XAMPP) EN conexion_db.py
+from conexion_db import obtener_conexion
+
+from Modulo_materias.routes_materias import materias_bp
 from flask_cors import CORS
 import mysql.connector
 import bcrypt
 from conexion_db import obtener_conexion
 from Modulo_Alumnos.routes_alumnos import alumnos_bp
+from Modulo_docentes.routes_docentes import rutas_docentes
+
 
 app = Flask(__name__)
+# Permitimos CORS para que tus archivos HTML y JS del frontend puedan comunicarse con Python
 CORS(app)
 app.register_blueprint(alumnos_bp)
 app.register_blueprint(materias_bp)
+app.register_blueprint(rutas_docentes)
 
+
+# 2. RUTA DE PRUEBA: Para verificar en el navegador que el servidor esté encendido
 @app.route('/', methods=['GET'])
 def inicio():
     return "El servidor de Python para el Semáforo Académico está corriendo correctamente."
