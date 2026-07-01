@@ -52,22 +52,61 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // 2. Aquí llamaremos a la API para cargar los datos reales
+   // --- SECCIÓN DOCENTE SEGÚN ROL ---
+    const rol = parseInt(localStorage.getItem('rolUsuario'));
+    const seccionDocente = document.querySelector('.contenedor-informacion-docente');
+    
+    if (rol !== 2 && seccionDocente) {
+        seccionDocente.innerHTML = `
+            <h2 class="subtitulo-docente">Información del Usuario</h2>
+            <div class="grid-info-docente">
+                <div class="bloque-docente-perfil">
+                    <div class="icono-docente-bg"><i class="fa-solid fa-address-card"></i></div>
+                    <div class="detalles-docente">
+                        <span class="sub-label">Usuario</span>
+                        <span class="valor-docente">${localStorage.getItem('nombreUsuario') || 'N/A'}</span>
+                    </div>
+                </div>
+                <div class="bloque-docente-perfil">
+                    <div class="icono-docente-bg"><i class="fa-solid fa-book"></i></div>
+                    <div class="detalles-docente">
+                        <span class="sub-label">Materias Asignadas</span>
+                        <span class="valor-docente">-</span>
+                    </div>
+                </div>
+                <div class="bloque-docente-perfil">
+                    <div class="icono-docente-bg"><i class="fa-solid fa-border-all"></i></div>
+                    <div class="detalles-docente">
+                        <span class="sub-label">Grupos Asignados</span>
+                        <span class="valor-docente">-</span>
+                    </div>
+                </div>
+            </div>`;
+    }
+
     cargarDatosDashboard();
 });
 
-// 3. Función para traer datos del servidor
 async function cargarDatosDashboard() {
     try {
         const respuesta = await fetch('http://127.0.0.1:5000/api/dashboard-stats');
         const data = await respuesta.json();
 
-        // Ejemplo: Si tu API devuelve { totalAlumnos: 1400, regulares: 980, riesgo: 198, criticos: 62 }
-        // Actualizamos los números en el HTML
         if (data.success) {
-            document.querySelector('.numero-banner').textContent = data.totalAlumnos;
-            // Podrías actualizar las tarjetas de semáforo aquí también
+            document.querySelector('.texto-alumnos-registrados strong').textContent = data.total;
+
+            const numeros = document.querySelectorAll('.numero-semaforo');
+            numeros[0].textContent = data.regulares;
+            numeros[1].textContent = data.riesgo;
+            numeros[2].textContent = data.criticos;
+
+            const links = document.querySelectorAll('.link-ver-mas-nuevo');
+            links[0].href = 'alumnos.html?estado=Regular';
+            links[1].href = 'alumnos.html?estado=Riesgo';
+            links[2].href = 'alumnos.html?estado=Critico';
         }
     } catch (error) {
         console.error("Error al cargar datos del dashboard:", error);
     }
 }
+
