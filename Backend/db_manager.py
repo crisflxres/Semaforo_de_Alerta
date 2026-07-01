@@ -2,7 +2,7 @@ from importador_TACA import importar_alumnos, importar_materias, importar_califi
 from importador_Contactos import importar_correos_electronicos
 from importador_fotos import importar_fotos
 from importador_Tutores import importar_tutores
-from conexion_db import obtener_conexion
+from Modulo_configuracion.conexion_bd import obtener_conexion
 import pandas as pd
 import bcrypt
 import os
@@ -22,6 +22,12 @@ def insertar_materia(cursor, materia, id_carrera, semestre, periodo):
     return resultado[0]
 
 def insertar_alumnos_usuarios(cursor, alumno):
+    # Si el usuario ya existe (misma matrícula como Email), no lo volvemos a crear
+    cursor.execute("SELECT Id_Usuario FROM usuarios WHERE Email = %s", (alumno["matricula"],))
+    existente = cursor.fetchone()
+    if existente:
+        return existente[0]
+
     password = bcrypt.hashpw(alumno["matricula"].encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
     sql = "INSERT INTO usuarios (Id_Rol, Nombre, Apellidos, Email, Password) VALUES (%s, %s, %s, %s, %s)"
     apellidos = alumno["apellido.p"] + " " + alumno["apellido.m"]
@@ -66,7 +72,7 @@ def insertar_importacion(cursor, id_grupo, periodo, archivo,importador_por):
     return cursor.lastrowid
 
 def insertar_calificaciones(cursor, calificacion, id_materia, id_importacion, periodo, aprobado):
-    sql = "INSERT INTO calificaciones (Matricula, Id_Materia, Id_Importacion, Periodo, P1, P2, P3, PR, Aprobado) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)ON DUPLICATE KEY UPDATE P1= VALUES (P1), P2 = VALUES(P2), P3 = VALUES(P3), PR =  VALUES(PR)"
+    sql = "INSERT INTO calificaciones (Matricula, Id_Materia, Id_Importacion, Periodo, P1, P2, P3, PR, Aprobado) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s) ON DUPLICATE KEY UPDATE P1 = VALUES(P1), P2 = VALUES(P2), P3 = VALUES(P3), PR = VALUES(PR), Aprobado = VALUES(Aprobado)"
     valores = (
         calificacion["matricula"],
         id_materia,
@@ -78,6 +84,27 @@ def insertar_calificaciones(cursor, calificacion, id_materia, id_importacion, pe
         calificacion["PR"],
         aprobado
     )
+    cursor.execute(sql, valores)
+    return cursor.lastrowid
+
+def calcular_id_nivel(cursor, materias_reprobadas):
+    cursor.execute("""
+        SELECT Id_Nivel FROM niveles_alerta
+        WHERE Min_Reprobadas <= %s
+          AND (Max_Reprobados IS NULL OR Max_Reprobados >= %s)
+        ORDER BY Min_Reprobadas DESC
+        LIMIT 1
+    """, (materias_reprobadas, materias_reprobadas))
+    resultado = cursor.fetchone()
+    return resultado[0] if resultado else None
+
+def insertar_alerta(cursor, matricula, periodo, materias_reprobadas, pac):
+    id_nivel = calcular_id_nivel(cursor, materias_reprobadas)
+    sql = """INSERT INTO alertas (Matricula, Periodo, Id_Nivel, Materias_Reprobadas, PAC, Fecha_Calculo)
+             VALUES (%s, %s, %s, %s, %s, NOW())
+             ON DUPLICATE KEY UPDATE Id_Nivel = VALUES(Id_Nivel), Materias_Reprobadas = VALUES(Materias_Reprobadas),
+                                     PAC = VALUES(PAC), Fecha_Calculo = NOW()"""
+    valores = (matricula, periodo, id_nivel, materias_reprobadas, pac)
     cursor.execute(sql, valores)
     return cursor.lastrowid
 
@@ -133,58 +160,62 @@ def insertar_tutor_grupo(cursor, id_usuario, id_grupo, periodo):
     cursor.execute(sql, valores)
     return cursor.lastrowid
 
-TACA = pd.read_html(r"C:\Users\crisf\OneDrive\Documentos\UPT\SEXTO CUATRIMESTRE_SERVICIO_SOCIAL_(TSU)\Proyecto_Documentacion\TACA_03U2A.xls")
 
-Contactos = pd.read_excel(r"C:\Users\crisf\OneDrive\Documentos\UPT\SEXTO CUATRIMESTRE_SERVICIO_SOCIAL_(TSU)\Proyecto_Documentacion\proyecto 2026\Matricula_Actual(2).xls")
+def importar_taca_completo(ruta_archivo, nombre_archivo, id_grupo, id_carrera,
+                            semestre, periodo, importado_por=None):
+    """
+    Recibe la ruta de un archivo TACA ya guardado en disco (temporal),
+    lo procesa completo e inserta materias, alumnos y calificaciones.
+    Devuelve un resumen para mostrar en el Historial de Importaciones.
+    """
+    tablas = pd.read_html(ruta_archivo)
+    hoja = tablas[0]
 
-fotos = importar_fotos(r"C:\Users\crisf\OneDrive\Documentos\UPT\SEXTO CUATRIMESTRE_SERVICIO_SOCIAL_(TSU)\Proyecto_Documentacion\Matricula Total")
+    materias = importar_materias(hoja)
+    alumnos = importar_alumnos(hoja)
+    calificaciones = importar_calificaciones(hoja, materias)
 
-hoja3 = pd.read_excel(r"C:\Users\crisf\OneDrive\Documentos\UPT\SEXTO CUATRIMESTRE_SERVICIO_SOCIAL_(TSU)\Proyecto_Documentacion\Datos Programa.xlsx", skiprows= 8)
+    conexion = obtener_conexion()
+    cursor = conexion.cursor()
 
-hoja = TACA[0]
-hoja2 = Contactos
+    try:
+        mapa_materias = {}
+        for materia in materias:
+            id_materia = insertar_materia(cursor, materia, id_carrera, semestre, periodo)
+            mapa_materias[materia["nombre"]] = id_materia
 
-materias = importar_materias(hoja)
-alumnos = importar_alumnos(hoja)
-calificaciones = importar_calificaciones(hoja, materias)
-contactos = importar_correos_electronicos(hoja2)
-tutores = importar_tutores(hoja3)
+        for alumno in alumnos:
+            id_usuario = insertar_alumnos_usuarios(cursor, alumno)
+            insertar_alumnos(cursor, alumno, id_grupo, id_usuario)
 
+        id_importacion = insertar_importacion(cursor, id_grupo, periodo, nombre_archivo, importado_por)
 
+        for calificacion in calificaciones:
+            id_materia = mapa_materias[calificacion["materia"]]
+            insertar_calificaciones(cursor, calificacion, id_materia, id_importacion, periodo, calificacion["aprobado"])
 
-conexion = obtener_conexion()
-cursor = conexion.cursor()
+        # Calculamos materias reprobadas por alumno y guardamos su alerta (PAC + nivel)
+        reprobadas_por_alumno = {}
+        for calificacion in calificaciones:
+            if calificacion["aprobado"] == 0:
+                matricula = calificacion["matricula"]
+                reprobadas_por_alumno[matricula] = reprobadas_por_alumno.get(matricula, 0) + 1
 
-mapa_materias = {}
-for materia in materias:
-    id_materia = insertar_materia(cursor, materia, 2, 6, "FEBRERO - JULIO 2026")
-    mapa_materias[materia["nombre"]] = id_materia
+        for alumno in alumnos:
+            matricula = alumno["matricula"]
+            reprobadas = reprobadas_por_alumno.get(matricula, 0)
+            insertar_alerta(cursor, matricula, periodo, reprobadas, alumno["PAC"])
 
-for alumno in alumnos:
-    id_usuario = insertar_alumnos_usuarios(cursor, alumno)
-    insertar_alumnos(cursor, alumno, 40, id_usuario)
-
-id_importacion = insertar_importacion (cursor, 40,"FEBRERO - JULIO 2026", os.path.basename(r"C:\Users\crisf\OneDrive\Documentos\UPT\SEXTO CUATRIMESTRE_SERVICIO_SOCIAL_(TSU)\Proyecto_Documentacion\TACA_03AL4I.xls"), None)
-
-for calificacion in calificaciones:
-    id_materia = mapa_materias [calificacion["materia"]]
-    insertar_calificaciones(cursor, calificacion, id_materia, id_importacion, "FEBRERO - JULIO 2026", calificacion["aprobado"])
-
-for contacto in contactos:
-    actualizar_correo(cursor, contacto)
-
-for foto in fotos:
-    actualizar_fotos(cursor, foto["matricula"], foto["ruta"])
-
-mapa_grupos = obtener_mapa_grupos(cursor)
-
-for tutor in tutores:
-    id_usuario = insertar_tutores_usuarios(cursor, tutor)
-    id_grupo = mapa_grupos.get(tutor["grupo"])
-    if id_grupo is None:
-        print(f"Aviso: el grupo '{tutor['grupo']}' del tutor {tutor['tutor']} no existe en la tabla grupos. Se omite.")
-        continue
-    insertar_tutor_grupo(cursor, id_usuario, id_grupo, "FEBRERO - JULIO 2026")
-    
-conexion.commit()
-conexion.close()
+        conexion.commit()
+        return {
+            "id_importacion": id_importacion,
+            "alumnos": len(alumnos),
+            "materias": len(materias),
+            "calificaciones": len(calificaciones),
+        }
+    except Exception:
+        conexion.rollback()
+        raise
+    finally:
+        cursor.close()
+        conexion.close()
