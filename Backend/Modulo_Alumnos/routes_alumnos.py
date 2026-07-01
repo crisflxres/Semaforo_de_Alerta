@@ -88,3 +88,39 @@ def get_alumnos():
     finally:
         if conexion and conexion.is_connected():
             conexion.close()
+
+
+@alumnos_bp.route('/api/dashboard-stats', methods=['GET'])
+def get_dashboard_stats():
+    try:
+        conexion = obtener_conexion()
+        cursor = conexion.cursor(dictionary=True)
+        cursor.execute("""
+            SELECT
+                COUNT(*) as total,
+                SUM(CASE WHEN COALESCE(rep.materias_reprobadas, 0) = 0 THEN 1 ELSE 0 END) as regulares,
+                SUM(CASE WHEN na.Nombre = 'Amarillo' THEN 1 ELSE 0 END) as riesgo,
+                SUM(CASE WHEN na.Nombre = 'Rojo' THEN 1 ELSE 0 END) as criticos
+            FROM alumnos a
+            LEFT JOIN (
+                SELECT Matricula, COUNT(*) AS materias_reprobadas
+                FROM calificaciones WHERE Aprobado = 0
+                GROUP BY Matricula
+            ) rep ON a.Matricula = rep.Matricula
+            LEFT JOIN niveles_alerta na
+                ON COALESCE(rep.materias_reprobadas, 0) >= na.Min_Reprobadas
+                AND (na.Max_Reprobados IS NULL OR COALESCE(rep.materias_reprobadas, 0) <= na.Max_Reprobados)
+            WHERE a.Activo = 1
+        """)
+        stats = cursor.fetchone()
+        cursor.close()
+        conexion.close()
+        return jsonify({
+            "success": True,
+            "total": stats['total'],
+            "regulares": stats['regulares'],
+            "riesgo": stats['riesgo'],
+            "criticos": stats['criticos']
+        })
+    except mysql.connector.Error as err:
+        return jsonify({"success": False, "message": str(err)}), 500
