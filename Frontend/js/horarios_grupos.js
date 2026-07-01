@@ -13,39 +13,30 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // --- 2. DATOS ---
+// --- 2. DATOS ---
     const gruposPorPagina = 12;
     let paginaActual  = 1;
     let textoBusqueda = "";
+    let todosLosGrupos = [];
 
-    const todosLosGrupos = [
-        { nombre: "Grupo 1",  alumnos: 30, turno: "Matutino",   color: "bg-rosa"       },
-        { nombre: "Grupo 2",  alumnos: 35, turno: "Matutino",   color: "bg-azul"       },
-        { nombre: "Grupo 3",  alumnos: 40, turno: "Matutino",   color: "bg-morado"     },
-        { nombre: "Grupo 4",  alumnos: 38, turno: "Matutino",   color: "bg-azul_claro" },
-        { nombre: "Grupo 5",  alumnos: 33, turno: "Matutino",   color: "bg-amarillo"   },
-        { nombre: "Grupo 6",  alumnos: 30, turno: "Matutino",   color: "bg-verde"      },
-        { nombre: "Grupo 7",  alumnos: 29, turno: "Matutino",   color: "bg-naranja"    },
-        { nombre: "Grupo 8",  alumnos: 35, turno: "Matutino",   color: "bg-cafe"       },
-        { nombre: "Grupo 9",  alumnos: 38, turno: "Matutino",   color: "bg-rojo"       },
-        { nombre: "Grupo 10", alumnos: 45, turno: "Matutino",   color: "bg-gris"       },
-        { nombre: "Grupo 11", alumnos: 27, turno: "Matutino",   color: "bg-rosa"       },
-        { nombre: "Grupo 12", alumnos: 34, turno: "Matutino",   color: "bg-azul"       },
-        { nombre: "Grupo 13", alumnos: 40, turno: "Vespertino", color: "bg-morado"     },
-        { nombre: "Grupo 14", alumnos: 40, turno: "Vespertino", color: "bg-azul_claro" },
-        { nombre: "Grupo 15", alumnos: 40, turno: "Vespertino", color: "bg-amarillo"   },
-        { nombre: "Grupo 16", alumnos: 40, turno: "Vespertino", color: "bg-verde"      },
-        { nombre: "Grupo 17", alumnos: 40, turno: "Vespertino", color: "bg-naranja"    },
-        { nombre: "Grupo 18", alumnos: 40, turno: "Vespertino", color: "bg-cafe"       },
-        { nombre: "Grupo 19", alumnos: 40, turno: "Vespertino", color: "bg-rojo"       },
-        { nombre: "Grupo 20", alumnos: 40, turno: "Vespertino", color: "bg-gris"       },
-        { nombre: "Grupo 21", alumnos: 40, turno: "Vespertino", color: "bg-rosa"       },
-        { nombre: "Grupo 22", alumnos: 40, turno: "Vespertino", color: "bg-azul"       },
-        { nombre: "Grupo 23", alumnos: 40, turno: "Vespertino", color: "bg-morado"     },
-        { nombre: "Grupo 24", alumnos: 40, turno: "Vespertino", color: "bg-azul_claro" },
-        { nombre: "Grupo 25", alumnos: 40, turno: "Vespertino", color: "bg-amarillo"   },
-        { nombre: "Grupo 26", alumnos: 40, turno: "Vespertino", color: "bg-verde"      }
-    ];
+    const colores = ["bg-rosa","bg-azul","bg-amarillo","bg-verde","bg-naranja",
+                     "bg-morado","bg-azul_claro","bg-cafe","bg-gris","bg-rojo"];
+
+    fetch("http://localhost:5000/grupos")
+        .then(res => res.json())
+        .then(respuesta => {
+            if (respuesta.success) {
+                todosLosGrupos = respuesta.data.map((g, i) => ({
+                    id:      g.Id_Grupo,
+                    nombre:  g.Nombre,
+                    alumnos: 0,
+                    turno:   g.Turno,
+                    color:   colores[i % colores.length]
+                }));
+                renderizar();
+            }
+        })
+        .catch(err => console.error("Error al cargar grupos:", err));
 
     // --- 3. PANEL ---
     const panelRegistro    = document.getElementById("panelRegistro");
