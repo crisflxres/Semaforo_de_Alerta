@@ -1,365 +1,231 @@
+// ── EDITOR ───────────────────────────────────────────────────────────────────
 function ejecutarComando(comando) {
     document.execCommand(comando, false, null);
-
-    const mensajeEditor = document.getElementById('mensajeEditor');
-    if (mensajeEditor) mensajeEditor.focus();
+    document.getElementById('mensajeEditor')?.focus();
 }
 
-function insertarEnlace() {
-    abrirModal('enlace');
-}
-
-function insertarImagen() {
-    abrirModal('imagen');
-}
+function insertarEnlace() { abrirModal('enlace'); }
+function insertarImagen() { abrirModal('imagen'); }
 
 function abrirModal(tipo) {
     const modal = document.getElementById('modalEditor');
-    const titulo = document.getElementById('modalTitulo');
-    const inputArchivo = document.getElementById('modalInputArchivo');
     const inputUrl = document.getElementById('modalInputUrl');
-    const seccionArchivo = document.getElementById('seccionArchivo');
-    const seccionUrl = document.getElementById('seccionUrl');
-    const previewImagen = document.getElementById('previewImagen');
-
-    if (!modal || !titulo || !inputArchivo || !inputUrl || !seccionArchivo || !seccionUrl) return;
-
+    const inputArchivo = document.getElementById('modalInputArchivo');
+    if (!modal) return;
     modal.dataset.tipo = tipo;
-
-    if (tipo === 'imagen') {
-        titulo.textContent = 'Insertar imagen';
-        seccionArchivo.style.display = 'block';
-        seccionUrl.style.display = 'block';
-        inputUrl.placeholder = 'https://ejemplo.com/imagen.png';
-        inputArchivo.accept = 'image/*';
-    } else {
-        titulo.textContent = 'Insertar enlace';
-        seccionArchivo.style.display = 'none';
-        seccionUrl.style.display = 'block';
-        inputUrl.placeholder = 'https://ejemplo.com';
-    }
-
+    document.getElementById('modalTitulo').textContent = tipo === 'imagen' ? 'Insertar imagen' : 'Insertar enlace';
+    document.getElementById('seccionArchivo').style.display = tipo === 'imagen' ? 'block' : 'none';
+    inputUrl.placeholder = tipo === 'imagen' ? 'https://ejemplo.com/imagen.png' : 'https://ejemplo.com';
     inputUrl.value = '';
     inputArchivo.value = '';
-
-    if (previewImagen) {
-        previewImagen.src = '';
-        previewImagen.style.display = 'none';
-    }
-
+    const preview = document.getElementById('previewImagen');
+    if (preview) { preview.src = ''; preview.style.display = 'none'; }
     modal.style.display = 'flex';
     inputUrl.focus();
 }
 
 function cerrarModal() {
-    const modal = document.getElementById('modalEditor');
-    if (modal) modal.style.display = 'none';
+    document.getElementById('modalEditor').style.display = 'none';
 }
 
 function confirmarModal() {
     const modal = document.getElementById('modalEditor');
     const inputUrl = document.getElementById('modalInputUrl');
     const inputArchivo = document.getElementById('modalInputArchivo');
-    const mensajeEditor = document.getElementById('mensajeEditor');
-
-    if (!modal || !inputUrl || !inputArchivo || !mensajeEditor) return;
-
-    const tipo = modal.dataset.tipo;
-
-    if (tipo === 'imagen') {
-        if (inputArchivo.files && inputArchivo.files[0]) {
+    const editor = document.getElementById('mensajeEditor');
+    if (!modal || !editor) return;
+    if (modal.dataset.tipo === 'imagen') {
+        if (inputArchivo.files?.[0]) {
             const reader = new FileReader();
-
-            reader.onload = (e) => {
-                mensajeEditor.focus();
-                document.execCommand('insertImage', false, e.target.result);
-            };
-
+            reader.onload = (e) => { editor.focus(); document.execCommand('insertImage', false, e.target.result); };
             reader.readAsDataURL(inputArchivo.files[0]);
         } else if (inputUrl.value.trim()) {
-            mensajeEditor.focus();
-            document.execCommand('insertImage', false, inputUrl.value.trim());
+            editor.focus(); document.execCommand('insertImage', false, inputUrl.value.trim());
         }
-    } else {
-        if (inputUrl.value.trim()) {
-            mensajeEditor.focus();
-            document.execCommand('createLink', false, inputUrl.value.trim());
-        }
+    } else if (inputUrl.value.trim()) {
+        editor.focus(); document.execCommand('createLink', false, inputUrl.value.trim());
     }
-
     cerrarModal();
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    const btnHamburguesa = document.getElementById('btnHamburguesa');
-    const sidebarOverlay = document.getElementById('sidebarOverlay');
-    const btnCerrarSidebar = document.getElementById('btnCerrarSidebar');
+// ── BD ───────────────────────────────────────────────────────────────────────
+let nivelActual = null;
+let resumenBD = [];
 
-    const avatarUsuario = document.getElementById('avatarUsuario');
-    const dropdownPerfil = document.getElementById('dropdownPerfil');
+async function cargarGrupos() {
+    try {
+        const res = await fetch('http://127.0.0.1:5000/alertas/grupos');
+        const data = await res.json();
+        if (data.ok) {
+            const select = document.getElementById('selectGrupo');
+            select.innerHTML = '<option value="">-- Elige un grupo --</option>';
+            data.datos.forEach(g => {
+                select.innerHTML += `<option value="${g.Id_Grupo}">${g.Nombre}</option>`;
+            });
+        }
+    } catch (e) { console.error('Error cargando grupos:', e); }
+}
 
-    const btnVerde = document.getElementById('btnVerde');
-    const btnAmarillo = document.getElementById('btnAmarillo');
-    const btnRojo = document.getElementById('btnRojo');
+async function cargarResumen() {
+    try {
+        const res = await fetch('http://127.0.0.1:5000/alertas/resumen');
+        const data = await res.json();
+        if (data.ok) resumenBD = data.datos;
+    } catch (e) { console.error('Error cargando resumen:', e); }
+}
 
-    const radiosAlcance = document.querySelectorAll('input[name="alcance"]');
-    const selectGrupo = document.getElementById('selectGrupo');
-    const radiosProgramacion = document.querySelectorAll('input[name="programacion"]');
-    const bloqueProgramar = document.getElementById('bloqueProgramar');
-
-    const resumenTipo = document.getElementById('resumenTipo');
-    const resumenAlcance = document.getElementById('resumenAlcance');
-    const resumenEnvio = document.getElementById('resumenEnvio');
-    const resumenDestinatarios = document.getElementById('resumenDestinatarios');
-    const resumenTotal = document.getElementById('resumenTotal');
-
-    const checkboxesDestinatarios = document.querySelectorAll('input[name="destinatarios"]');
-    const btnDropdownVars = document.getElementById('btnDropdownVars');
-    const menuDesplegableVars = document.getElementById('menuDesplegableVars');
-    const asuntoNotificacion = document.getElementById('asuntoNotificacion');
-    const mensajeEditor = document.getElementById('mensajeEditor');
-    const inputArchivo = document.getElementById('modalInputArchivo');
-    const previewImagen = document.getElementById('previewImagen');
-
-    const btnCerrarSesion = document.getElementById('btnCerrarSesion');
-
-    if (btnCerrarSesion) {
-        btnCerrarSesion.addEventListener('click', (e) => {
-            e.preventDefault();
-
-            localStorage.removeItem('rolUsuario');
-            localStorage.removeItem('nombreUsuario');
-
-            window.location.href = 'index.html';
+function actualizarTotal() {
+    if (!nivelActual) return;
+    const nivel = resumenBD.find(d => d.Nivel_Alerta === nivelActual);
+    const checkboxes = document.querySelectorAll('input[name="destinatarios"]:checked');
+    let total = 0;
+    if (nivel) {
+        checkboxes.forEach(c => {
+            if (c.value === 'alumnos') total += nivel.Total_Alumnos;
+            if (c.value === 'tutores') total += nivel.Total_Tutores;
+            if (c.value === 'docentes') total += nivel.Total_Docentes;
         });
     }
+    document.getElementById('resumenTotal').textContent = total;
+}
 
-    if (inputArchivo) {
-        inputArchivo.addEventListener('change', function () {
-            if (this.files && this.files[0]) {
-                const reader = new FileReader();
+// ── INICIO ───────────────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', async () => {
+    await cargarGrupos();
+    await cargarResumen();
 
-                reader.onload = (e) => {
-                    if (previewImagen) {
-                        previewImagen.src = e.target.result;
-                        previewImagen.style.display = 'block';
-                    }
-                };
+    // Menú hamburguesa
+    const overlay = document.getElementById('sidebarOverlay');
+    document.getElementById('btnHamburguesa')?.addEventListener('click', () => overlay.classList.add('open'));
+    document.getElementById('btnCerrarSidebar')?.addEventListener('click', () => overlay.classList.remove('open'));
+    overlay?.addEventListener('click', (e) => { if (e.target === overlay) overlay.classList.remove('open'); });
 
-                reader.readAsDataURL(this.files[0]);
-            }
-        });
-    }
+    // Dropdown perfil
+    const avatar = document.getElementById('avatarUsuario');
+    const dropdown = document.getElementById('dropdownPerfil');
+    const menuVars = document.getElementById('menuDesplegableVars');
+    avatar?.addEventListener('click', (e) => { e.stopPropagation(); menuVars?.classList.remove('show'); dropdown?.classList.toggle('show'); });
+    document.addEventListener('click', () => { dropdown?.classList.remove('show'); menuVars?.classList.remove('show'); });
 
-    if (avatarUsuario && dropdownPerfil) {
-        avatarUsuario.addEventListener('click', (e) => {
-            e.stopPropagation();
-            if (menuDesplegableVars) menuDesplegableVars.classList.remove('show');
-            dropdownPerfil.classList.toggle('show');
-        });
-    }
-
-    let ultimoElementoEnfocado = mensajeEditor;
-
-    if (asuntoNotificacion) {
-        asuntoNotificacion.addEventListener('focus', () => {
-            ultimoElementoEnfocado = asuntoNotificacion;
-        });
-    }
-
-    if (mensajeEditor) {
-        mensajeEditor.addEventListener('focus', () => {
-            ultimoElementoEnfocado = mensajeEditor;
-        });
-    }
-
-    if (btnDropdownVars && menuDesplegableVars) {
-        btnDropdownVars.addEventListener('click', (e) => {
-            e.stopPropagation();
-            if (dropdownPerfil) dropdownPerfil.classList.remove('show');
-            menuDesplegableVars.classList.toggle('show');
-        });
-    }
-
-    document.addEventListener('click', () => {
-        if (menuDesplegableVars) menuDesplegableVars.classList.remove('show');
-        if (dropdownPerfil) dropdownPerfil.classList.remove('show');
+    // Cerrar sesión
+    document.getElementById('btnCerrarSesion')?.addEventListener('click', (e) => {
+        e.preventDefault();
+        localStorage.removeItem('rolUsuario');
+        localStorage.removeItem('nombreUsuario');
+        window.location.href = 'index.html';
     });
 
-    if (menuDesplegableVars) {
-        menuDesplegableVars.querySelectorAll('li').forEach((item) => {
-            item.addEventListener('click', function () {
-                const variable = this.getAttribute('data-variable');
+    // Preview imagen modal
+    document.getElementById('modalInputArchivo')?.addEventListener('change', function () {
+        if (this.files?.[0]) {
+            const reader = new FileReader();
+            reader.onload = (e) => { const p = document.getElementById('previewImagen'); if (p) { p.src = e.target.result; p.style.display = 'block'; } };
+            reader.readAsDataURL(this.files[0]);
+        }
+    });
 
-                if (ultimoElementoEnfocado === asuntoNotificacion && asuntoNotificacion) {
-                    const startPos = asuntoNotificacion.selectionStart;
-                    const endPos = asuntoNotificacion.selectionEnd;
-                    const textoPrevio = asuntoNotificacion.value;
-
-                    asuntoNotificacion.value =
-                        textoPrevio.substring(0, startPos) +
-                        variable +
-                        textoPrevio.substring(endPos);
-
-                    asuntoNotificacion.focus();
-                } else if (mensajeEditor) {
-                    mensajeEditor.focus();
-
-                    const seleccion = window.getSelection();
-
-                    if (seleccion.getRangeAt && seleccion.rangeCount) {
-                        const rango = seleccion.getRangeAt(0);
-                        rango.deleteContents();
-
-                        const nodoTexto = document.createTextNode(variable);
-                        rango.insertNode(nodoTexto);
-                        rango.setStartAfter(nodoTexto);
-                        rango.setEndAfter(nodoTexto);
-
-                        seleccion.removeAllRanges();
-                        seleccion.addRange(rango);
-                    }
+    // Variables en editor
+    let ultimoFoco = document.getElementById('mensajeEditor');
+    document.getElementById('asuntoNotificacion')?.addEventListener('focus', () => ultimoFoco = document.getElementById('asuntoNotificacion'));
+    document.getElementById('mensajeEditor')?.addEventListener('focus', () => ultimoFoco = document.getElementById('mensajeEditor'));
+    document.getElementById('btnDropdownVars')?.addEventListener('click', (e) => { e.stopPropagation(); dropdown?.classList.remove('show'); menuVars?.classList.toggle('show'); });
+    menuVars?.querySelectorAll('li').forEach(item => {
+        item.addEventListener('click', function () {
+            const variable = this.getAttribute('data-variable');
+            const asunto = document.getElementById('asuntoNotificacion');
+            const editor = document.getElementById('mensajeEditor');
+            if (ultimoFoco === asunto) {
+                const s = asunto.selectionStart, e2 = asunto.selectionEnd;
+                asunto.value = asunto.value.substring(0, s) + variable + asunto.value.substring(e2);
+                asunto.focus();
+            } else {
+                editor.focus();
+                const sel = window.getSelection();
+                if (sel.getRangeAt && sel.rangeCount) {
+                    const r = sel.getRangeAt(0); r.deleteContents();
+                    const t = document.createTextNode(variable); r.insertNode(t);
+                    r.setStartAfter(t); r.setEndAfter(t);
+                    sel.removeAllRanges(); sel.addRange(r);
                 }
-
-                menuDesplegableVars.classList.remove('show');
-            });
-        });
-    }
-
-    if (btnHamburguesa && sidebarOverlay) {
-        btnHamburguesa.addEventListener('click', () => {
-            sidebarOverlay.classList.add('open');
-        });
-    }
-
-    if (btnCerrarSidebar && sidebarOverlay) {
-        btnCerrarSidebar.addEventListener('click', () => {
-            sidebarOverlay.classList.remove('open');
-        });
-    }
-
-    if (sidebarOverlay) {
-        sidebarOverlay.addEventListener('click', (e) => {
-            if (e.target === sidebarOverlay) {
-                sidebarOverlay.classList.remove('open');
             }
+            menuVars.classList.remove('show');
+        });
+    });
+
+    // Semáforo
+    function limpiarSemaforo() {
+        ['btnVerde', 'btnAmarillo', 'btnRojo'].forEach(id => {
+            document.getElementById(id)?.classList.remove('active-verde', 'active-amarillo', 'active-rojo');
         });
     }
 
-    function limpiarEstadosSemaforicos() {
-        if (btnVerde) btnVerde.classList.remove('active-verde');
-        if (btnAmarillo) btnAmarillo.classList.remove('active-amarillo');
-        if (btnRojo) btnRojo.classList.remove('active-rojo');
-    }
+    document.getElementById('btnVerde')?.addEventListener('click', () => {
+        limpiarSemaforo(); document.getElementById('btnVerde').classList.add('active-verde');
+        document.getElementById('resumenTipo').textContent = 'Regulares';
+        nivelActual = 'Verde'; actualizarTotal();
+    });
 
-    if (btnVerde) {
-        btnVerde.addEventListener('click', () => {
-            limpiarEstadosSemaforicos();
-            btnVerde.classList.add('active-verde');
-            if (resumenTipo) resumenTipo.textContent = 'Regulares';
-        });
-    }
+    document.getElementById('btnAmarillo')?.addEventListener('click', () => {
+        limpiarSemaforo(); document.getElementById('btnAmarillo').classList.add('active-amarillo');
+        document.getElementById('resumenTipo').textContent = 'En Riesgo';
+        nivelActual = 'Amarillo'; actualizarTotal();
+    });
 
-    if (btnAmarillo) {
-        btnAmarillo.addEventListener('click', () => {
-            limpiarEstadosSemaforicos();
-            btnAmarillo.classList.add('active-amarillo');
-            if (resumenTipo) resumenTipo.textContent = 'En Riesgo';
-        });
-    }
+    document.getElementById('btnRojo')?.addEventListener('click', () => {
+        limpiarSemaforo(); document.getElementById('btnRojo').classList.add('active-rojo');
+        document.getElementById('resumenTipo').textContent = 'Riesgo Crítico';
+        nivelActual = 'Rojo'; actualizarTotal();
+    });
 
-    if (btnRojo) {
-        btnRojo.addEventListener('click', () => {
-            limpiarEstadosSemaforicos();
-            btnRojo.classList.add('active-rojo');
-            if (resumenTipo) resumenTipo.textContent = 'Riesgo Crítico';
-        });
-    }
-
-    radiosAlcance.forEach((radio) => {
+    // Alcance
+    document.querySelectorAll('input[name="alcance"]').forEach(radio => {
         radio.addEventListener('change', (e) => {
+            const select = document.getElementById('selectGrupo');
+            const resumenAlcance = document.getElementById('resumenAlcance');
             if (e.target.value === 'especifico') {
-                if (selectGrupo) selectGrupo.disabled = false;
-
-                if (resumenAlcance && selectGrupo) {
-                    resumenAlcance.textContent = selectGrupo.value
-                        ? `Grupo: ${selectGrupo.value.toUpperCase()}`
-                        : 'Grupo no elegido';
-                }
+                select.disabled = false;
+                resumenAlcance.textContent = select.value ? `Grupo: ${select.value}` : 'Grupo no elegido';
             } else {
-                if (selectGrupo) selectGrupo.disabled = true;
-                if (resumenAlcance) resumenAlcance.textContent = 'Todos los grupos';
+                select.disabled = true;
+                resumenAlcance.textContent = 'Todos los grupos';
             }
         });
     });
 
-    if (selectGrupo) {
-        selectGrupo.addEventListener('change', (e) => {
-            if (!selectGrupo.disabled && e.target.value && resumenAlcance) {
-                resumenAlcance.textContent = `Grupo: ${e.target.value.toUpperCase()}`;
-            }
-        });
-    }
+    document.getElementById('selectGrupo')?.addEventListener('change', (e) => {
+        const texto = e.target.options[e.target.selectedIndex].text;
+        document.getElementById('resumenAlcance').textContent = `Grupo: ${texto}`;
+    });
 
-    radiosProgramacion.forEach((radio) => {
+    // Programación
+    document.querySelectorAll('input[name="programacion"]').forEach(radio => {
         radio.addEventListener('change', (e) => {
-            if (!bloqueProgramar) return;
-
-            if (e.target.value === 'programar') {
-                bloqueProgramar.style.opacity = '1';
-                bloqueProgramar.style.pointerEvents = 'auto';
-                if (resumenEnvio) resumenEnvio.textContent = 'Planificado';
-            } else {
-                bloqueProgramar.style.opacity = '0.5';
-                bloqueProgramar.style.pointerEvents = 'none';
-                if (resumenEnvio) resumenEnvio.textContent = 'Inmediato';
-            }
+            const bloque = document.getElementById('bloqueProgramar');
+            const esProgramar = e.target.value === 'programar';
+            bloque.style.opacity = esProgramar ? '1' : '0.5';
+            bloque.style.pointerEvents = esProgramar ? 'auto' : 'none';
+            document.getElementById('resumenEnvio').textContent = esProgramar ? 'Planificado' : 'Inmediato';
         });
     });
 
-    checkboxesDestinatarios.forEach((check) => {
+    // Destinatarios
+    document.querySelectorAll('input[name="destinatarios"]').forEach(check => {
         check.addEventListener('change', () => {
-            const parentLabel = check.parentElement;
-
-            if (check.checked) {
-                parentLabel.classList.add('is-selected');
-            } else {
-                parentLabel.classList.remove('is-selected');
-            }
-
-            const seleccionados = [];
-
-            checkboxesDestinatarios.forEach((c) => {
-                if (c.checked) {
-                    const textoLimpio = c.parentNode.textContent.replace(/\s+/g, ' ').trim();
-                    seleccionados.push(textoLimpio);
-                }
-            });
-
-            if (resumenDestinatarios) {
-                resumenDestinatarios.textContent =
-                    seleccionados.length > 0 ? seleccionados.join(', ') : '0 seleccionados';
-            }
-
-            if (resumenTotal) {
-                resumenTotal.textContent = seleccionados.length * 125;
-            }
+            check.parentElement.classList.toggle('is-selected', check.checked);
+            const seleccionados = [...document.querySelectorAll('input[name="destinatarios"]:checked')]
+                .map(c => c.parentNode.textContent.trim());
+            document.getElementById('resumenDestinatarios').textContent =
+                seleccionados.length > 0 ? seleccionados.join(', ') : '0 seleccionados';
+            actualizarTotal();
         });
     });
 
-    const btnEnviarAlerta = document.getElementById('btnEnviarAlerta');
+    // Enviar
+    document.getElementById('btnEnviarAlerta')?.addEventListener('click', () => {
+        alert('¡Notificaciones procesadas!\nContenido listo para envío.');
+    });
 
-    if (btnEnviarAlerta) {
-        btnEnviarAlerta.addEventListener('click', () => {
-            alert('¡Notificaciones procesadas!\nContenido listo para envío.');
-        });
-    }
-
-    const btnVistaPrevia = document.getElementById('btnVistaPrevia');
-
-    if (btnVistaPrevia) {
-        btnVistaPrevia.addEventListener('click', () => {
-            alert('Abriendo panel de previsualización adaptativa...');
-        });
-    }
+    document.getElementById('btnVistaPrevia')?.addEventListener('click', () => {
+        alert('Abriendo panel de previsualización adaptativa...');
+    });
 });

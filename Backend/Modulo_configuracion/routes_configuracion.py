@@ -2,9 +2,8 @@ import os
 import tempfile
 from werkzeug.utils import secure_filename
 from flask import Blueprint, jsonify, request
-
 from db_manager import importar_taca_completo
-from Modulo_configuracion.conexion_bd import obtener_conexion
+from conexion_db import obtener_conexion
 
 configuracion_bp = Blueprint(
     "configuracion",
