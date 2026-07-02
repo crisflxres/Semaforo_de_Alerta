@@ -156,6 +156,7 @@ function cargarHistorial() {
             const tbody = document.getElementById('cuerpoHistorial');
             tbody.innerHTML = '';
             data.data.forEach(item => {
+                console.log(item.fecha);
                 const fechaObj = new Date(item.fecha);
                 const fecha = fechaObj.toLocaleDateString('es-MX');
                 const hora = fechaObj.toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' });
