@@ -9,13 +9,31 @@ import mysql.connector
 import bcrypt
 from conexion_db import obtener_conexion
 from Modulo_Alumnos.routes_alumnos import alumnos_bp
+from Modulo_docentes.routes_docentes import rutas_docentes
+from Modulo_materias.routes_materias import materias_bp
+from Modulo_configuracion.routes_configuracion import configuracion_bp
+from Modulo_calificaciones.routes_calificaciones import calificaciones_bp
+from Modulo_grupos.routes_grupos import grupos_bp
+from Modulo_alertas.routes_alertas import alerta_bp
 
 app = Flask(__name__)
 # Permitimos CORS para que tus archivos HTML y JS del frontend puedan comunicarse con Python
 CORS(app)
 app.register_blueprint(alumnos_bp)
 app.register_blueprint(materias_bp)
+app.register_blueprint(rutas_docentes)
+app.register_blueprint(configuracion_bp)
+app.register_blueprint(calificaciones_bp)
+app.register_blueprint(grupos_bp)
+app.register_blueprint(alerta_bp)
 
+
+
+
+
+
+
+# 2. RUTA DE PRUEBA: Para verificar en el navegador que el servidor esté encendido
 @app.route('/', methods=['GET'])
 def inicio():
     return "El servidor de Python para el Semáforo Académico está corriendo correctamente."
