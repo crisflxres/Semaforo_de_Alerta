@@ -51,6 +51,11 @@ def historial_importaciones():
             ORDER BY i.fecha DESC
         """)
         filas = cursor.fetchall()
+        # Convertir datetime a texto 
+        for fila in filas:
+            if fila["fecha"]:
+                fila["fecha"] = fila["fecha"].strftime("%Y-%m-%d %H:%M:%S")
+                
         cursor.close()
         conexion.close()
         return jsonify({"success": True, "data": filas})
