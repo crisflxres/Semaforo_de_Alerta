@@ -4,11 +4,14 @@ import mysql.connector
 import bcrypt
 from conexion_db import obtener_conexion
 from Modulo_Alumnos.routes_alumnos import alumnos_bp
+from Modulo_materias.routes_materias import materias_bp
+from Modulo_docentes.routes_docentes import rutas_docentes
 
 app = Flask(__name__)
 CORS(app)
 app.register_blueprint(alumnos_bp)
 app.register_blueprint(materias_bp)
+app.register_blueprint(rutas_docentes)
 
 @app.route('/', methods=['GET'])
 def inicio():
