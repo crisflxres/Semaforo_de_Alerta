@@ -209,7 +209,6 @@ def recuperar():
         return jsonify({
             "success": False,
             "message": f"Error: {err}"
-        }), 500
-
+        }), 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)

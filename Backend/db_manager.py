@@ -1,4 +1,4 @@
-from importador_TACA import importar_alumnos, importar_materias, importar_calificaciones
+from importador_TACA import leer_taca, importar_alumnos, importar_materias, importar_calificaciones
 from importador_Contactos import importar_correos_electronicos
 from importador_fotos import importar_fotos
 from importador_Tutores import importar_tutores
@@ -54,6 +54,7 @@ def insertar_alumnos(cursor, alumno, id_grupo, id_usuario):
         None,
         None,
         id_usuario,
+        alumno["PAC"],
     )
     cursor.execute(sql,valores)
     cursor.execute("SELECT Matricula FROM alumnos WHERE Matricula = %s", (alumno["matricula"],))
@@ -166,10 +167,11 @@ def importar_taca_completo(ruta_archivo, nombre_archivo, id_grupo, id_carrera,
     """
     Recibe la ruta de un archivo TACA ya guardado en disco (temporal),
     lo procesa completo e inserta materias, alumnos y calificaciones.
+    Detecta automáticamente si el archivo es HTML disfrazado (.xls) o
+    un Excel binario real (.xlsx).
     Devuelve un resumen para mostrar en el Historial de Importaciones.
     """
-    tablas = pd.read_html(ruta_archivo)
-    hoja = tablas[0]
+    hoja = leer_taca(ruta_archivo)
 
     materias = importar_materias(hoja)
     alumnos = importar_alumnos(hoja)

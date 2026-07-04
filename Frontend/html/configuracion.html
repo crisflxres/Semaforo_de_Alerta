@@ -57,7 +57,7 @@
                 <div class="seccion-importar">
                     <h3><div class="icono-tipo icono-verde-bg"><i class="fa-solid fa-file-lines"></i></div>Datos Académicos</h3>
                     <p>Importar Excel de calificaciones</p>
-                    <input type="file" id="inputAcademico" style="display:none;" onchange="manejarArchivo(this, 'academico')">
+                    <input type="file" id="inputAcademico" multiple style="display:none;" onchange="manejarArchivo(this, 'academico')">
                     <div class="zona-drop zona-drop-verde" id="dropAcademico" onclick="document.getElementById('inputAcademico').click()" ondragover="event.preventDefault(); this.classList.add('dragover')" ondragleave="this.classList.remove('dragover')" ondrop="manejarDrop(event, 'academico')">
                         <i class="fa-solid fa-cloud-arrow-up"></i>
                         <strong>Seleccionar archivo</strong>

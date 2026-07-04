@@ -1,4 +1,4 @@
-from importador_TACA import importar_alumnos, importar_materias, importar_calificaciones
+from importador_TACA import leer_taca, importar_alumnos, importar_materias, importar_calificaciones
 from importador_Contactos import importar_correos_electronicos
 from importador_fotos import importar_fotos
 from importador_Tutores import importar_tutores
@@ -42,8 +42,8 @@ def insertar_alumnos_usuarios(cursor, alumno):
 
 def insertar_alumnos(cursor, alumno, id_grupo, id_usuario):
     sql = """INSERT INTO alumnos (Matricula, Nombre, Apellidos, Id_Grupo, Foto, Email, id_usuario, PAC)
-             VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
-             ON DUPLICATE KEY UPDATE PAC = VALUES(PAC)"""
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+            ON DUPLICATE KEY UPDATE PAC = VALUES(PAC)"""
     apellidos = alumno["apellido.p"] + " " + alumno["apellido.m"]
     valores = (
         alumno["matricula"],
@@ -162,7 +162,8 @@ def insertar_alerta(cursor, matricula, periodo, materias_reprobadas, pac):
     cursor.execute(sql, valores)
     return cursor.lastrowid
 
-TACA = pd.read_html(r"C:\Users\crisf\OneDrive\Documentos\UPT\SEXTO CUATRIMESTRE_SERVICIO_SOCIAL_(TSU)\Proyecto_Documentacion\TACA_03AJ6L.xls")
+# Ahora una sola línea, sin importar si el archivo es HTML disfrazado o .xlsx real
+hoja = leer_taca(r"C:\Users\crisf\OneDrive\Documentos\UPT\SEXTO CUATRIMESTRE_SERVICIO_SOCIAL_(TSU)\Proyecto_Documentacion\archivos de prueba\TACA_03U2A.xlsx")
 
 Contactos = pd.read_excel(r"C:\Users\crisf\OneDrive\Documentos\UPT\SEXTO CUATRIMESTRE_SERVICIO_SOCIAL_(TSU)\Proyecto_Documentacion\proyecto 2026\Matricula_Actual(2).xls")
 
@@ -170,7 +171,6 @@ fotos = importar_fotos(r"C:\Users\crisf\OneDrive\Documentos\UPT\SEXTO CUATRIMEST
 
 hoja3 = pd.read_excel(r"C:\Users\crisf\OneDrive\Documentos\UPT\SEXTO CUATRIMESTRE_SERVICIO_SOCIAL_(TSU)\Proyecto_Documentacion\Datos Programa.xlsx", skiprows= 8)
 
-hoja = TACA[0]
 hoja2 = Contactos
 
 materias = importar_materias(hoja)

@@ -1,4 +1,5 @@
 import os
+import re
 import tempfile
 from werkzeug.utils import secure_filename
 from flask import Blueprint, jsonify, request
@@ -12,6 +13,52 @@ configuracion_bp = Blueprint(
 )
 
 EXTENSIONES_PERMITIDAS = {".xls", ".xlsx"}
+
+MAPA_SEMESTRES = {
+    "primero": 1, "segundo": 2, "tercero": 3, "cuarto": 4,
+    "quinto": 5, "sexto": 6, "septimo": 7, "séptimo": 7,
+    "octavo": 8, "noveno": 9, "decimo": 10, "décimo": 10,
+}
+
+
+def extraer_nombre_grupo(nombre_archivo):
+    """
+    Extrae el código de grupo a partir del nombre del archivo TACA.
+    Funciona con nombres como 'TACA_03AL4I.xls' o 'meca_TACA_03U6A.xls'.
+    Devuelve el código en mayúsculas (ej. '03AL4I') o None si no lo encuentra.
+    """
+    nombre_sin_extension = os.path.splitext(nombre_archivo)[0]
+    coincidencia = re.search(r'TACA_([A-Za-z0-9]+)', nombre_sin_extension, re.IGNORECASE)
+    if not coincidencia:
+        return None
+    return coincidencia.group(1).upper()
+
+
+def obtener_datos_grupo(nombre_grupo):
+    """
+    Busca el grupo por nombre en la tabla `grupos` y devuelve
+    (id_grupo, id_carrera, semestre_numero) o None si no existe.
+    """
+    conexion = obtener_conexion()
+    cursor = conexion.cursor(dictionary=True)
+    cursor.execute(
+        "SELECT Id_Grupo, Id_Carrera, Semestre FROM grupos WHERE Nombre = %s",
+        (nombre_grupo,)
+    )
+    fila = cursor.fetchone()
+    cursor.close()
+    conexion.close()
+
+    if not fila:
+        return None
+
+    semestre_texto = fila["Semestre"].strip().lower()
+    semestre_numero = MAPA_SEMESTRES.get(semestre_texto)
+
+    if semestre_numero is None:
+        raise ValueError(f"No se reconoce el semestre '{fila['Semestre']}' del grupo '{nombre_grupo}'")
+
+    return fila["Id_Grupo"], fila["Id_Carrera"], semestre_numero
 
 
 @configuracion_bp.route("/prueba", methods=["GET"])
@@ -44,8 +91,8 @@ def historial_importaciones():
         cursor = conexion.cursor(dictionary=True)
         cursor.execute("""
             SELECT i.id_importacion, i.archivo, i.fecha, i.periodo,
-                   g.Nombre AS grupo,
-                   (SELECT COUNT(*) FROM calificaciones c WHERE c.Id_Importacion = i.id_importacion) AS registros
+                    g.Nombre AS grupo,
+                    (SELECT COUNT(*) FROM calificaciones c WHERE c.Id_Importacion = i.id_importacion) AS registros
             FROM importaciones i
             LEFT JOIN grupos g ON g.Id_Grupo = i.id_grupo
             ORDER BY i.fecha DESC
@@ -79,11 +126,27 @@ def importar_taca():
     if extension not in EXTENSIONES_PERMITIDAS:
         return jsonify({"success": False, "mensaje": "Formato no soportado, sube un .xls o .xlsx"}), 400
 
-    # Por ahora estos valores van fijos, luego los podemos mandar desde el front
-    # (selects de grupo/carrera/semestre/periodo en la misma pantalla)
-    id_grupo = request.form.get("id_grupo", 40, type=int)
-    id_carrera = request.form.get("id_carrera", 2, type=int)
-    semestre = request.form.get("semestre", 6, type=int)
+    # Extraer el grupo del nombre del archivo y buscar sus datos reales en la BD
+    nombre_grupo = extraer_nombre_grupo(nombre_archivo)
+    if nombre_grupo is None:
+        return jsonify({
+            "success": False,
+            "mensaje": f"No se pudo determinar el grupo a partir del nombre del archivo '{nombre_archivo}'. "
+                        f"Se espera un nombre como 'TACA_03AL4I.xls'."
+        }), 400
+
+    try:
+        datos_grupo = obtener_datos_grupo(nombre_grupo)
+    except ValueError as e:
+        return jsonify({"success": False, "mensaje": str(e)}), 400
+
+    if datos_grupo is None:
+        return jsonify({
+            "success": False,
+            "mensaje": f"El grupo '{nombre_grupo}' extraído del archivo no existe en la tabla de grupos."
+        }), 400
+
+    id_grupo, id_carrera, semestre = datos_grupo
     periodo = request.form.get("periodo", "FEBRERO - JULIO 2026")
 
     ruta_temporal = os.path.join(tempfile.gettempdir(), nombre_archivo)
