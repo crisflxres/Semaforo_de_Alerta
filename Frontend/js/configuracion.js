@@ -5,36 +5,70 @@ document.getElementById("btnCerrarSidebar").addEventListener("click", () => docu
 const API_BASE = "http://localhost:5000";
 
 function manejarArchivo(input, tipo) {
-    if (input.files && input.files[0]) {
-        procesarArchivo(input.files[0], tipo);
+    if (input.files && input.files.length > 0) {
+        procesarArchivos(Array.from(input.files), tipo);
         input.value = '';
     }
 }
 
 function manejarDrop(event, tipo) {
     event.preventDefault();
-    const archivo = event.dataTransfer.files[0];
-    if (archivo) procesarArchivo(archivo, tipo);
-}
-
-function procesarArchivo(archivo, tipo) {
-    if (tipo === 'academico') {
-        procesarAcademico(archivo);
-    } else {
-        procesarContactos(archivo); // simulado por ahora
+    event.currentTarget.classList.remove('dragover');
+    const archivos = event.dataTransfer.files;
+    if (archivos && archivos.length > 0) {
+        procesarArchivos(Array.from(archivos), tipo);
     }
 }
 
-/* ACADÉMICO (TACA) — conectado al backend real */
-async function procesarAcademico(archivo) {
+function procesarArchivos(archivos, tipo) {
+    if (tipo === 'academico') {
+        procesarVariosAcademicos(archivos);
+    } else {
+        // Contactos sigue siendo un solo archivo por ahora
+        procesarContactos(archivos[0]);
+    }
+}
+
+/* ACADÉMICO (TACA) — soporta varios archivos, procesados en secuencia */
+async function procesarVariosAcademicos(archivos) {
+    const msg = document.getElementById('exitoAcademico');
+    const textoMsg = document.getElementById('textoExitoAcademico');
+
+    let exitosos = 0;
+    let fallidos = [];
+
+    for (let i = 0; i < archivos.length; i++) {
+        const archivo = archivos[i];
+        textoMsg.textContent = `Importando ${archivo.name} (${i + 1}/${archivos.length})...`;
+        msg.style.display = 'flex';
+
+        const resultado = await procesarAcademico(archivo, true); // true = modo silencioso (no muestra su propio mensaje individual)
+
+        if (resultado.exito) {
+            exitosos++;
+        } else {
+            fallidos.push({ nombre: archivo.name, mensaje: resultado.mensaje });
+        }
+    }
+
+    if (fallidos.length === 0) {
+        textoMsg.textContent = `${exitosos} archivo(s) importado(s) correctamente.`;
+    } else {
+        const detalleFallos = fallidos.map(f => `${f.nombre}: ${f.mensaje}`).join(' | ');
+        textoMsg.textContent = `${exitosos} importado(s), ${fallidos.length} con error → ${detalleFallos}`;
+    }
+    msg.style.display = 'flex';
+    setTimeout(() => { msg.style.display = 'none'; }, 7000);
+}
+
+/* Procesa un solo archivo TACA. Devuelve { exito, mensaje } para que
+   procesarVariosAcademicos pueda armar el resumen final. */
+async function procesarAcademico(archivo, silencioso = false) {
     const nombre = archivo.name.replace(/\.[^/.]+$/, "");
     const ahora = new Date();
     const fecha = ahora.toLocaleDateString('es-MX');
     const hora = ahora.toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' });
     const urlArchivo = URL.createObjectURL(archivo);
-
-    const msg = document.getElementById('exitoAcademico');
-    const textoMsg = document.getElementById('textoExitoAcademico');
 
     const formData = new FormData();
     formData.append("archivo", archivo);
@@ -47,20 +81,27 @@ async function procesarAcademico(archivo) {
         const data = await respuesta.json();
 
         if (!respuesta.ok || !data.success) {
-            mostrarErrorAcademico(data.mensaje || "Error al importar el archivo");
-            return;
+            const mensajeError = data.mensaje || "Error al importar el archivo";
+            if (!silencioso) mostrarErrorAcademico(mensajeError);
+            return { exito: false, mensaje: mensajeError };
         }
 
-        textoMsg.textContent = `Archivo ${nombre} cargado, ${data.registros} calificaciones agregadas.`;
-        msg.style.display = 'flex';
+        if (!silencioso) {
+            const msg = document.getElementById('exitoAcademico');
+            const textoMsg = document.getElementById('textoExitoAcademico');
+            textoMsg.textContent = `Archivo ${nombre} cargado, ${data.registros} calificaciones agregadas.`;
+            msg.style.display = 'flex';
+            setTimeout(() => { msg.style.display = 'none'; }, 5000);
+        }
 
         agregarHistorial(nombre, fecha, hora, `${data.registros} regs`, 'academico', urlArchivo, archivo.name, data.id_importacion);
-
-        setTimeout(() => { msg.style.display = 'none'; }, 5000);
+        return { exito: true, mensaje: "" };
 
     } catch (error) {
         console.error("Error al conectar con el servidor:", error);
-        mostrarErrorAcademico("No se pudo conectar con el servidor");
+        const mensajeError = "No se pudo conectar con el servidor";
+        if (!silencioso) mostrarErrorAcademico(mensajeError);
+        return { exito: false, mensaje: mensajeError };
     }
 }
 
