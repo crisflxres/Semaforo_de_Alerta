@@ -15,6 +15,8 @@ from Modulo_configuracion.routes_configuracion import configuracion_bp
 from Modulo_calificaciones.routes_calificaciones import calificaciones_bp
 from Modulo_grupos.routes_grupos import grupos_bp
 from Modulo_alertas.routes_alertas import alerta_bp
+from Modulo_horarios.routes_horarios import horarios_bp 
+from Modulo_aulas.routes_aulas import aulas_bp 
 
 app = Flask(__name__)
 # Permitimos CORS para que tus archivos HTML y JS del frontend puedan comunicarse con Python
@@ -26,12 +28,8 @@ app.register_blueprint(configuracion_bp)
 app.register_blueprint(calificaciones_bp)
 app.register_blueprint(grupos_bp)
 app.register_blueprint(alerta_bp)
-
-
-
-
-
-
+app.register_blueprint(horarios_bp)
+app.register_blueprint(aulas_bp) 
 
 # 2. RUTA DE PRUEBA: Para verificar en el navegador que el servidor esté encendido
 @app.route('/', methods=['GET'])
