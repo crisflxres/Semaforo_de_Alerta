@@ -5,6 +5,7 @@ def consultar_alumnos_por_alerta():
         a.Nombre,
         a.Apellidos,
         a.Email,
+        g.Id_Grupo,
         g.Nombre AS Grupo,
         c.Nombre AS Carrera,
         al.PAC,
@@ -13,6 +14,7 @@ def consultar_alumnos_por_alerta():
         na.Id_Nivel,
         na.Nombre AS Nivel_Alerta,
         na.Color_Hex,
+        na.Descripcion AS Descripcion_Nivel,
         u_tutor.Nombre AS Nombre_Tutor,
         u_tutor.Apellidos AS Apellidos_Tutor,
         u_tutor.Email AS Correo_Tutor,
@@ -31,7 +33,6 @@ def consultar_alumnos_por_alerta():
     WHERE na.Nombre = %s
     ORDER BY g.Nombre, a.Apellidos, a.Nombre;
     """
-
 def consultar_grupos():
     return """
     SELECT Id_Grupo, Nombre

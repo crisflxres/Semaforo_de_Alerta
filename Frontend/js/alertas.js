@@ -1,3 +1,25 @@
+// ── PLANTILLA GENERAL (aplica para los 3 niveles) ───────────────────────────
+const PLANTILLA_GENERAL = {
+    asunto: "Situación Académica de {alumno} - Estatus: {estatus}",
+    mensaje: `Estimado(a) {destinatario}:
+
+Por medio de la presente, le informamos sobre la situación académica del alumno(a) {alumno}, con matrícula {matricula}, perteneciente al grupo {grupo} de la carrera de {carrera}.
+
+De acuerdo con los registros académicos, el estudiante mantiene actualmente un estatus académico {estatus}, con un Promedio de Aprovechamiento Académico (PAC) de {pac} y {reprobadas} materia(s) en situación de riesgo.
+
+Le invitamos a dar seguimiento a esta información y, de ser necesario, mantener comunicación con la institución y los docentes correspondientes para favorecer el desempeño académico del estudiante.
+
+Atentamente,
+Coordinación Académica Institucional CECyTE Hidalgo`
+};
+
+function aplicarPlantilla() {
+    const asunto = document.getElementById('asuntoNotificacion');
+    const editor = document.getElementById('mensajeEditor');
+    if (asunto) asunto.value = PLANTILLA_GENERAL.asunto;
+    if (editor) editor.innerHTML = PLANTILLA_GENERAL.mensaje.replace(/\n/g, '<br>');
+}
+
 // ── EDITOR ───────────────────────────────────────────────────────────────────
 function ejecutarComando(comando) {
     document.execCommand(comando, false, null);
@@ -163,18 +185,21 @@ document.addEventListener('DOMContentLoaded', async () => {
         limpiarSemaforo(); document.getElementById('btnVerde').classList.add('active-verde');
         document.getElementById('resumenTipo').textContent = 'Regulares';
         nivelActual = 'Verde'; actualizarTotal();
+        aplicarPlantilla();
     });
 
     document.getElementById('btnAmarillo')?.addEventListener('click', () => {
         limpiarSemaforo(); document.getElementById('btnAmarillo').classList.add('active-amarillo');
         document.getElementById('resumenTipo').textContent = 'En Riesgo';
         nivelActual = 'Amarillo'; actualizarTotal();
+        aplicarPlantilla();
     });
 
     document.getElementById('btnRojo')?.addEventListener('click', () => {
         limpiarSemaforo(); document.getElementById('btnRojo').classList.add('active-rojo');
         document.getElementById('resumenTipo').textContent = 'Riesgo Crítico';
         nivelActual = 'Rojo'; actualizarTotal();
+        aplicarPlantilla();
     });
 
     // Alcance
@@ -221,8 +246,52 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     // Enviar
-    document.getElementById('btnEnviarAlerta')?.addEventListener('click', () => {
-        alert('¡Notificaciones procesadas!\nContenido listo para envío.');
+    document.getElementById('btnEnviarAlerta')?.addEventListener('click', async () => {
+        if (!nivelActual) {
+            alert('Selecciona un tipo de alerta (Verde, Amarillo o Rojo).');
+            return;
+        }
+        const destinatarios = [...document.querySelectorAll('input[name="destinatarios"]:checked')].map(c => c.value);
+        if (destinatarios.length === 0) {
+            alert('Selecciona al menos un destinatario.');
+            return;
+        }
+        const alcance = document.querySelector('input[name="alcance"]:checked').value;
+        const grupoId = alcance === 'especifico' ? document.getElementById('selectGrupo').value : null;
+        const asunto = document.getElementById('asuntoNotificacion').value.trim();
+        const mensaje = document.getElementById('mensajeEditor').innerHTML.trim();
+
+        if (!asunto || !mensaje) {
+            alert('Escribe un asunto y un mensaje antes de enviar.');
+            return;
+        }
+
+        const payload = { nivel: nivelActual, destinatarios, alcance, grupo_id: grupoId, asunto, mensaje };
+
+        const btn = document.getElementById('btnEnviarAlerta');
+        btn.disabled = true;
+        btn.textContent = 'Enviando...';
+
+        try {
+            const res = await fetch('http://127.0.0.1:5000/alertas/enviar', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            const data = await res.json();
+
+            if (data.ok) {
+                alert(`Alerta enviada.\nCorreos enviados: ${data.enviados}\nFallidos: ${data.fallidos}`);
+            } else {
+                alert(`Error al enviar: ${data.mensaje}`);
+            }
+        } catch (e) {
+            alert('No se pudo conectar con el servidor. Revisa que Flask esté corriendo.');
+            console.error(e);
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Enviar Alerta';
+        }
     });
 
     document.getElementById('btnVistaPrevia')?.addEventListener('click', () => {

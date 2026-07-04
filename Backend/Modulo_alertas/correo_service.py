@@ -2,11 +2,10 @@ import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
-# Configuración SMTP — cambia estos valores cuando tengas las credenciales reales
-SMTP_SERVER   = "smtp.office365.com"
+SMTP_SERVER   = "smtp.gmail.com"
 SMTP_PORT     = 587
-SMTP_EMAIL    = "sistema@cecyteh.edu.mx"   # correo remitente
-SMTP_PASSWORD = "tu_contraseña"            # contraseña
+SMTP_EMAIL    = "vicmanu315623@gmail.com"
+SMTP_PASSWORD = "plpyyluikspahcdz"
 
 def enviar_correo(destinatario, asunto, cuerpo_html):
     """
@@ -38,9 +37,11 @@ def reemplazar_variables(texto, alumno):
     en el asunto o cuerpo del mensaje.
     """
     return texto \
-        .replace("{alumno}",     f"{alumno['nombre']} {alumno['apellidos']}") \
-        .replace("{matricula}",  alumno["matricula"]) \
-        .replace("{carrera}",    alumno.get("carrera", "")) \
-        .replace("{grupo}",      alumno.get("grupo", "")) \
-        .replace("{reprobadas}", str(alumno.get("materias_reprobadas", 0))) \
-        .replace("{pac}",        str(alumno.get("pac", "")))
+        .replace("{alumno}",       f"{alumno['nombre']} {alumno['apellidos']}") \
+        .replace("{destinatario}", alumno.get("destinatario", "")) \
+        .replace("{matricula}",    alumno["matricula"]) \
+        .replace("{carrera}",      alumno.get("carrera", "")) \
+        .replace("{grupo}",        alumno.get("grupo", "")) \
+        .replace("{reprobadas}",   str(alumno.get("materias_reprobadas", 0))) \
+        .replace("{pac}",          str(alumno.get("pac", ""))) \
+        .replace("{estatus}",      alumno.get("estatus", ""))

@@ -27,12 +27,6 @@ app.register_blueprint(calificaciones_bp)
 app.register_blueprint(grupos_bp)
 app.register_blueprint(alerta_bp)
 
-
-
-
-
-
-
 # 2. RUTA DE PRUEBA: Para verificar en el navegador que el servidor esté encendido
 @app.route('/', methods=['GET'])
 def inicio():
