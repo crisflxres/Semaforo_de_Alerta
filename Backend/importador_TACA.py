@@ -1,5 +1,36 @@
 import pandas as pd
 
+def leer_taca(ruta_archivo):
+    """
+    Lee un archivo TACA sin importar si es HTML disfrazado (.xls) 
+    o un archivo Excel binario real (.xlsx).
+    Devuelve el DataFrame ya normalizado, listo para usarse
+    con importar_alumnos, importar_materias, importar_calificaciones.
+    """
+    try:
+        # Intento 1: formato HTML disfrazado (el más común)
+        tablas = pd.read_html(ruta_archivo, encoding='cp1252')
+        hoja = tablas[0]
+        return hoja
+    except Exception as error_html:
+        # Intento 2: formato Excel binario real
+        try:
+            hoja = pd.read_excel(ruta_archivo, header=None)
+            hoja.iloc[0] = hoja.iloc[0].ffill()
+            return hoja
+        except Exception as error_excel:
+            raise Exception(
+                f"No se pudo leer el archivo como HTML ni como Excel.\n"
+                f"Error HTML: {error_html}\n"
+                f"Error Excel: {error_excel}"
+            )
+
+def limpiar_texto(valor):
+    # Evita que celdas vacías (NaN) rompan concatenaciones de texto
+    if pd.isna(valor):
+        return ""
+    return str(valor).strip()
+
 def importar_alumnos (hoja):
     alumnos:list =[]
     
@@ -8,9 +39,9 @@ def importar_alumnos (hoja):
             ultima_columna= hoja.shape[1] - 1
             alumno:dict = {
                 "matricula": fila[0],
-                "apellido.p": fila[1],
-                "apellido.m": fila[2],
-                "nombre(s)": fila[3],
+                "apellido.p": limpiar_texto(fila[1]),
+                "apellido.m": limpiar_texto(fila[2]),
+                "nombre(s)": limpiar_texto(fila[3]),
                 "PAC": float(fila[ultima_columna])
             }
             alumnos.append(alumno)
@@ -92,13 +123,8 @@ def importar_calificaciones(hoja, materias):
     return calificaciones
 
 if __name__== "__main__":
-    # Leer el archivo
-    TACA = pd.read_html(r"C:\Users\crisf\OneDrive\Documentos\UPT\SEXTO CUATRIMESTRE_SERVICIO_SOCIAL_(TSU)\Proyecto_Documentacion\TACA_03AJ6L.xls")
-    
-    print("Tablas encontradas:", len(TACA))
-    # Ver cuántas tablas encontró
-    # Tomar la primera hoja del TACA
-    hoja = TACA[0]
+    # Leer el archivo (ya usando la función que detecta el formato automáticamente)
+    hoja = leer_taca(r"C:\Users\crisf\OneDrive\Documentos\UPT\SEXTO CUATRIMESTRE_SERVICIO_SOCIAL_(TSU)\Proyecto_Documentacion\TACA_03AJ6L.xls")
 
     # Ver cuántas filas y columnas tiene
     print("Filas y columnas:", hoja.shape)
