@@ -59,7 +59,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 const tr = document.createElement('tr');
                 const estadoClase = alumno.estado_alerta.toLowerCase().replace(' ', '-');
                 tr.innerHTML = `
-                    <td class="avatar-cell"><i class="fa-solid fa-circle-user"></i></td>
+                    <td class="avatar-cell">
+                        <img src= "http://127.0.0.1:5000/fotos/${alumno.matricula}"
+                        style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;"
+                        onerror=" this.outerHTML = '<i class= \\'fa-solid fa-circle-user\\'></i>'">
                     <td>${alumno.matricula}</td><td>${alumno.nombre}</td><td>${alumno.apellidos}</td>
                     <td>${alumno.grupo}</td><td>${alumno.turno}</td><td>${alumno.semestre}</td>
                     <td>${alumno.carrera}</td><td>${alumno.pac}</td>

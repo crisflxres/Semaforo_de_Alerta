@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 29-06-2026 a las 09:44:28
+-- Tiempo de generación: 04-07-2026 a las 05:54:59
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -51,7 +51,8 @@ CREATE TABLE `alumnos` (
   `Foto` varchar(500) DEFAULT NULL,
   `Email` varchar(150) DEFAULT NULL,
   `Activo` tinyint(1) NOT NULL DEFAULT 1,
-  `Id_Usuario` int(10) UNSIGNED NOT NULL
+  `Id_Usuario` int(10) UNSIGNED NOT NULL,
+  `PAC` decimal(4,2) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_spanish_ci;
 
 -- --------------------------------------------------------
@@ -62,8 +63,7 @@ CREATE TABLE `alumnos` (
 
 CREATE TABLE `aulas` (
   `Id_Aula` int(10) UNSIGNED NOT NULL,
-  `Nombre` varchar(50) NOT NULL,
-  `Tipo` varchar(50) DEFAULT NULL
+  `Nombre` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_spanish_ci;
 
 -- --------------------------------------------------------
@@ -81,7 +81,7 @@ CREATE TABLE `calificaciones` (
   `P1` decimal(4,2) DEFAULT NULL,
   `P2` decimal(4,2) DEFAULT NULL,
   `P3` decimal(4,2) DEFAULT NULL,
-  `PR` decimal(4,2) NOT NULL,
+  `PR` decimal(4,2) DEFAULT NULL,
   `Aprobado` tinyint(1) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_spanish_ci;
 
