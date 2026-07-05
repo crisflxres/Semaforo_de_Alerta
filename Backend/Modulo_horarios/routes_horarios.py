@@ -101,6 +101,64 @@ def editar_horario(id_horario):
         return jsonify({"success": False, "message": str(err)}), 500
 
 
+@horarios_bp.route('/api/horarios/resumen-materia/<int:id_materia>', methods=['GET'])
+def resumen_materia(id_materia):
+    """
+    Nota general de una materia: qué docentes la imparten, en qué grupos
+    y en qué aulas, según lo que ya está registrado en 'horarios'.
+    Se usa para la tarjetita que aparece al hacer doble clic en una clase.
+    """
+    try:
+        conexion = obtener_conexion()
+        cursor = conexion.cursor(dictionary=True)
+
+        cursor.execute("SELECT Nombre FROM materias WHERE Id_Materia = %s", (id_materia,))
+        fila_materia = cursor.fetchone()
+        nombre_materia = fila_materia['Nombre'] if fila_materia else ''
+
+        cursor.execute("""
+            SELECT DISTINCT CONCAT(u.Nombre, ' ', u.Apellidos) AS nombre
+            FROM horarios h
+            JOIN usuarios u ON h.Id_Usuario = u.Id_Usuario
+            WHERE h.Id_Materia = %s
+            ORDER BY nombre
+        """, (id_materia,))
+        docentes = [f['nombre'] for f in cursor.fetchall()]
+
+        cursor.execute("""
+            SELECT DISTINCT g.Nombre AS nombre
+            FROM horarios h
+            JOIN grupos g ON h.Id_Grupo = g.Id_Grupo
+            WHERE h.Id_Materia = %s
+            ORDER BY nombre
+        """, (id_materia,))
+        grupos = [f['nombre'] for f in cursor.fetchall()]
+
+        cursor.execute("""
+            SELECT DISTINCT a.Nombre AS nombre
+            FROM horarios h
+            JOIN aulas a ON h.Id_Aula = a.Id_Aula
+            WHERE h.Id_Materia = %s
+            ORDER BY nombre
+        """, (id_materia,))
+        aulas = [f['nombre'] for f in cursor.fetchall()]
+
+        cursor.close()
+        conexion.close()
+
+        return jsonify({
+            "success": True,
+            "data": {
+                "materia": nombre_materia,
+                "docentes": docentes,
+                "grupos": grupos,
+                "aulas": aulas
+            }
+        })
+    except Exception as err:
+        return jsonify({"success": False, "message": str(err)}), 500
+
+
 @horarios_bp.route('/api/horarios/<int:id_horario>', methods=['DELETE'])
 def eliminar_horario(id_horario):
     try:

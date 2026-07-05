@@ -269,9 +269,9 @@ document.addEventListener("DOMContentLoaded", () => {
                     alert(`No se pudo eliminar: ${json.message}`);
                     return;
                 }
-                delete clases[keyReal];
+                // Recargamos todo desde la BD para no depender de la memoria local
+                await cargarHorarios();
                 renderListaExistentes(keyActual);
-                aplicarFiltros();
             } catch (err) {
                 console.error("Error al eliminar:", err);
                 alert("No se pudo conectar con el servidor.");
@@ -349,28 +349,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 return;
             }
 
-            const nuevaKey = `${hora}|${dia}|${idGrupo}|${idMateria}`;
-            const color    = (modoEdicion && clases[keyRealEditando]?.color)
-                || coloresClase[Math.floor(Math.random() * coloresClase.length)];
-
-            if (modoEdicion && keyRealEditando && keyRealEditando !== nuevaKey) {
-                delete clases[keyRealEditando];
-            }
-
-            clases[nuevaKey] = {
-                materia: selMateria.options[selMateria.selectedIndex].textContent,
-                docente: selDocente.options[selDocente.selectedIndex].textContent,
-                grupo: selGrupo.options[selGrupo.selectedIndex].textContent,
-                aula: selAula.options[selAula.selectedIndex].textContent,
-                color,
-                ids: {
-                    Id_Horario: modoEdicion ? idHorarioEditando : json.Id_Horario,
-                    Id_Usuario: idDocente,
-                    Id_Grupo: idGrupo,
-                    Id_Materia: idMateria,
-                    Id_Aula: idAula
-                }
-            };
+            // Recargamos todo desde la BD: así el grid nunca puede quedar
+            // mostrando datos viejos (ej. una materia editada que ya no debería
+            // aparecer bajo la materia anterior).
+            await cargarHorarios();
 
             aplicarFiltros();
             panel.classList.add("hidden");
@@ -462,6 +444,25 @@ document.addEventListener("DOMContentLoaded", () => {
             }
             .btn-fila-editar { background: #f0e0e6; color: #a3123a; }
             .btn-fila-eliminar { background: #f8d7da; color: #842029; }
+
+            .celda-clase {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                text-align: center;
+                padding: 6px 4px;
+                overflow: hidden;
+            }
+            .celda-clase span {
+                display: -webkit-box;
+                -webkit-line-clamp: 4;
+                -webkit-box-orient: vertical;
+                overflow: hidden;
+                word-break: break-word;
+                font-size: 12px;
+                line-height: 1.25;
+                width: 100%;
+            }
 
             .nota-materia-overlay {
                 position: fixed;
