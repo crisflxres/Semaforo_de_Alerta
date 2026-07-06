@@ -4,11 +4,9 @@ import os
 # 1. FUNCIÓN DE CONEXIÓN A TU MYSQL WORKBENCH (CONFIGURADA PARA XAMPP) EN conexion_db.py
 from conexion_db import obtener_conexion
 
-from Modulo_materias.routes_materias import materias_bp
 from flask_cors import CORS
 import mysql.connector
 import bcrypt
-from conexion_db import obtener_conexion
 from Modulo_Alumnos.routes_alumnos import alumnos_bp
 from Modulo_docentes.routes_docentes import rutas_docentes
 from Modulo_materias.routes_materias import materias_bp
@@ -16,6 +14,8 @@ from Modulo_configuracion.routes_configuracion import configuracion_bp
 from Modulo_calificaciones.routes_calificaciones import calificaciones_bp
 from Modulo_grupos.routes_grupos import grupos_bp
 from Modulo_alertas.routes_alertas import alerta_bp
+from Modulo_horarios.routes_horarios import horarios_bp   # <-- RESTAURADO
+from Modulo_aulas.routes_aulas import aulas_bp             # <-- RESTAURADO
 
 app = Flask(__name__)
 # Permitimos CORS para que tus archivos HTML y JS del frontend puedan comunicarse con Python
@@ -27,6 +27,9 @@ app.register_blueprint(configuracion_bp)
 app.register_blueprint(calificaciones_bp)
 app.register_blueprint(grupos_bp)
 app.register_blueprint(alerta_bp)
+app.register_blueprint(horarios_bp)   # <-- RESTAURADO
+app.register_blueprint(aulas_bp)      # <-- RESTAURADO
+
 
 # 2. RUTA DE PRUEBA: Para verificar en el navegador que el servidor esté encendido
 @app.route('/', methods=['GET'])
@@ -134,7 +137,9 @@ def registro():
             "message": f"Error al registrar: {err}"
         }), 500
 
-CARPETA_FOTOS = r"C:\Users\crisf\OneDrive\Documentos\UPT\SEXTO CUATRIMESTRE_SERVICIO_SOCIAL_(TSU)\Proyecto_Documentacion\Matricula Total"
+
+# --- Fotos de alumnos (agregado por tu compañero) ---
+CARPETA_FOTOS = r"C:\Users\aleja\OneDrive\Documentos\Archivos_bd\Matricula Total"
 
 def construir_mapa_fotos(carpeta):
     mapa = {}
@@ -156,6 +161,7 @@ def get_foto(matricula):
         return send_file(ruta, mimetype="image/jpeg")
     print(f"No se encontró foto para matrícula: {nombre}")
     return "", 404
+
 
 @app.route('/recuperar', methods=['POST'])
 def recuperar():
@@ -209,6 +215,7 @@ def recuperar():
         return jsonify({
             "success": False,
             "message": f"Error: {err}"
-        }), 
+        }), 500   # <-- FALTABA este 500, sin él el return quedaba roto
+
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
