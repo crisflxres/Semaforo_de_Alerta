@@ -33,11 +33,7 @@
         <div class="contenedor-horarios">
             <div class="filtros-container">
                 <div class="filtro-item">Docente
-                    <select id="filtroDocente" onchange="filtrarPorDocente()">
-                        <option value="">...</option>
-                        <option value="lorena">Maestra Lorena</option>
-                        <option value="juan">Profesor Juan</option>
-                    </select>
+                    <select id="filtroDocente"><option value="">...</option></select>
                 </div>
                 <div class="filtro-item">Grupo
                     <select id="filtroGrupo"><option value="">...</option></select>
@@ -65,41 +61,30 @@
         <div id="panelNuevaClase" class="hidden">
             <div class="panel-titulo">NUEVA CLASE</div>
             <div class="panel-seleccion-info" id="panelInfo">Has seleccionado: —</div>
+            <div id="listaClasesExistentes"></div>
             <div class="panel-cuerpo">
                 <div>
                     <label>Materia</label>
                     <select id="selectMateria">
                         <option value="">Seleccionar...</option>
-                        <option>Inglés IV</option>
-                        <option>Reacciones Químicas</option>
-                        <option>Temas selectos de matemáticas I</option>
-                        <option>Ciencias Sociales III</option>
-                        <option>Conciencia Histórica I</option>
-                        <option>Submódulo 1</option>
-                        <option>Submódulo 2</option>
-                        <option>Submódulo 3</option>
                     </select>
                 </div>
                 <div>
                     <label>Docente</label>
                     <select id="selectDocente">
                         <option value="">Seleccionar...</option>
-                        <option>Maestra Lorena</option>
-                        <option>Profesor Juan</option>
+                    </select>
+                </div>
+                <div>
+                    <label>Grupo</label>
+                    <select id="selectGrupo">
+                        <option value="">Seleccionar...</option>
                     </select>
                 </div>
                 <div>
                     <label>Aula</label>
                     <select id="selectAula">
                         <option value="">Seleccionar...</option>
-                        <option>Aula 10</option>
-                        <option>Aula 14</option>
-                        <option>Aula 17</option>
-                        <option>Aula 23</option>
-                        <option>Laboratorio de Cómputo 1</option>
-                        <option>Submódulo 1</option>
-                        <option>Submódulo 2</option>
-                        <option>Submódulo 3</option>
                     </select>
                 </div>
             </div>
@@ -130,26 +115,5 @@
     </div>
 
     <script src="../js/horarios.js"></script>
-
-    <script>
-        const datosDocentes = {
-            "lorena": { grupos: ["1A", "1B"], materias: ["Matemáticas", "Física"], aulas: ["Lab 1", "Aula 202"] },
-            "juan":   { grupos: ["2A"],        materias: ["Historia"],              aulas: ["Aula 101"] }
-        };
-
-        function filtrarPorDocente() {
-            const docente  = document.getElementById("filtroDocente").value;
-            const sGrupo   = document.getElementById("filtroGrupo");
-            const sMateria = document.getElementById("filtroMateria");
-            const sAula    = document.getElementById("filtroAula");
-            [sGrupo, sMateria, sAula].forEach(s => s.innerHTML = '<option value="">...</option>');
-            if (docente !== "") {
-                const info = datosDocentes[docente];
-                info.grupos.forEach(g   => sGrupo.innerHTML   += `<option value="${g}">${g}</option>`);
-                info.materias.forEach(m => sMateria.innerHTML += `<option value="${m}">${m}</option>`);
-                info.aulas.forEach(a    => sAula.innerHTML    += `<option value="${a}">${a}</option>`);
-            }
-        }
-    </script>
 </body>
 </html>
