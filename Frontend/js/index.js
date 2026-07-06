@@ -26,15 +26,22 @@ document.getElementById('formLogin').addEventListener('submit', async (e) => {
         const resultado = await respuesta.json();
 
         if (resultado.success) {
-            alert(`Bienvenido, ${resultado.nombre}`);
+        alert(`Bienvenido, ${resultado.nombre}`);
 
-            localStorage.setItem('rolUsuario', resultado.rol);
-            localStorage.setItem('nombreUsuario', resultado.nombre);
+        localStorage.setItem('rolUsuario', resultado.rol);
+        localStorage.setItem('nombreUsuario', resultado.nombre);
 
+        const rol = resultado.rol;
+
+        if (rol === 5) {
+            window.location.href = '../Alumno/Inicio/alumno_inicio.html';
+        } else {
             window.location.href = 'inicio.html';
+        }
+
         } else {
             alert('Error: ' + resultado.message);
-        }
+        {}}
 
     } catch (error) {
         console.error('Error en la conexión:', error);
