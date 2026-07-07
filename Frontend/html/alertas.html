@@ -240,7 +240,7 @@
                     <div class="bloque-vacio-historial"></div>
                     <div class="bloque-vacio-historial"></div>
                 </div>
-                <a href="#" class="link-ver-todo">Ver historial completo de envíos</a>
+                <a href="#" class="link-ver-todo" onclick="abrirModalHistorial(); return false;">Ver historial completo de envíos</a>
             </div>
         </aside>
     </main>
@@ -276,7 +276,15 @@
             </div>
         </div>
     </div>
-
+    <div id="modalHistorial" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.45); z-index:9999; align-items:center; justify-content:center;">
+    <div style="background:#fff; border-radius:14px; padding:30px; width:600px; max-width:92vw; max-height:80vh; overflow-y:auto; box-shadow:0 10px 40px rgba(0,0,0,0.2);">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+            <h3 style="font-size:18px; color:#6c1d35; font-weight:700;">Historial completo de envíos</h3>
+            <button onclick="cerrarModalHistorial()" style="background:none; border:none; font-size:22px; cursor:pointer; color:#666;">&times;</button>
+        </div>
+        <div id="listaHistorialCompleto"></div>
+    </div>
+</div>
     <script src="../js/alertas.js"></script>
 </body>
 </html>

@@ -163,13 +163,13 @@ def insertar_alerta(cursor, matricula, periodo, materias_reprobadas, pac):
     return cursor.lastrowid
 
 # Ahora una sola línea, sin importar si el archivo es HTML disfrazado o .xlsx real
-hoja = leer_taca(r"C:\Users\crisf\OneDrive\Documentos\UPT\SEXTO CUATRIMESTRE_SERVICIO_SOCIAL_(TSU)\Proyecto_Documentacion\archivos de prueba\TACA_03U2A.xlsx")
+hoja = leer_taca(r"C:\Users\Victo\OneDrive\Documentos\Actividades\TACA_03AJ6L.xls")
 
-Contactos = pd.read_excel(r"C:\Users\crisf\OneDrive\Documentos\UPT\SEXTO CUATRIMESTRE_SERVICIO_SOCIAL_(TSU)\Proyecto_Documentacion\proyecto 2026\Matricula_Actual(2).xls")
+Contactos = pd.read_excel(r"C:\Users\Victo\OneDrive\Documentos\Actividades\Matricula_Actual(2).xls", skiprows= 8)
 
-fotos = importar_fotos(r"C:\Users\crisf\OneDrive\Documentos\UPT\SEXTO CUATRIMESTRE_SERVICIO_SOCIAL_(TSU)\Proyecto_Documentacion\Matricula Total")
+fotos = importar_fotos(r"C:\Users\Victo\OneDrive\Documentos\Actividades\Matricula Total")
 
-hoja3 = pd.read_excel(r"C:\Users\crisf\OneDrive\Documentos\UPT\SEXTO CUATRIMESTRE_SERVICIO_SOCIAL_(TSU)\Proyecto_Documentacion\Datos Programa.xlsx", skiprows= 8)
+hoja3 = pd.read_excel(r"C:\Users\Victo\OneDrive\Documentos\Actividades\Datos Programa.xlsx", skiprows= 8)
 
 hoja2 = Contactos
 

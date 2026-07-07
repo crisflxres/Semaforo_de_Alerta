@@ -7,6 +7,7 @@ from conexion_db import obtener_conexion
 from flask_cors import CORS
 import mysql.connector
 import bcrypt
+from Modulo_alertas.scheduler_config import scheduler
 from Modulo_Alumnos.routes_alumnos import alumnos_bp
 from Modulo_docentes.routes_docentes import rutas_docentes
 from Modulo_materias.routes_materias import materias_bp
@@ -137,9 +138,7 @@ def registro():
             "message": f"Error al registrar: {err}"
         }), 500
 
-
-# --- Fotos de alumnos (agregado por tu compañero) ---
-CARPETA_FOTOS = r"C:\Users\aleja\OneDrive\Documentos\Archivos_bd\Matricula Total"
+CARPETA_FOTOS = r"C:\Users\Victo\OneDrive\Documentos\Actividades\Matricula Total"
 
 def construir_mapa_fotos(carpeta):
     mapa = {}
