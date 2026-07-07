@@ -3,6 +3,7 @@ from importador_Contactos import importar_correos_electronicos
 from importador_fotos import importar_fotos
 from importador_Tutores import importar_tutores
 from app import obtener_conexion
+from importador_docentes import importar_docentes
 import pandas as pd
 import bcrypt
 import os
@@ -162,6 +163,29 @@ def insertar_alerta(cursor, matricula, periodo, materias_reprobadas, pac):
     cursor.execute(sql, valores)
     return cursor.lastrowid
 
+def insertar_docentes(cursor, docente):
+    partes = docente["nombre_docente"].split(" ")
+    nombre_docente = " ".join(partes[2:])
+    apellidos_docente = " ".join(partes[:2])
+    
+    cursor.execute("SELECT Id_Usuario FROM usuarios WHERE Nombre = %s AND Apellidos = %s LIMIT 1", (nombre_docente, apellidos_docente))
+    resultado = cursor.fetchone()
+    
+    if resultado:
+        return resultado[0]
+    
+    password = bcrypt.hashpw(docente["correo"]. encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
+    sql = "INSERT INTO usuarios (Id_Rol, Nombre, Apellidos, Email, Password) VALUES (%s, %s, %s, %s, %s)"
+    valores = (
+        docente["rol"],
+        nombre_docente,
+        apellidos_docente,
+        docente["correo"],
+        password
+    )
+    cursor.execute(sql, valores)
+    return cursor.lastrowid
+
 # Ahora una sola línea, sin importar si el archivo es HTML disfrazado o .xlsx real
 hoja = leer_taca(r"C:\Users\crisf\OneDrive\Documentos\UPT\SEXTO CUATRIMESTRE_SERVICIO_SOCIAL_(TSU)\Proyecto_Documentacion\archivos de prueba\TACA_03U2A.xlsx")
 
@@ -171,6 +195,8 @@ fotos = importar_fotos(r"C:\Users\crisf\OneDrive\Documentos\UPT\SEXTO CUATRIMEST
 
 hoja3 = pd.read_excel(r"C:\Users\crisf\OneDrive\Documentos\UPT\SEXTO CUATRIMESTRE_SERVICIO_SOCIAL_(TSU)\Proyecto_Documentacion\Datos Programa.xlsx", skiprows= 8)
 
+hoja_docentes = pd.read_excel(r"C:\Users\crisf\OneDrive\Documentos\UPT\SEXTO CUATRIMESTRE_SERVICIO_SOCIAL_(TSU)\Proyecto_Documentacion\archivos de prueba\correos docentes.xlsx")
+
 hoja2 = Contactos
 
 materias = importar_materias(hoja)
@@ -178,7 +204,7 @@ alumnos = importar_alumnos(hoja)
 calificaciones = importar_calificaciones(hoja, materias)
 contactos = importar_correos_electronicos(hoja2)
 tutores = importar_tutores(hoja3)
-
+docentes = importar_docentes(hoja_docentes)
 
 
 conexion = obtener_conexion()
@@ -226,6 +252,9 @@ for alumno in alumnos:
     matricula = alumno["matricula"]
     reprobadas = reprobadas_por_alumno.get(matricula, 0)
     insertar_alerta(cursor, matricula, "FEBRERO - JULIO 2026", reprobadas, alumno["PAC"])
+
+for docente in docentes:
+    insertar_docentes(cursor, docente)
 
 conexion.commit()
 conexion.close()

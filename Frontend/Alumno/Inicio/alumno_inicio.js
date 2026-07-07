@@ -41,7 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Información personal
         if (datos.nombre) document.getElementById('nombre-alumno').textContent = datos.nombre;
         if (datos.matricula) document.getElementById('matricula-alumno').textContent = datos.matricula;
-        if (datos.email) document.getElementById('email-alumno').textContent = datos.email;
+        if (datos.email !== undefined) document.getElementById('email-alumno').textContent = datos.email;
         if (datos.carrera) document.getElementById('carrera-alumno').textContent = datos.carrera;
         if (datos.grupo) document.getElementById('grupo-alumno').textContent = datos.grupo;
         if (datos.turno) document.getElementById('turno-alumno').textContent = datos.turno;
@@ -60,3 +60,53 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 });
+
+// 4. Cargar datos del alumno desde Flask
+const matricula = localStorage.getItem('matriculaSeleccionada');
+
+if (matricula) {
+    // Datos del alumno
+    fetch('http://127.0.0.1:5000/api/alumnos')
+        .then(res => res.json())
+        .then(data => {
+            const alumno = data.lista.find(a => a.matricula === matricula);
+            if (!alumno) return;
+
+            window.cargarDatosAlumno({
+                nombre: `${alumno.nombre} ${alumno.apellidos}`,
+                matricula: alumno.matricula,
+                email: alumno.email || 'Sin correo registrado',
+                carrera: alumno.carrera,
+                grupo: alumno.grupo,
+                turno: alumno.turno,
+                fotoUrl: `http://127.0.0.1:5000/fotos/${alumno.matricula}`
+            });
+        });
+
+    // Calificaciones para el resumen
+    fetch(`http://127.0.0.1:5000/calificaciones/${matricula}`)
+        .then(res => res.json())
+        .then(respuesta => {
+            if (!respuesta.success) return;
+
+            window.cargarDatosAlumno({
+                promedio: respuesta.pac,
+                reprobadas: respuesta.reprobadas
+            });
+
+            // Estado visual
+            const estado = document.getElementById('estado-academico');
+            if (estado) {
+                const reprobadas = respuesta.reprobadas;
+                if (reprobadas === 0) {
+                    estado.style.backgroundColor = '#3ab54a';
+                } else if (reprobadas <= 2) {
+                    estado.style.backgroundColor = '#f1c40f';
+                } else {
+                    estado.style.backgroundColor = '#e74c3c';
+                }
+            }
+        });
+} else {
+    console.warn("No hay matrícula en localStorage.");
+}
