@@ -64,19 +64,32 @@ def login():
         cursor.execute(query, (usuario_login,))
         usuario = cursor.fetchone()
 
-        cursor.close()
-        conexion.close()
-
         if usuario and bcrypt.checkpw(
             password_usuario.encode('utf-8'),
             usuario['Password'].strip().encode('utf-8')
         ):
+            matricula = None
+            if usuario['Id_Rol'] == 5:
+                cursor2 = conexion.cursor(dictionary=True)
+                cursor2.execute("SELECT Matricula FROM alumnos WHERE id_usuario = %s", (usuario['Id_Usuario'],))
+                alumno = cursor2.fetchone()
+                cursor2.close()
+                if alumno:
+                    matricula = alumno['Matricula']
+
+            cursor.close()
+            conexion.close()
+
             return jsonify({
                 "success": True,
                 "message": "Bienvenido al sistema.",
                 "nombre": usuario['Nombre'],
-                "rol": usuario['Id_Rol']
+                "rol": usuario['Id_Rol'],
+                "matricula": matricula
             })
+
+        cursor.close()
+        conexion.close()
 
         return jsonify({
             "success": False,
@@ -88,7 +101,7 @@ def login():
             "success": False,
             "message": f"Error de base de datos: {err}"
         }), 500
-
+        
 @app.route('/registro', methods=['POST'])
 def registro():
     datos = request.get_json()
@@ -138,7 +151,8 @@ def registro():
             "message": f"Error al registrar: {err}"
         }), 500
 
-CARPETA_FOTOS = r"C:\Users\Victo\OneDrive\Documentos\Actividades\Matricula Total"
+# --- Fotos de alumnos (agregado por tu compañero) ---
+CARPETA_FOTOS = r"C:\Users\crisf\OneDrive\Documentos\UPT\SEXTO CUATRIMESTRE_SERVICIO_SOCIAL_(TSU)\Proyecto_Documentacion\Matricula Total"
 
 def construir_mapa_fotos(carpeta):
     mapa = {}
