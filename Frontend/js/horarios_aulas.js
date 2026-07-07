@@ -17,17 +17,44 @@ document.addEventListener("DOMContentLoaded", () => {
     const itemsPorPagina = 12;
     let paginaActual  = 1;
     let textoBusqueda = "";
+    let todasLasAulas = [];
 
-    const todasLasAulas = [
-        { nombre: "Aula 10",                  id: 1, color: "bg-rosa"       },
-        { nombre: "Aula 14",                  id: 2, color: "bg-azul"       },
-        { nombre: "Aula 17",                  id: 3, color: "bg-morado"     },
-        { nombre: "Aula 23",                  id: 4, color: "bg-azul_claro" },
-        { nombre: "Laboratorio de Cómputo 1", id: 5, color: "bg-amarillo"   },
-        { nombre: "Submódulo 3",              id: 6, color: "bg-verde"      },
-        { nombre: "Submódulo 1",              id: 7, color: "bg-naranja"    },
-        { nombre: "Submódulo 2",              id: 8, color: "bg-cafe"       }
-    ];
+    async function cargarAulas() {
+
+        try {
+
+            const respuesta = await fetch("http://127.0.0.1:5000/api/aulas");
+            const resultado = await respuesta.json();
+
+            if (resultado.success) {
+
+                const colores = [
+                    "bg-rosa",
+                    "bg-azul",
+                    "bg-amarillo",
+                    "bg-verde",
+                    "bg-naranja",
+                    "bg-morado",
+                    "bg-azul_claro",
+                    "bg-cafe"
+                ];
+
+                todasLasAulas = resultado.data.map((aula, index) => ({
+                    id: aula.Id_Aula,
+                    nombre: aula.Nombre,
+                    color: colores[index % colores.length]
+                }));
+
+                renderizar();
+
+            }
+        } catch (error) {
+
+            console.error(error);
+
+        }
+
+    }
 
     // --- 3. PANEL ---
     const panelRegistro    = document.getElementById("panelRegistro");
@@ -36,12 +63,23 @@ document.addEventListener("DOMContentLoaded", () => {
     const btnCancelarPanel = document.getElementById("btnCancelar");
 
     // Solo aparece al presionar + Nueva aula
-    btnNuevo.addEventListener("click", () => {
+    btnNuevo.addEventListener("click", async () => {
         cerrarTodosLosMenus();
         document.getElementById("indiceEdicion").value  = "-1";
         document.getElementById("inputNombreAula").value = "";
         document.getElementById("inputIdAula").value    = "";
         panelRegistro.classList.remove("hidden");
+
+        // Mostrar el siguiente ID disponible (solo informativo, el backend lo recalcula al guardar)
+        try {
+            const respuesta = await fetch("http://127.0.0.1:5000/api/aulas/siguiente-id");
+            const resultado = await respuesta.json();
+            if (resultado.success) {
+                document.getElementById("inputIdAula").value = resultado.siguiente_id;
+            }
+        } catch (error) {
+            console.error(error);
+        }
     });
 
     btnCancelarPanel.addEventListener("click", () => {
@@ -49,24 +87,111 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("indiceEdicion").value = "-1";
     });
 
-    btnGuardar.addEventListener("click", () => {
+    btnGuardar.addEventListener("click", async () => {
+
         const indice = parseInt(document.getElementById("indiceEdicion").value);
         const nombre = document.getElementById("inputNombreAula").value.trim();
-        const id     = parseInt(document.getElementById("inputIdAula").value) || 0;
+        const id = parseInt(document.getElementById("inputIdAula").value);
 
-        if (!nombre) { alert("El nombre del aula es obligatorio."); return; }
-
-        if (indice > -1) {
-            todasLasAulas[indice].nombre = nombre;
-            todasLasAulas[indice].id     = id;
-        } else {
-            const colores = ["bg-rosa","bg-azul","bg-amarillo","bg-verde","bg-naranja","bg-morado","bg-azul_claro","bg-cafe"];
-            todasLasAulas.push({ nombre, id, color: colores[Math.floor(Math.random() * colores.length)] });
+        if (!nombre) {
+            alert("Debes capturar el nombre del aula.");
+            return;
         }
 
-        renderizar();
-        panelRegistro.classList.add("hidden");
-        document.getElementById("indiceEdicion").value = "-1";
+        // Registrar nueva aula
+        if (indice == -1) {
+
+            try {
+
+                const respuesta = await fetch("http://127.0.0.1:5000/api/aulas", {
+
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+
+                    body: JSON.stringify({
+                        nombre: nombre
+                        // ya no se manda "id": el backend lo calcula solo (MAX + 1)
+                    })
+
+                });
+
+                const resultado = await respuesta.json();
+
+                if (resultado.success) {
+
+                    alert("Aula registrada correctamente.");
+
+                    panelRegistro.classList.add("hidden");
+
+                    document.getElementById("inputNombreAula").value = "";
+                    document.getElementById("inputIdAula").value = "";
+                    document.getElementById("indiceEdicion").value = "-1";
+
+                    await cargarAulas();
+
+                } else {
+
+                    alert(resultado.message);
+
+                }
+
+            } catch (error) {
+
+                console.error(error);
+                alert("Error al conectar con el servidor.");
+
+            }
+
+        // Editar aula existente
+        } else {
+
+            try {
+
+                const respuesta = await fetch(`http://127.0.0.1:5000/api/aulas/${id}`, {
+
+                    method: "PUT",
+
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+
+                    body: JSON.stringify({
+                        nombre: nombre
+                    })
+
+                });
+
+                const resultado = await respuesta.json();
+
+                if (resultado.success) {
+
+                    alert("Aula actualizada correctamente.");
+
+                    panelRegistro.classList.add("hidden");
+
+                    document.getElementById("indiceEdicion").value = "-1";
+
+                    await cargarAulas();
+
+                } else {
+
+                    alert(resultado.message);
+
+                }
+
+            } catch (error) {
+
+                console.error(error);
+
+                alert("Error al actualizar.");
+
+            }
+
+        }
+
     });
 
     // --- 4. BUSCADOR ---
@@ -184,13 +309,44 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     // --- 9. ELIMINAR ---
-    window.eliminarAula = (index) => {
+    window.eliminarAula = async (index) => {
+
         cerrarTodosLosMenus();
-        if (confirm("¿Eliminar esta aula?")) {
-            todasLasAulas.splice(index, 1);
-            renderizar();
+
+        if (!confirm("¿Eliminar esta aula?")) return;
+
+        const aula = todasLasAulas[index];
+
+        try {
+
+            const respuesta = await fetch(`http://127.0.0.1:5000/api/aulas/${aula.id}`, {
+                method: "DELETE"
+            });
+
+            const resultado = await respuesta.json();
+
+            if (resultado.success) {
+
+                alert("Aula eliminada.");
+
+                await cargarAulas();
+
+            } else {
+
+                alert(resultado.message);
+
+            }
+
+        } catch (error) {
+
+            console.error(error);
+
+            alert("Error al eliminar.");
+
         }
+
     };
 
-    renderizar();
+    cargarAulas();
+
 });
