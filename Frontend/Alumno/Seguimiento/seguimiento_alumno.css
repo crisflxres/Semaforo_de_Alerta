@@ -106,6 +106,9 @@ body { background-color: var(--color-fondo-global); color: var(--color-texto); }
 .cabecera-botones-grid { background-color: var(--color-guinda); color: #fff; padding: 12px 10px; border-radius: 8px; text-align: center; font-weight: bold; }
 .fila-materia-renglon { border-bottom: 1px solid var(--color-gris-borde); padding: 15px 0; }
 .pie-tabla-calificaciones { margin-top: 20px; padding-top: 10px; }
-.celda-rosada { background-color: var(--color-guinda-suave); border: 1px solid var(--color-gris-borde); height: 45px; border-radius: 8px; }
-.celda-pac { background-color: var(--color-guinda); color: white; height: 45px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; }
+
+.celda-rosada { background-color: var(--color-guinda-suave); border: 1px solid var(--color-gris-borde); height: 45px; border-radius: 8px; display: flex; align-items: center; justify-content: center; text-align: center;}
+
+.celda-pac { background-color: var(--color-guinda); color: white; height: 45px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; font-weight: bold; }
+
 .txt-nota { text-align: center; }
