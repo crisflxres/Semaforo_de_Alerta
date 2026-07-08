@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nueva Contraseña · Semáforo de Alerta Académica</title>
+<link rel="stylesheet" href="../css/nueva_contrasena.css">
+</head>
+<body>
+
+  <div class="topbar">
+    <div class="logo-mark">
+      <img src="Logo-cecyteh.png" alt="CECyTE Hidalgo" style="height:34px;">
+    </div>
+    <div class="divider-v"></div>
+    <div class="logo-sep">
+      <img src="Logo-SEP.png" alt="SEP Educación" style="height:34px;">
+    </div>
+    <div class="institution-title">Colegio de Estudios Científicos y Tecnológicos del Estado de Hidalgo</div>
+  </div>
+  <div class="goldbar"></div>
+
+  <div class="stage">
+    <div class="diamond tl"></div>
+    <div class="diamond bl"></div>
+    <div class="diamond-pattern"></div>
+    <div class="dots top-left">
+      <span></span><span></span><span></span><span></span>
+      <span></span><span></span><span></span><span></span>
+      <span></span><span></span><span></span><span></span>
+    </div>
+    <div class="dots bottom-right">
+      <span></span><span></span><span></span><span></span>
+      <span></span><span></span><span></span><span></span>
+      <span></span><span></span><span></span><span></span>
+    </div>
+    <div class="line-accent one"></div>
+    <div class="line-accent two"></div>
+
+    <div class="content-grid">
+      <div class="headline">
+        <h1>Semáforo de<br>Alerta<br>Académica</h1>
+      </div>
+
+      <div class="card">
+        <h2>Nueva Contraseña</h2>
+        <p class="desc">Ingresa y confirma tu nueva contraseña para restablecer el acceso a tu cuenta</p>
+
+        <form id="newPasswordForm" novalidate>
+          <div class="field-group">
+            <label for="password">Contraseña</label>
+            <input type="password" id="password" name="password" placeholder="Contraseña" required>
+            <div class="hint" id="passwordHint">*Mínimo 8 caracteres</div>
+          </div>
+
+          <div class="field-group">
+            <label for="confirmPassword">Confirmar Contraseña</label>
+            <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirmar Contraseña" required>
+          </div>
+
+          <button type="submit" class="btn-send" id="saveBtn">Guardar</button>
+
+          <div class="msg" id="feedback"></div>
+        </form>
+
+        <a href="index.html" class="back-link">&larr; Volver al inicio de sesión</a>
+      </div>
+    </div>
+  </div>
+
+<script src="../js/nueva_contrasena.js"></script>
+
+</body>
+</html>
