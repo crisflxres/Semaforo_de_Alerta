@@ -20,6 +20,7 @@ def get_alumnos():
                 a.Nombre,
                 a.Apellidos,
                 a.Email,
+                a.PAC,
                 g.Nombre AS Grupo,
                 g.Turno,
                 g.Semestre,
@@ -70,7 +71,7 @@ def get_alumnos():
                 "turno": fila.get('Turno'),
                 "semestre": fila.get('Semestre'),
                 "carrera": fila.get('Carrera'),
-                "pac": "",
+                "pac": fila.get('PAC') if fila.get('PAC') is not None else '-',
                 "estado_alerta": estado,
                 "materias_reprobadas": fila.get('materias_reprobadas', 0)
             })

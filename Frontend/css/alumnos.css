@@ -16,7 +16,16 @@
 
 * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
 
-body { background-color: var(--bg-main); color: var(--text-dark); padding-bottom: 40px; }
+html, body { height: 100%; }
+
+body {
+    background-color: var(--bg-main);
+    color: var(--text-dark);
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden; /* la página ya no scrollea; solo lo hará la tabla */
+}
 
 /* --- HEADER --- */
 .header-institucional {
@@ -28,6 +37,7 @@ body { background-color: var(--bg-main); color: var(--text-dark); padding-bottom
     padding: 10px 40px;
     box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     height: 64px;
+    flex-shrink: 0;
 }
 
 .menu-hamburguesa {
@@ -151,17 +161,27 @@ body { background-color: var(--bg-main); color: var(--text-dark); padding-bottom
 }
 
 /* --- CONTAINER --- */
-.container { max-width: 1280px; margin: 30px auto; padding: 0 20px; }
+.container {
+    max-width: 1280px;
+    width: 100%;
+    margin: 30px auto;
+    padding: 0 20px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0; /* necesario para que el hijo con overflow funcione dentro del flex */
+    overflow: hidden;
+}
 
 /* --- ENCABEZADO DE SECCIÓN --- */
-.header-section { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 25px; }
+.header-section { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 25px; flex-shrink: 0; }
 .title-area h1 { font-size: 28px; color: #581825; font-weight: 600; text-transform: uppercase; }
 .title-area p { font-size: 13px; color: var(--brand-maroon); margin-top: 2px; }
 .btn-reporte { background-color: var(--brand-maroon); color: var(--white); border: none; padding: 12px 24px; border-radius: 8px; font-weight: 600; font-size: 14px; cursor: pointer; transition: background 0.2s; }
 .btn-reporte:hover { background-color: #610721; }
 
 /* --- MÉTRICAS --- */
-.metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 30px; }
+.metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 30px; flex-shrink: 0; }
 .metric-card { background-color: #ffffff; border-radius: 14px; padding: 20px; display: flex; align-items: center; gap: 15px; position: relative; padding-bottom: 30px; border: 1px solid #000000; }
 .icon-circle { width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 22px; }
 .metric-card.total .icon-circle { background-color: #fcedf1; color: var(--brand-maroon); }
@@ -193,7 +213,7 @@ body { background-color: var(--bg-main); color: var(--text-dark); padding-bottom
 .metric-card.criticos .progress-bar-fill   { background-color: var(--alert-red); }
 
 /* --- FILTROS --- */
-.filters-panel { background-color: var(--white); border-radius: 12px; padding: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.04); margin-bottom: 25px; border: 1px solid #000000; }
+.filters-panel { background-color: var(--white); border-radius: 12px; padding: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.04); margin-bottom: 25px; border: 1px solid #000000; flex-shrink: 0; }
 .search-row { display: flex; gap: 15px; margin-bottom: 15px; }
 .search-container { position: relative; flex-grow: 1; }
 .search-container i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
@@ -206,9 +226,27 @@ body { background-color: var(--bg-main); color: var(--text-dark); padding-bottom
 .filter-select { padding: 10px; border: 1px solid #dcdcdc; border-radius: 8px; font-size: 13px; background-color: #fafafa; outline: none; cursor: pointer; }
 
 /* --- TABLA --- */
-.table-container { background-color: #ffffff; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.04); overflow-x: auto; border: 1px solid #000000; }
+.table-container {
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.04);
+    border: 1px solid #000000;
+    flex: 1;
+    min-height: 0; /* permite que el overflow interno funcione dentro del flex */
+    overflow: auto; /* scroll vertical Y horizontal si la tabla es muy ancha */
+}
 .data-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 13px; }
-.data-table th { background-color: var(--white); color: var(--text-dark); padding: 16px 12px; font-weight: 600; border-bottom: 2px solid #e0e0e0; white-space: nowrap; }
+.data-table th {
+    background-color: var(--white);
+    color: var(--text-dark);
+    padding: 16px 12px;
+    font-weight: 600;
+    border-bottom: 2px solid #e0e0e0;
+    white-space: nowrap;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+}
 .data-table td { padding: 14px 12px; border-bottom: 1px solid #eeeeee; vertical-align: middle; color: #444; }
 .data-table tbody tr:hover { background-color: #fafafa; }
 .avatar-cell { font-size: 24px; color: var(--text-muted); text-align: center; width: 40px; }

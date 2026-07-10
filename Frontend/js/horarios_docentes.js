@@ -34,8 +34,8 @@ function renderizar() {
         <div class="docente-card">
             <div><h3>${doc.nombre}</h3><p>${doc.email}</p><p>${doc.tel}</p><p>${doc.rol}</p></div>
             <div>
-                <button onclick="editar(${doc.id})">✏️</button>
-                <button onclick="eliminar(${doc.id})">🗑️</button>
+                <button  class="btn-editar" onclick="editar(${doc.id})">✏️</button>
+                <button class="btn-eliminar" onclick="eliminar(${doc.id})">🗑️</button>
             </div>
         </div>`;
     });

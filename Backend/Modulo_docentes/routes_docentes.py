@@ -1,10 +1,12 @@
 from flask import Blueprint, request, jsonify
 import bcrypt
 from conexion_db import obtener_conexion
+from auth_utils import requiere_rol 
 
 rutas_docentes = Blueprint('rutas_docentes', __name__)
 
 @rutas_docentes.route('/docentes', methods=['GET'])
+@requiere_rol(1, 2, 4)
 def get_docentes():
     try:
         conexion = obtener_conexion()
@@ -23,6 +25,7 @@ def get_docentes():
 
 
 @rutas_docentes.route('/docentes', methods=['POST'])
+@requiere_rol(1, 4)
 def crear_docente():
     datos = request.get_json()
     try:
@@ -44,6 +47,7 @@ def crear_docente():
 
 
 @rutas_docentes.route('/docentes/<int:id_usuario>', methods=['PUT'])
+@requiere_rol(1, 4)
 def editar_docente(id_usuario):
     datos = request.get_json()
     try:
@@ -62,6 +66,7 @@ def editar_docente(id_usuario):
 
 
 @rutas_docentes.route('/docentes/<int:id_usuario>', methods=['DELETE'])
+@requiere_rol(1, 4)
 def eliminar_docente(id_usuario):
     try:
         conexion = obtener_conexion()

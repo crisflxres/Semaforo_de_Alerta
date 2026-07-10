@@ -1,0 +1,5 @@
+body.rol-docente #btnNuevoDocente,
+body.rol-docente .btn-editar,
+body.rol-docente .btn-eliminar {
+    display: none !important;
+}
