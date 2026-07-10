@@ -17,7 +17,7 @@ def importar_correos_electronicos (hoja):
     
 if __name__ == "__main__":
     
-    Contactos = pd.read_excel(r"C:\Users\crisf\OneDrive\Documentos\UPT\SEXTO CUATRIMESTRE_SERVICIO_SOCIAL_(TSU)\Proyecto_Documentacion\proyecto 2026\Matricula_Actual(2).xls")
+    Contactos = pd.read_excel(r"C:\Users\aleja\OneDrive\Documentos\Archivos_bd\Matricula_Actual(2).xls")
     
     print("Tablas encontradas: ", len(Contactos))
     

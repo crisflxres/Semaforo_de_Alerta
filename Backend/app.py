@@ -151,7 +151,7 @@ def registro():
         }), 500
 
 # --- Fotos de alumnos (agregado por tu compañero) ---
-CARPETA_FOTOS = r"C:\Users\crisf\OneDrive\Documentos\UPT\SEXTO CUATRIMESTRE_SERVICIO_SOCIAL_(TSU)\Proyecto_Documentacion\Matricula Total"
+CARPETA_FOTOS = r"C:\Users\aleja\OneDrive\Documentos\Archivos_bd\Matricula Total"
 
 def construir_mapa_fotos(carpeta):
     mapa = {}

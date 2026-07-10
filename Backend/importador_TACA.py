@@ -124,7 +124,7 @@ def importar_calificaciones(hoja, materias):
 
 if __name__== "__main__":
     # Leer el archivo (ya usando la función que detecta el formato automáticamente)
-    hoja = leer_taca(r"C:\Users\crisf\OneDrive\Documentos\UPT\SEXTO CUATRIMESTRE_SERVICIO_SOCIAL_(TSU)\Proyecto_Documentacion\TACA_03AJ6L.xls")
+    hoja = leer_taca(r"C:\Users\aleja\OneDrive\Documentos\Archivos_bd\TACA_03AJ6L.xls")
 
     # Ver cuántas filas y columnas tiene
     print("Filas y columnas:", hoja.shape)

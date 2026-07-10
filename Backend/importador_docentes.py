@@ -24,7 +24,7 @@ def importar_docentes(hoja):
 
 if __name__ == "__main__":
     
-    hoja = pd.read_excel(r"C:\Users\crisf\OneDrive\Documentos\UPT\SEXTO CUATRIMESTRE_SERVICIO_SOCIAL_(TSU)\Proyecto_Documentacion\archivos de prueba\correos docentes.xlsx")
+    hoja = pd.read_excel(r"C:\Users\aleja\OneDrive\Documentos\Archivos_bd\archivos de prueba\archivos de prueba\correos docentes.xlsx")
     
     docentes = importar_docentes(hoja)
     
