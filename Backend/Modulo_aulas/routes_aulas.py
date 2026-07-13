@@ -1,9 +1,11 @@
 from flask import Blueprint, jsonify, request
 from conexion_db import obtener_conexion
+from auth_utils import requiere_rol
 
 aulas_bp = Blueprint('aulas_bp', __name__)
 
 @aulas_bp.route('/api/aulas', methods=['GET'])
+@requiere_rol(1, 2, 3)
 def get_aulas():
 
     try:
@@ -30,6 +32,7 @@ def get_aulas():
 
 
 @aulas_bp.route('/api/aulas/siguiente-id', methods=['GET'])
+@requiere_rol(1, 3)
 def siguiente_id_aula():
 
     try:
@@ -55,6 +58,7 @@ def siguiente_id_aula():
 
 
 @aulas_bp.route('/api/aulas', methods=['POST'])
+@requiere_rol(1, 3)
 def agregar_aula():
 
     try:
@@ -99,6 +103,7 @@ def agregar_aula():
 
 
 @aulas_bp.route('/api/aulas/<int:id_aula>', methods=['PUT'])
+@requiere_rol(1, 3)
 def editar_aula(id_aula):
 
     try:
@@ -139,6 +144,7 @@ def editar_aula(id_aula):
 
 
 @aulas_bp.route('/api/aulas/<int:id_aula>', methods=['DELETE'])
+@requiere_rol(1, 3)
 def eliminar_aula(id_aula):
 
     try:

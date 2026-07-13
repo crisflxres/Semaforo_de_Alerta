@@ -1,11 +1,13 @@
 from flask import Blueprint, jsonify
 import mysql.connector
+from auth_utils import requiere_rol
 
 grupos_bp = Blueprint('grupos', __name__)
 
 from conexion_db import obtener_conexion
 
 @grupos_bp.route('/grupos', methods=['GET'])
+@requiere_rol(1, 2, 3)
 def get_grupos():
     try:
         conexion = obtener_conexion()

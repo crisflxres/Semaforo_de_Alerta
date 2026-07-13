@@ -113,7 +113,7 @@ document.addEventListener("DOMContentLoaded", () => {
                             <i class="fa-solid fa-ellipsis-vertical"></i>
                         </button>
                         <div class="menu-desplegable" id="menu-${idx}">
-                            <button onclick="window.abrirEditar(${idx})">✏️ Editar</button>
+                            <button class="btn-editar" onclick="window.abrirEditar(${idx})">✏️ Editar</button>
                             <button class="btn-eliminar" onclick="window.eliminarGrupo(${idx})">🗑️ Eliminar</button>
                         </div>
                     </div>

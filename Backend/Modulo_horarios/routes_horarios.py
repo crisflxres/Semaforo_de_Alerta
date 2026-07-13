@@ -1,10 +1,12 @@
 from flask import Blueprint, request, jsonify
 from conexion_db import obtener_conexion
+from auth_utils import requiere_rol
 
 horarios_bp = Blueprint('horarios_bp', __name__)
 
 
 @horarios_bp.route('/api/horarios', methods=['GET'])
+@requiere_rol(1, 2, 3)
 def get_horarios():
     """
     Devuelve todas las clases registradas, con los nombres ya resueltos
@@ -42,6 +44,7 @@ def get_horarios():
 
 
 @horarios_bp.route('/api/horarios', methods=['POST'])
+@requiere_rol(1, 3) 
 def crear_horario():
     datos = request.get_json()
     try:
@@ -78,6 +81,7 @@ def crear_horario():
 
 
 @horarios_bp.route('/api/horarios/<int:id_horario>', methods=['PUT'])
+@requiere_rol(1, 3) 
 def editar_horario(id_horario):
     datos = request.get_json()
     try:
@@ -102,6 +106,7 @@ def editar_horario(id_horario):
 
 
 @horarios_bp.route('/api/horarios/resumen-materia/<int:id_materia>', methods=['GET'])
+@requiere_rol(1, 2, 3) 
 def resumen_materia(id_materia):
     """
     Nota general de una materia: qué docentes la imparten, en qué grupos
@@ -160,6 +165,7 @@ def resumen_materia(id_materia):
 
 
 @horarios_bp.route('/api/horarios/<int:id_horario>', methods=['DELETE'])
+@requiere_rol(1, 3)
 def eliminar_horario(id_horario):
     try:
         conexion = obtener_conexion()

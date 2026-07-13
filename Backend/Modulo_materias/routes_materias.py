@@ -1,9 +1,11 @@
 from flask import Blueprint, jsonify, request
 from conexion_db import obtener_conexion
+from auth_utils import requiere_rol
 
 materias_bp = Blueprint("materias", __name__)
 
 @materias_bp.route("/api/materias")
+@requiere_rol(1, 2, 3)
 def get_materias():
     conexion = obtener_conexion()
     query = "SELECT Id_Materia, Nombre, Semestre, Id_Carrera, Periodo, Tipo FROM materias"
@@ -28,6 +30,7 @@ def get_materias():
     return jsonify(materias)
 
 @materias_bp.route("/api/materias", methods = ["POST"])
+@requiere_rol(1, 3)
 def crear_materia():
     datos =request.get_json()
     
@@ -59,6 +62,7 @@ def crear_materia():
     return jsonify({"success": True, "message": "Materia registrada correctamente..."})
 
 @materias_bp.route("/api/materias", methods = ["PUT"] )
+@requiere_rol(1, 3)
 def editar_materia():
     datos = request.get_json()
     
@@ -85,6 +89,7 @@ def editar_materia():
     return jsonify({"success": True, "message": "Materia actualizada correctamente."})
 
 @materias_bp.route("/api/materias", methods = ["DELETE"] )
+@requiere_rol(1, 3)
 def eliminar_materia():
     dato = request.get_json()
     
