@@ -6,10 +6,10 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.image import MIMEImage
 
-SMTP_SERVER   = "smtp.gmail.com"
+SMTP_SERVER   = "smtp.office365.com"
 SMTP_PORT     = 587
-SMTP_EMAIL    = "vicmanu315623@gmail.com"
-SMTP_PASSWORD = "plpyyluikspahcdz"
+SMTP_EMAIL    = "poner_aqui_el_correo@cecytehidalgo.edu.mx"
+SMTP_PASSWORD = "poner_aqui_la_contraseña"
 
 def enviar_correo(destinatario, asunto, cuerpo_procesado, imagenes):
     """
