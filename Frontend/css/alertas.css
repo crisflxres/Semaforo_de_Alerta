@@ -768,3 +768,16 @@ body {
     .distribucion-inferior-figma { grid-template-columns: 1fr; }
     .linea-divisoria-vertical { display: none; }
 }
+/* Evita que el texto se pegue directo a la imagen flotante */
+#mensajeEditor::after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+/* Si el editor está vacío, que no quede un espacio raro de la imagen flotante */
+#mensajeEditor:empty::before {
+    content: "Escribe tu mensaje aquí...";
+    color: #aaa;
+    pointer-events: none;
+}

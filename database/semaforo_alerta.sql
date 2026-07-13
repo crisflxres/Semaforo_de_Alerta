@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 04-07-2026 a las 05:54:59
+-- Tiempo de generación: 10-07-2026 a las 22:28:49
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -66,6 +66,42 @@ CREATE TABLE `aulas` (
   `Nombre` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_spanish_ci;
 
+--
+-- Volcado de datos para la tabla `aulas`
+--
+
+INSERT INTO `aulas` (`Id_Aula`, `Nombre`) VALUES
+(1, 'Salón 1'),
+(2, 'Salón 2'),
+(3, 'Salón 3'),
+(4, 'Salón 4'),
+(5, 'Salón 5'),
+(6, 'Salón 6'),
+(7, 'Salón 7'),
+(8, 'Salón 8'),
+(9, 'Salón 9'),
+(10, 'Salón 10'),
+(11, 'Salón 11'),
+(12, 'Salón 12'),
+(13, 'Salón 13'),
+(14, 'Salón 14'),
+(15, 'Salón 15'),
+(16, 'Salón 16'),
+(17, 'Salón 17'),
+(18, 'Salón 18'),
+(19, 'Salón 19'),
+(20, 'Salón 20'),
+(21, 'Salón 21'),
+(22, 'Laboratorio de Usos Múltiples'),
+(23, 'Componente Mecatrónica Taller'),
+(24, 'Componente Programación Cómputo I'),
+(25, 'Cómputo II'),
+(26, 'Cómputo III'),
+(27, 'Componente Soporte MTTO de Cómputo I'),
+(28, 'Componente P.G.A Lab. Contabilidad'),
+(29, 'Taller Dibujo '),
+(30, 'Ex Lab. P.I');
+
 -- --------------------------------------------------------
 
 --
@@ -97,6 +133,17 @@ CREATE TABLE `carreras` (
   `Clave` varchar(20) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_spanish_ci;
 
+--
+-- Volcado de datos para la tabla `carreras`
+--
+
+INSERT INTO `carreras` (`Id_Carrera`, `Nombre`, `Clave`) VALUES
+(1, 'SOPORTE Y MANTENIMIENTO DE EQUIPO DE CÓMPUTO', 'SyMEC'),
+(2, 'PROGRAMACIÓN', 'Progra'),
+(3, 'PROCESOS DE GESTIÓN ADMINISTRATIVA', 'PGA'),
+(4, 'MECATRÓNICA', 'Meca'),
+(5, 'PRODUCCIÓN INDUSTRIAL', 'PI');
+
 -- --------------------------------------------------------
 
 --
@@ -110,6 +157,54 @@ CREATE TABLE `grupos` (
   `Id_Carrera` smallint(5) UNSIGNED NOT NULL,
   `Turno` enum('Matutino','Vespertino') NOT NULL DEFAULT 'Matutino'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_spanish_ci;
+
+--
+-- Volcado de datos para la tabla `grupos`
+--
+
+INSERT INTO `grupos` (`Id_Grupo`, `Nombre`, `Semestre`, `Id_Carrera`, `Turno`) VALUES
+(1, '03U2A', 'Segundo', 4, 'Matutino'),
+(2, '03U2B', 'Segundo', 4, 'Matutino'),
+(3, '03U2C', 'Segundo', 4, 'Vespertino'),
+(4, '03U2D', 'Segundo', 4, 'Vespertino'),
+(5, '03V2E', 'Segundo', 3, 'Matutino'),
+(6, '03V2F', 'Segundo', 3, 'Matutino'),
+(7, '03V2G', 'Segundo', 3, 'Vespertino'),
+(8, '03V2H', 'Segundo', 3, 'Vespertino'),
+(9, '03AL2I', 'Segundo', 5, 'Matutino'),
+(10, '03AL2J', 'Segundo', 5, 'Vespertino'),
+(11, '03AJ2K', 'Segundo', 2, 'Matutino'),
+(12, '03AJ2L', 'Segundo', 2, 'Vespertino'),
+(13, '03AE2M', 'Segundo', 1, 'Matutino'),
+(14, '03AE2N', 'Segundo', 1, 'Vespertino'),
+(15, '03U4A', 'Cuarto', 4, 'Matutino'),
+(16, '03U4B', 'Cuarto', 4, 'Vespertino'),
+(17, '03U4C', 'Cuarto', 4, 'Vespertino'),
+(18, '03V4D', 'Cuarto', 3, 'Matutino'),
+(19, '03V4E', 'Cuarto', 3, 'Matutino'),
+(20, '03V4F', 'Cuarto', 3, 'Vespertino'),
+(21, '03AL4G', 'Cuarto', 5, 'Matutino'),
+(22, '03AL4H', 'Cuarto', 5, 'Vespertino'),
+(23, '03AL4I', 'Cuarto', 5, 'Vespertino'),
+(24, '03AJ4J', 'Cuarto', 2, 'Matutino'),
+(25, '03AJ4K', 'Cuarto', 2, 'Matutino'),
+(26, '03AJ4L', 'Cuarto', 2, 'Vespertino'),
+(27, '03AE4M', 'Cuarto', 1, 'Matutino'),
+(28, '03AE4N', 'Cuarto', 1, 'Vespertino'),
+(29, '03U6A', 'Sexto', 4, 'Matutino'),
+(30, '03U6B', 'Sexto', 4, 'Matutino'),
+(31, '03U6C', 'Sexto', 4, 'Vespertino'),
+(32, '03U6D', 'Sexto', 4, 'Vespertino'),
+(33, '03V6E', 'Sexto', 3, 'Matutino'),
+(34, '03V6F', 'Sexto', 3, 'Vespertino'),
+(35, '03AL6G', 'Sexto', 5, 'Matutino'),
+(36, '03AL6H', 'Sexto', 5, 'Vespertino'),
+(37, '03AJ6I', 'Sexto', 2, 'Matutino'),
+(38, '03AJ6J', 'Sexto', 2, 'Matutino'),
+(39, '03AJ6K', 'Sexto', 2, 'Vespertino'),
+(40, '03AJ6L', 'Sexto', 2, 'Vespertino'),
+(41, '03AE6M', 'Sexto', 1, 'Matutino'),
+(42, '03AE6N', 'Sexto', 1, 'Vespertino');
 
 -- --------------------------------------------------------
 
@@ -245,8 +340,7 @@ INSERT INTO `roles` (`Id_Rol`, `Nombre`, `Descripcion`) VALUES
 (1, 'Administrador', 'Administrador del sistema'),
 (2, 'Docente', 'Docente de la Institución'),
 (3, 'Tutor', 'Tutor académico'),
-(4, 'Padre', 'Padre o Tutor familiar'),
-(5, 'Alumno', 'Alumno del Plantel');
+(4, 'Alumno', 'Alumno del Plantel');
 
 -- --------------------------------------------------------
 
@@ -276,7 +370,9 @@ CREATE TABLE `usuarios` (
   `Password` varchar(255) NOT NULL,
   `Activo` tinyint(1) NOT NULL DEFAULT 1,
   `Fecha_Creacion` datetime NOT NULL DEFAULT current_timestamp(),
-  `Telefono` varchar(20) DEFAULT NULL
+  `Telefono` varchar(20) DEFAULT NULL,
+  `reset_token` varchar(100) DEFAULT NULL,
+  `reset_expiracion` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_spanish_ci;
 
 --
@@ -423,7 +519,7 @@ ALTER TABLE `alertas`
 -- AUTO_INCREMENT de la tabla `aulas`
 --
 ALTER TABLE `aulas`
-  MODIFY `Id_Aula` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `Id_Aula` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
 
 --
 -- AUTO_INCREMENT de la tabla `calificaciones`
@@ -435,13 +531,13 @@ ALTER TABLE `calificaciones`
 -- AUTO_INCREMENT de la tabla `carreras`
 --
 ALTER TABLE `carreras`
-  MODIFY `Id_Carrera` smallint(5) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `Id_Carrera` smallint(5) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT de la tabla `grupos`
 --
 ALTER TABLE `grupos`
-  MODIFY `Id_Grupo` smallint(5) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `Id_Grupo` smallint(5) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=43;
 
 --
 -- AUTO_INCREMENT de la tabla `horarios`
