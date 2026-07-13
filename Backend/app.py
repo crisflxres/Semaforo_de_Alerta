@@ -7,6 +7,8 @@ from conexion_db import obtener_conexion
 from flask_cors import CORS
 import mysql.connector
 import bcrypt
+from Modulo_recuperacion.routes_recuperacion import recuperacion_bp
+from Modulo_alertas.scheduler_config import scheduler
 from Modulo_Alumnos.routes_alumnos import alumnos_bp
 from Modulo_docentes.routes_docentes import rutas_docentes
 from Modulo_materias.routes_materias import materias_bp
@@ -20,6 +22,7 @@ from Modulo_aulas.routes_aulas import aulas_bp             # <-- RESTAURADO
 app = Flask(__name__)
 # Permitimos CORS para que tus archivos HTML y JS del frontend puedan comunicarse con Python
 CORS(app)
+app.register_blueprint(recuperacion_bp)
 app.register_blueprint(alumnos_bp)
 app.register_blueprint(materias_bp)
 app.register_blueprint(rutas_docentes)
