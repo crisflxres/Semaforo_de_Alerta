@@ -245,6 +245,8 @@ def get_foto(matricula):
     return "", 404
 
 
+
+
 @app.route('/recuperar', methods=['POST'])
 def recuperar():
     datos = request.get_json()

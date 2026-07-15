@@ -18,7 +18,7 @@ def importar_tutores(hoja):
 
 if __name__ == "__main__":
     
-    hoja = pd.read_excel(r"C:\Users\crisf\OneDrive\Documentos\UPT\SEXTO CUATRIMESTRE_SERVICIO_SOCIAL_(TSU)\Proyecto_Documentacion\Datos Programa.xlsx", skiprows= 7)
+    hoja = pd.read_excel(r"C:\Users\aleja\OneDrive\Documentos\Archivos_bd\Datos Programa.xlsx", skiprows= 7)
     
     tutores = importar_tutores(hoja)
     
