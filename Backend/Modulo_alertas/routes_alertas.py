@@ -107,7 +107,7 @@ def enviar_alerta():
             return jsonify({"ok": False, "mensaje": "No hay alumnos que coincidan con los filtros"}), 404
 
         def proceso_envio():
-            # 👇 conexión se abre aquí, cada vez que esta función realmente corre
+            # conexión se abre aquí, cada vez que esta función realmente corre
             conexion = obtener_conexion()
             cursor = conexion.cursor()
 
@@ -160,6 +160,7 @@ def enviar_alerta():
             conexion.close()
 
             print(f"[Envío ejecutado] Enviados: {enviados}, Fallidos: {fallidos}")
+            return enviados, fallidos, detalles 
 
         if modalidad == "programar" and fecha_envio and hora_envio:
             fecha_hora_str = f"{fecha_envio} {hora_envio}"
@@ -173,10 +174,12 @@ def enviar_alerta():
                 "total_alumnos": len(alumnos)
             })
         else:
-            proceso_envio()
+            enviados, fallidos, detalles = proceso_envio()  
             return jsonify({
                 "ok": True,
-                "total_alumnos": len(alumnos)
+                "total_alumnos": len(alumnos),
+                "enviados": enviados,  
+                "fallidos": fallidos    
             })
 
     except Exception as e:

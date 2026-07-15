@@ -42,8 +42,8 @@ def insertar_alumnos_usuarios(cursor, alumno):
     return cursor.lastrowid
 
 def insertar_alumnos(cursor, alumno, id_grupo, id_usuario):
-    sql = """INSERT INTO alumnos (Matricula, Nombre, Apellidos, Id_Grupo, Foto, Email, id_usuario, PAC)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+    sql = """INSERT INTO alumnos (Matricula, Nombre, Apellidos, Id_Grupo, id_usuario, PAC)
+            VALUES (%s, %s, %s, %s, %s, %s)
             ON DUPLICATE KEY UPDATE PAC = VALUES(PAC)"""
     apellidos = alumno["apellido.p"] + " " + alumno["apellido.m"]
     valores = (
@@ -51,8 +51,6 @@ def insertar_alumnos(cursor, alumno, id_grupo, id_usuario):
         alumno["nombre(s)"],
         apellidos,
         id_grupo,
-        None,
-        None,
         id_usuario,
         alumno["PAC"],
     )
@@ -195,7 +193,7 @@ fotos = importar_fotos(r"C:\Users\Victo\OneDrive\Documentos\Actividades\Matricul
 
 hoja3 = pd.read_excel(r"C:\Users\Victo\OneDrive\Documentos\Actividades\Datos Programa.xlsx", skiprows= 8)
 
-hoja_docentes = pd.read_excel(r"C:\Users\crisf\OneDrive\Documentos\UPT\SEXTO CUATRIMESTRE_SERVICIO_SOCIAL_(TSU)\Proyecto_Documentacion\archivos de prueba\correos docentes.xlsx")
+hoja_docentes = pd.read_excel(r"C:\Users\Victo\OneDrive\Documentos\Actividades\archivos de prueba\correos docentes.xlsx")
 
 hoja2 = Contactos
 
