@@ -1,0 +1,315 @@
+/* 1. CONFIGURACIÓN GLOBAL Y RESPONSIVA */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+body {
+    background-color: #fcfbfa;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+}
+
+/* 2. HEADER INSTITUCIONAL */
+.header-institucional {
+    width: 100%;
+    min-height: 90px;
+    padding: 15px 5%;
+    background: #ffffff;
+    border-bottom: 4px solid #850121;
+    box-shadow: 0 4px 0px 0px #bc955c;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    z-index: 10;
+}
+.logos-container { display: flex; align-items: center; gap: 20px; }
+.logo-cecyteh { height: 50px; object-fit: contain; }
+.divisor-linea { width: 2px; height: 40px; background-color: #bc955c; }
+.logo-gobierno { height: 50px; object-fit: contain; }
+.nombre-colegio { font-size: 0.95rem; color: #850121; font-weight: 600; }
+
+/* 3. CONTENEDOR PRINCIPAL */
+.login-wrapper {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 40px 10%;
+    position: relative;
+    min-height: calc(100vh - 94px);
+    background-image: url('../html/fondo.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+/* 4. DISTRIBUCIÓN DE COLUMNAS FLEXIBLES */
+.info-lado {
+    flex: 1;
+    max-width: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    z-index: 2;
+    padding-right: 20px;
+}
+.titulo-sistema { font-size: clamp(2rem, 4vw, 3rem); color: #850121; font-weight: 700; line-height: 1.2; }
+.titulo-sistema span { color: #850121; font-size: clamp(2.3rem, 4.5vw, 3.4rem); }
+.formulario-lado { flex: 1; display: flex; justify-content: flex-end; align-items: center; z-index: 2; }
+
+/* 5. TARJETA DE CREAR CUENTA (un poco más ancha porque hay más campos) */
+.tarjeta-login {
+    background: #ffffff;
+    width: 100%;
+    max-width: 480px;
+    padding: 50px 40px;
+    border-radius: 28px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e2e8f0;
+    text-align: center;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+.tarjeta-login h2 { font-size: 2.2rem; color: #850121; margin-bottom: 8px; }
+.subtitulo { font-size: 0.85rem; color: #8a8a8a; margin-bottom: 35px; }
+.grupo-input { margin-bottom: 20px; }
+.input-icono-wrapper { position: relative; width: 100%; }
+
+/* Icono de entrada izquierdo (Usuario/Candado/Correo/Teléfono/Rol) */
+.input-icono-wrapper > i {
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #475569;
+    font-size: 22px;
+    pointer-events: none;
+}
+.input-icono-wrapper input {
+    width: 100%;
+    padding: 18px 40px 18px 55px;
+    text-align: left;
+    border: 1px solid #cbd5e1;
+    border-radius: 14px;
+    background-color: #f8fafc;
+    font-size: 1rem;
+    color: #334155;
+    outline: none;
+    transition: all 0.2s ease;
+}
+.input-icono-wrapper input:focus {
+    border-color: #850121;
+    background-color: #ffffff;
+    box-shadow: 0 0 0 4px rgba(133, 1, 33, 0.1);
+}
+
+/* 5.1 ESTILO DEL SELECT DE ROL (mismo look que los inputs) */
+.input-icono-wrapper select {
+    width: 100%;
+    padding: 18px 40px 18px 55px;
+    text-align: left;
+    border: 1px solid #cbd5e1;
+    border-radius: 14px;
+    background-color: #f8fafc;
+    font-size: 1rem;
+    color: #334155;
+    outline: none;
+    transition: all 0.2s ease;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    cursor: pointer;
+}
+.input-icono-wrapper select:focus {
+    border-color: #850121;
+    background-color: #ffffff;
+    box-shadow: 0 0 0 4px rgba(133, 1, 33, 0.1);
+}
+.input-icono-wrapper select:invalid {
+    color: #94a3b8;
+}
+/* Flechita personalizada para el select, para que combine con el diseño */
+.input-icono-wrapper:has(select)::after {
+    content: '\f078';
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #475569;
+    font-size: 14px;
+    pointer-events: none;
+}
+
+.olvido-contraseña { text-align: center; margin-bottom: 35px; }
+.olvido-contraseña a { color: #561C24; font-size: 0.9rem; text-decoration: none; font-weight: 500; }
+
+/* 5.2 MENSAJE DE ERROR */
+.mensaje-error {
+    font-size: 0.85rem;
+    color: #850121;
+    background-color: #fdf2f4;
+    border: 1px solid #f3c6ce;
+    border-radius: 10px;
+    padding: 10px 14px;
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+/* 6. BOTONES COMPLETAMENTE ÓVALOS ESTILO FIGMA */
+.grupo-botones { display: flex; flex-direction: column; gap: 18px; margin-top: 10px; }
+
+.btn-iniciar {
+    width: 100% !important;
+    height: 58px !important;
+    font-size: 1.15rem !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 50px !important;
+    background-color: #850121 !important;
+    color: #ffffff !important;
+    border: none !important;
+    box-shadow: 0 4px 12px rgba(133, 1, 33, 0.25) !important;
+    transition: all 0.2s ease !important;
+    outline: none !important;
+}
+.btn-iniciar:hover { background-color: #561C24 !important; transform: translateY(-2px) !important; box-shadow: 0 6px 18px rgba(133, 1, 33, 0.35) !important; }
+
+.btn-Crear-cuenta {
+    width: 100% !important;
+    height: 58px !important;
+    font-size: 1.15rem !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 50px !important;
+    background-color: #ffffff !important;
+    color: #850121 !important;
+    border: 2.5px solid #850121 !important;
+    transition: all 0.2s ease !important;
+    outline: none !important;
+}
+.btn-Crear-cuenta:hover { background-color: #fdf2f4 !important; transform: translateY(-2px) !important; }
+.btn-iniciar:active, .btn-Crear-cuenta:active { transform: translateY(1px) !important; }
+
+/* 7. RESPONSIVE - ADAPTACIÓN A DIFERENTES TAMAÑOS DE PANTALLA*/
+
+/* Tablets grandes / pantallas medianas */
+@media (max-width: 1024px) {
+    .login-wrapper {
+        padding: 30px 6%;
+    }
+    .info-lado {
+        max-width: 45%;
+        padding-right: 15px;
+    }
+    .tarjeta-login {
+        max-width: 420px;
+        padding: 40px 30px;
+    }
+}
+
+/* Tablets / pantallas pequeñas */
+@media (max-width: 840px) {
+    .login-wrapper {
+        flex-direction: column;
+        justify-content: center;
+        padding: 30px 5%;
+        gap: 30px;
+    }
+    .info-lado {
+        max-width: 100%;
+        align-items: center;
+        text-align: center;
+        padding-right: 0;
+    }
+    .titulo-sistema {
+        text-align: center;
+    }
+    .formulario-lado {
+        width: 100%;
+        justify-content: center;
+    }
+    .tarjeta-login {
+        max-width: 460px;
+        width: 100%;
+    }
+}
+
+/* Header institucional en pantallas medianas */
+@media (max-width: 768px) {
+    .header-institucional {
+        flex-direction: column;
+        text-align: center;
+        gap: 10px;
+        padding: 12px 5%;
+    }
+    .nombre-colegio {
+        font-size: 0.85rem;
+    }
+}
+
+/* Celulares (≤480px) */
+@media (max-width: 480px) {
+    .logos-container {
+        gap: 12px;
+    }
+    .logo-cecyteh, .logo-gobierno {
+        height: 38px;
+    }
+    .divisor-linea {
+        height: 30px;
+    }
+    .titulo-sistema {
+        font-size: 1.7rem;
+    }
+    .tarjeta-login {
+        padding: 30px 20px;
+        border-radius: 20px;
+        max-height: 95vh;
+    }
+    .tarjeta-login h2 {
+        font-size: 1.7rem;
+    }
+    .subtitulo {
+        font-size: 0.8rem;
+        margin-bottom: 25px;
+    }
+    .grupo-input {
+        margin-bottom: 16px;
+    }
+    .input-icono-wrapper input,
+    .input-icono-wrapper select {
+        padding: 15px 35px 15px 48px;
+        font-size: 0.95rem;
+    }
+    .input-icono-wrapper > i {
+        left: 16px;
+        font-size: 18px;
+    }
+    .btn-iniciar, .btn-Crear-cuenta {
+        height: 52px !important;
+        font-size: 1.05rem !important;
+    }
+}
+
+/* Celulares muy pequeños (≤360px) */
+@media (max-width: 360px) {
+    .tarjeta-login {
+        padding: 24px 16px;
+    }
+    .titulo-sistema {
+        font-size: 1.4rem;
+    }
+}
