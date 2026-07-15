@@ -35,7 +35,7 @@ document.getElementById('formLogin').addEventListener('submit', async (e) => {
             const rol = resultado.rol;
 
             if (rol === 5) {
-                window.location.href = 'http://127.0.0.1:5500/Semaforo_de_Alerta/Frontend/Alumno/Inicio/alumno_inicio.html';
+                window.location.href = '../Alumno/Inicio/alumno_inicio.html';
             } else {
                 window.location.href = 'inicio.html';
             }
