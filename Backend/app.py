@@ -153,8 +153,75 @@ def registro():
             "message": f"Error al registrar: {err}"
         }), 500
 
+@app.route('/admin/crear_usuario', methods=['POST'])
+def crear_usuario():
+    datos = request.get_json()
+
+    nombre = datos.get('nombre', '').strip()
+    apellidos = datos.get('apellidos', '').strip()
+    email = datos.get('email', '').strip()
+    password_usuario = datos.get('password', '').strip()
+    telefono = datos.get('telefono', '').strip()
+    id_rol = datos.get('id_rol')
+
+    if not all([nombre, apellidos, email, password_usuario, telefono, id_rol]):
+        return jsonify({
+            "success": False,
+            "message": "Todos los campos son obligatorios."
+        }), 400
+
+    try:
+        id_rol = int(id_rol)
+    except (ValueError, TypeError):
+        return jsonify({
+            "success": False,
+            "message": "Rol inválido."
+        }), 400
+
+    password_encriptada = bcrypt.hashpw(
+        password_usuario.encode('utf-8'),
+        bcrypt.gensalt()
+    ).decode('utf-8')
+
+    try:
+        conexion = obtener_conexion()
+        cursor = conexion.cursor(dictionary=True)
+
+        # Verificar que el correo no exista ya
+        cursor.execute("SELECT Id_Usuario FROM usuarios WHERE Email = %s", (email,))
+        existente = cursor.fetchone()
+        if existente:
+            cursor.close()
+            conexion.close()
+            return jsonify({
+                "success": False,
+                "message": "Ese correo ya está registrado."
+            }), 409
+
+        query = """
+            INSERT INTO usuarios
+            (Id_Rol, Nombre, Apellidos, Email, Password, Telefono, Activo)
+            VALUES (%s, %s, %s, %s, %s, %s, %s)
+        """
+        cursor.execute(query, (id_rol, nombre, apellidos, email, password_encriptada, telefono, 1))
+
+        conexion.commit()
+        cursor.close()
+        conexion.close()
+
+        return jsonify({
+            "success": True,
+            "message": "Usuario creado correctamente."
+        })
+
+    except mysql.connector.Error as err:
+        return jsonify({
+            "success": False,
+            "message": f"Error al crear usuario: {err}"
+        }), 500
+
 # --- Fotos de alumnos (agregado por tu compañero) ---
-CARPETA_FOTOS = r"C:\Users\crisf\OneDrive\Documentos\UPT\SEXTO CUATRIMESTRE_SERVICIO_SOCIAL_(TSU)\Proyecto_Documentacion\Matricula Total"
+CARPETA_FOTOS = r"c:\Users\manuv\OneDrive\Documentos\6 Cuatri\Archivos proyecto\Matricula Total"
 
 def construir_mapa_fotos(carpeta):
     mapa = {}

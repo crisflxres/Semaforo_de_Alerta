@@ -156,4 +156,47 @@ body {
     background-position: right 12px center;
 }
 
-#inputRol:focus { outline: none; border-color: #731a23;}
+@media (max-width: 700px) {
+    .grid-importacion { grid-template-columns: 1fr; }
+    .divisor-vertical { display: none; }
+}
+.tarjeta-crear-cuenta {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 24px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border: 1px solid #eee;
+}
+.cabecera-crear-cuenta {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #850121;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.tarjeta-crear-cuenta p {
+    color: #666;
+    font-size: 0.9rem;
+    margin-bottom: 16px;
+}
+.btn-crear-cuenta-config {
+    background-color: #850121;
+    color: #fff;
+    border: none;
+    border-radius: 50px;
+    padding: 12px 24px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+}
+.btn-crear-cuenta-config:hover {
+    background-color: #561C24;
+    transform: translateY(-2px);
+}
