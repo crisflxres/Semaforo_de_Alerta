@@ -84,11 +84,13 @@
 
         <div class="tarjeta-historial">
             <div class="cabecera-historial"><i class="fa-solid fa-clock-rotate-left"></i> Historial de Importaciones</div>
-            <table>
-                <thead><tr><th>Archivo</th><th>Fecha de importación</th><th>Registros</th><th>Acciones</th></tr></thead>
-                <tbody id="cuerpoHistorial"></tbody>
-            </table>
-            <div id="historialVacio" style="text-align:center; padding:30px; color:#aaa; font-size:14px;"><i class="fa-solid fa-inbox" style="font-size:28px; display:block; margin-bottom:8px;"></i> Aún no se han importado archivos</div>
+            <div class="tabla-scroll">
+                <table>
+                    <thead><tr><th>Archivo</th><th>Fecha de importación</th><th>Registros</th><th>Acciones</th></tr></thead>
+                    <tbody id="cuerpoHistorial"></tbody>
+                </table>
+                <div id="historialVacio" style="text-align:center; padding:30px; color:#aaa; font-size:14px;"><i class="fa-solid fa-inbox" style="font-size:28px; display:block; margin-bottom:8px;"></i> Aún no se han importado archivos</div>
+            </div>
         </div>
     </main>
     <script src="../js/interceptor.js"></script>
