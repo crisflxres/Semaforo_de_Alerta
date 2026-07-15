@@ -22,6 +22,14 @@ def insertar_materia(cursor, materia, id_carrera, semestre, periodo):
     resultado = cursor.fetchone()
     return resultado[0]
 
+def normalizar_matricula(matricula):
+    """Quita el prefijo 'M' si existe, para que coincida con el formato
+    guardado en alumnos.Matricula (sin la M)."""
+    matricula = str(matricula).strip()
+    if matricula.upper().startswith("M") and matricula[1:].isdigit():
+        matricula = matricula[1:]
+    return matricula
+
 def insertar_alumnos_usuarios(cursor, alumno):
     cursor.execute("SELECT Id_Usuario FROM usuarios WHERE Email = %s", (alumno["matricula"],))
     existente = cursor.fetchone()
@@ -89,21 +97,21 @@ def insertar_calificaciones(cursor, calificacion, id_materia, id_importacion, pe
     return cursor.lastrowid
 
 def actualizar_correo(cursor, contacto):
+    matricula = normalizar_matricula(contacto["matricula"])
     sql = "UPDATE alumnos SET Email = %s WHERE Matricula = %s"
-    valores = (
-        contacto["correo"], 
-        contacto["matricula"]
-    )
-    cursor.execute(sql,valores)
+    valores = (contacto["correo"], matricula)
+    cursor.execute(sql, valores)
+    if cursor.rowcount == 0:
+        print(f"[AVISO] No se actualizó correo: matrícula '{matricula}' no encontrada en alumnos")
     return cursor.rowcount
 
 def actualizar_fotos(cursor, matricula, ruta):
+    matricula = normalizar_matricula(matricula)
     sql = "UPDATE alumnos SET Foto= %s WHERE Matricula = %s"
-    valores = (
-        ruta,
-        matricula
-    )
-    cursor.execute(sql,valores)
+    valores = (ruta, matricula)
+    cursor.execute(sql, valores)
+    if cursor.rowcount == 0:
+        print(f"[AVISO] No se actualizó foto: matrícula '{matricula}' no encontrada en alumnos")
     return cursor.rowcount
 
 def insertar_tutores_usuarios(cursor, tutor):
@@ -187,13 +195,13 @@ def insertar_docentes(cursor, docente):
     return cursor.lastrowid
 
 # Ahora una sola línea, sin importar si el archivo es HTML disfrazado o .xlsx real
-hoja = leer_taca(r"C:\Users\Victo\OneDrive\Documentos\Actividades\TACA_03AJ6L.xls")
+hoja = leer_taca(r"C:\Users\crisf\OneDrive\Documentos\UPT\SEXTO CUATRIMESTRE_SERVICIO_SOCIAL_(TSU)\Proyecto_Documentacion\TACA_03AJ6L.xls")
 
-Contactos = pd.read_excel(r"C:\Users\Victo\OneDrive\Documentos\Actividades\Matricula_Actual(2).xls", skiprows= 8)
+Contactos = pd.read_excel(r"C:\Users\crisf\OneDrive\Documentos\UPT\SEXTO CUATRIMESTRE_SERVICIO_SOCIAL_(TSU)\Proyecto_Documentacion\proyecto 2026\Matricula_Actual(2).xls", skiprows= 8)
 
-fotos = importar_fotos(r"C:\Users\Victo\OneDrive\Documentos\Actividades\Matricula Total")
+fotos = importar_fotos(r"C:\Users\crisf\OneDrive\Documentos\UPT\SEXTO CUATRIMESTRE_SERVICIO_SOCIAL_(TSU)\Proyecto_Documentacion\Matricula Total")
 
-hoja3 = pd.read_excel(r"C:\Users\Victo\OneDrive\Documentos\Actividades\Datos Programa.xlsx", skiprows= 8)
+hoja3 = pd.read_excel(r"C:\Users\crisf\OneDrive\Documentos\UPT\SEXTO CUATRIMESTRE_SERVICIO_SOCIAL_(TSU)\Proyecto_Documentacion\Datos Programa.xlsx", skiprows= 8)
 
 hoja_docentes = pd.read_excel(r"C:\Users\crisf\OneDrive\Documentos\UPT\SEXTO CUATRIMESTRE_SERVICIO_SOCIAL_(TSU)\Proyecto_Documentacion\archivos de prueba\correos docentes.xlsx")
 
