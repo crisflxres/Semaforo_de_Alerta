@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crear Cuenta - Semáforo de Alerta Académica</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="../css/crear_cuenta.css">
+</head>
+<body>
+    <header class="header-institucional">
+        <div class="logos-container">
+            <img src="Logo-cecyteh.png" alt="Logo CECyTEH" class="logo-cecyteh">
+            <div class="divisor-linea"></div>
+            <img src="Logo-SEP.png" alt="Logo Gobierno del Estado de Hidalgo" class="logo-gobierno">
+        </div>
+        <div class="nombre-colegio">
+            Colegio de Estudios Científicos y Tecnológicos del Estado de Hidalgo
+        </div>
+    </header>
+    <main class="login-wrapper">
+        <section class="info-lado">
+            <h1 class="titulo-sistema">
+                Semáforo de <br>
+                <span>Alerta Académica</span>
+            </h1>
+        </section>
+        <section class="formulario-lado">
+            <div class="tarjeta-login">
+                <h2>Crear Cuenta</h2>
+                <p class="subtitulo">Completa los campos para crear un nuevo usuario</p>
+                <form id="formCrearCuenta">
+                    <div class="grupo-input">
+                        <div class="input-icono-wrapper">
+                            <i class="fa-regular fa-user"></i>
+                            <input type="text" id="nombre" placeholder="Nombre" required>
+                        </div>
+                    </div>
+                    <div class="grupo-input">
+                        <div class="input-icono-wrapper">
+                            <i class="fa-regular fa-user"></i>
+                            <input type="text" id="apellidos" placeholder="Apellidos" required>
+                        </div>
+                    </div>
+                    <div class="grupo-input">
+                        <div class="input-icono-wrapper">
+                            <i class="fa-regular fa-envelope"></i>
+                            <input type="email" id="email" placeholder="Correo electrónico" required>
+                        </div>
+                    </div>
+                    <div class="grupo-input">
+                        <div class="input-icono-wrapper">
+                            <i class="fa-solid fa-phone"></i>
+                            <input type="tel" id="telefono" placeholder="Teléfono" required>
+                        </div>
+                    </div>
+                    <div class="grupo-input">
+                        <div class="input-icono-wrapper">
+                            <i class="fa-solid fa-lock"></i>
+                            <input type="password" id="password" placeholder="Contraseña" required autocomplete="new-password">
+                        </div>
+                    </div>
+                    <div class="grupo-input">
+                        <div class="input-icono-wrapper">
+                            <i class="fa-solid fa-user-shield"></i>
+                            <select id="id_rol" required>
+                                <option value="" disabled selected>Selecciona un rol</option>
+                                <option value="1">Administrador</option>
+                                <option value="2">Docente</option>
+                                <option value="3">Tutor</option>
+                                <option value="4">Alumno</option>
+                                <!-- Ajusta estos valores/nombres según tu tabla de roles -->
+                            </select>
+                        </div>
+                    </div>
+                    <div id="mensajeError" class="mensaje-error" style="display:none; color:red;"></div>
+                    <div class="grupo-botones">
+                        <button type="submit" class="btn-iniciar">Crear Cuenta</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+        <script src="../js/crear_cuenta.js"></script>
+    </main>
+</body>
+</html>

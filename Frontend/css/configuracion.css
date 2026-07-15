@@ -1,257 +1,202 @@
-:root {
-    --guinda-principal: #6c1d35;
-    --guinda-oscuro: #4a1222;
-    --vino-oscuro: #4A0A18; /* Color institucional para el header, homologado con perfil.css */
-    --dorado-detalle: #bc955c;
-    --texto-oscuro: #333333;
-    --texto-mutado: #666666;
-    --fondo-gris: #f4f6f9;
-    --blanco: #ffffff;
-    --verde: #28a745;
-    --verde-claro: #e8f5e9;
-    --morado: #7c4dbe;
-    --morado-claro: #ede7f6;
+/* --- 1. GENERAL --- */
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif; }
+body {
+    background-color: #f4f7f6;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden; /* la página ya no scrollea; solo lo hará la lista de docentes */
 }
 
-* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-
-body { background-color: var(--fondo-gris); color: var(--texto-oscuro); min-height: 100vh; }
-
-/* HEADER */
-.header-institucional {
-    position: relative;
-   background-color: var(--vino-oscuro);
+/* --- 2. HEADER (igual que Aulas) --- */
+.main-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 10px 40px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    height: 64px;
+    background-color: #4A0A18;
+    padding: 10px 20px;
+    color: white;
+    flex-shrink: 0;
 }
-.menu-hamburguesa { font-size: 18px; color: var(--blanco); cursor: pointer; width: 35px; z-index: 2; }
-
-.logo-centro { 
-    position: absolute; 
-    left: 50%; 
-    transform: translateX(-50%);
-    display: flex; 
-    justify-content: center; 
-    align-items: center; 
-    pointer-events: none; 
-}
-
-.logo-centro img { 
-    height: 40px; 
-    width: auto; 
-    object-fit: contain; 
-    display: block; 
-    /* Se eliminó el transform: translateX(-50%) de aquí porque el contenedor .logo-centro ya se encarga del centrado */
+.menu-btn { cursor: pointer; font-size: 24px; z-index: 2; }
+.logo-container { flex: 1; text-align: center; }
+.logo { height: 40px; }
+.user-avatar {
+    background: #e0e0e0; border-radius: 50%;
+    width: 40px; height: 40px;
+    display: flex; align-items: center; justify-content: center;
+    color: #333; font-weight: bold;
 }
 
-/* DROPDOWN DE PERFIL INTERACTIVO */
-.perfil-usuario {
-    width: 37px;
+/* --- 3. PESTAÑAS (igual que Aulas) --- */
+.tabs-container { background: white; padding: 10px; border-bottom: 2px solid #ddd; flex-shrink: 0; }
+.tabs { display: flex; width: 100%; max-width: 1200px; margin: 0 auto; gap: 10px; }
+.tab-item {
+    flex: 1; text-align: center; padding: 15px 10px;
+    text-decoration: none; color: #555;
+    background-color: #fdf2f2; border: 1px solid transparent;
+    border-radius: 4px; font-weight: bold;
+}
+.tab-item.active { background-color: #4a151b; color: white; border-color: #4a151b; }
+
+/* --- 4. CONTENIDO --- */
+.container {
+    max-width: 1000px;
+    width: 100%;
+    margin: 30px auto;
+    padding: 0 20px;
+    flex: 1;
     display: flex;
-    justify-content: flex-end;
-    position: relative;
-    z-index: 2;
-}
-
-.perfil-usuario .avatar {
-    background-color: #bc955c;
-    color: #4a4a4a;                   
-    width: 38px;
-    height: 38px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-    font-size: 18px;
-    cursor: pointer;
-    user-select: none;
-    transition: transform 0.2s ease;
-}
-
-/* Efecto de pulsación al hacer clic */
-.perfil-usuario .avatar:active {
-    transform: scale(0.95);
-}
-
-.dropdown-perfil {
-    position: absolute;
-    top: 50px;
-    right: 0;
-    width: 220px;
-    background-color: var(--guinda-oscuro);
-    border-radius: 14px;
+    flex-direction: column;
+    min-height: 0; /* necesario para que el hijo con overflow funcione dentro del flex */
     overflow: hidden;
-    box-shadow: 0 8px 25px rgba(0,0,0,.30);
-    
-    /* Estado inicial oculto */
-    opacity: 0;
-    visibility: hidden;
-    transform: translateY(-10px);
-    transition: all .25s ease;
-    z-index: 2000;
 }
+.controls { display: flex; gap: 15px; margin-bottom: 20px; flex-shrink: 0; }
+.search-bar { flex-grow: 1; padding: 12px; border: 1px solid #ccc; border-radius: 4px; }
+.btn-primary { background: #4a1515; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; }
+.btn-secondary { background: #fff; color: #333; padding: 10px 20px; border: 1px solid #ccc; border-radius: 4px; cursor: pointer; }
 
-/* Clase interactiva que activa tu animación */
-.dropdown-perfil.show {
-    opacity: 1;
-    visibility: visible;
-    transform: translateY(0);
+.docente-card {
+    background: white; padding: 20px; border: 1px solid #ddd;
+    border-radius: 8px; display: flex; justify-content: space-between;
+    align-items: center; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
+.docente-info h3 { margin-bottom: 5px; color: #333; }
+.docente-info p { color: #666; font-size: 0.9em; }
+.docente-actions { display: flex; gap: 10px; }
+.btn-action { padding: 8px 12px; cursor: pointer; border: 1px solid #ccc; background: #fff; border-radius: 4px; }
 
-.lista-dropdown-perfil {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-}
-
-.lista-dropdown-perfil li {
-    list-style: none;
-}
-
-.lista-dropdown-perfil li a {
+/* --- 5. LAYOUT Y PANEL --- */
+.main-layout {
+    flex: 1;
+    min-height: 0;
     display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 14px 18px;
-    color: var(--blanco);
-    text-decoration: none;
-    font-size: 14px;
-    transition: .2s;
+    gap: 20px;
+    align-items: stretch; /* antes era flex-start; con stretch ambas columnas ocupan la altura disponible */
+    margin-top: 20px;
+}
+.left-side {
+    flex: 2;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
 }
 
-.lista-dropdown-perfil li a:hover {
-    background-color: #5d1a2d;
+/* Lista de docentes: es la que scrollea */
+#listaDocentes {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
 }
 
-.lista-dropdown-perfil li a i {
-    width: 18px;
-    text-align: center;
-    color: var(--dorado-detalle);
+#panelRegistro {
+    flex: 1; border: 1px solid #ddd;
+    padding: 20px; background: white; border-radius: 8px;
+    overflow-y: auto; /* por si el formulario crece, también scrollea internamente */
 }
+#panelRegistro input { width: 100%; padding: 10px; margin-bottom: 10px; display: block; }
+.hidden { display: none; }
+.panel-actions { display: flex; gap: 10px; }
+.paginacion-container { margin-top: 20px; display: flex; gap: 5px; justify-content: center; }
 
-.divisor-dropdown {
-    height: 1px;
-    background: rgba(255,255,255,.15);
-    margin: 4px 15px;
-}
-
-/* MENÚ FLOTANTE IZQUIERDO */
+/* --- 6. MENÚ FLOTANTE (igual que Aulas) --- */
 .menu-flotante-overlay {
-    position: fixed; top: 0; left: 0;
-    width: 100vw; height: 100vh;
-    background-color: rgba(0,0,0,0.4);
-    z-index: 1000; opacity: 0; pointer-events: none;
-    transition: opacity 0.25s ease;
+    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+    background-color: rgba(0,0,0,0.6); z-index: 1000;
+    opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
 }
 .menu-flotante-overlay.open { opacity: 1; pointer-events: auto; }
+
 .btn-cerrar-flotante {
-    position: absolute; top: 15px; left: 25px;
-    width: 55px; height: 55px;
-    background-color: var(--dorado-detalle);
+    position: absolute; top: 15px; left: 15px;
+    width: 50px; height: 50px; background-color: #d4b483;
     border-radius: 50%; border: 2px solid #000;
     display: flex; align-items: center; justify-content: center;
-    font-size: 28px; color: #000; cursor: pointer;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    font-size: 24px; color: #000; cursor: pointer;
 }
+
 .tarjeta-menu-flotante {
-    position: absolute; top: 85px; left: 25px;
-    width: 295px; background-color: var(--vino-oscuro);
-    border-radius: 24px; padding: 25px 22px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.35);
-    transform: translateY(-20px); transition: transform 0.3s ease;
+    position: absolute; top: 75px; left: 15px; width: 280px;
+    background-color: #4a151b; border-radius: 20px;
+    padding: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.4);
 }
-.menu-flotante-overlay.open .tarjeta-menu-flotante { transform: translateY(0); }
-.lista-menu-flotante { list-style: none; display: flex; flex-direction: column; gap: 18px; }
-.lista-menu-flotante li a { display: flex; align-items: center; gap: 15px; color: var(--blanco); text-decoration: none; font-size: 19px; }
+
+.lista-menu-flotante {
+    list-style: none; display: flex; flex-direction: column;
+    gap: 8px; padding: 0; margin: 0;
+}
+.lista-menu-flotante li a {
+    display: flex; align-items: center; gap: 12px;
+    color: #fff; text-decoration: none;
+    font-size: 18px; padding: 8px 10px;
+}
 .lista-menu-flotante li a span { text-decoration: underline; }
-.lista-menu-flotante .opcion-activa-figma { background-color: #cbb393; border-radius: 16px; padding: 6px 12px; }
-.lista-menu-flotante .opcion-activa-figma a span { text-decoration: none !important; color: #000; font-weight: 600; }
-.lista-menu-flotante .opcion-activa-figma a i { color: #000; }
+.opcion-activa-figma a span { text-decoration: none !important; }
 
-/* CONTENIDO */
-.contenido-principal { max-width: 900px; margin: 30px auto; padding: 0 20px; }
-.titulo-pagina { font-size: 26px; font-weight: 700; color: var(--guinda-principal); margin-bottom: 24px; }
-
-/* TARJETA IMPORTACIÓN */
-.tarjeta-importacion {
-    background: var(--blanco);
-    border-radius: 14px;
-    border: 1px solid #ddd;
-    padding: 28px;
-    margin-bottom: 24px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-}
-.grid-importacion {
-    display: grid;
-    grid-template-columns: 1fr 1px 1fr;
-    gap: 0 24px;
-    align-items: start;
-}
-
-.seccion-importar h3 { font-size: 16px; font-weight: 700; color: #222; margin-bottom: 4px; display: flex; align-items: center; gap: 10px; }
-.seccion-importar h3 .icono-tipo { width: 34px; height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; }
-.icono-verde-bg  { background-color: var(--verde-claro);  color: var(--verde); }
-.icono-morado-bg { background-color: var(--morado-claro); color: var(--morado); }
-.seccion-importar p { font-size: 12px; color: var(--texto-mutado); margin-bottom: 16px; margin-left: 44px; }
-
-/* ZONA DROP */
-.zona-drop {
-    border: 2px dashed #aaa;
-    border-radius: 10px;
-    padding: 28px 16px;
-    text-align: center;
+.opcion-activa-figma { background-color: #d4b483; border-radius: 12px; }
+.opcion-activa-figma a { color: #000 !important; font-weight: 600; padding: 10px 15px !important; }
+.opcion-activa-figma a i { color: #000; }
+/* --- 7. PAGINACIÓN (ya no se usa: todos los docentes se listan de una vez) --- */
+#paginacion { display: none; }
+.btn-pagina { padding: 8px 15px; border: 1px solid #ccc; background-color: white; cursor: pointer; border-radius: 6px; color: #333; font-weight: bold; }
+.btn-pagina.activa { background-color: #731a23; color: white; border-color: #731a23; }
+#inputRol {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: white;
+    color: #333;
+    font-size: 14px;
     cursor: pointer;
-    transition: all 0.2s ease;
-    margin-bottom: 14px;
-    position: relative;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath fill='%23731a23' d='M0 0l6 8 6-8z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
 }
-.zona-drop:hover, .zona-drop.dragover { opacity: 0.85; }
-.zona-drop-verde  { border-color: #7bc99a; background-color: #f0faf3; }
-.zona-drop-morado { border-color: #b39ddb; background-color: #f5f0fc; }
-.zona-drop i { font-size: 36px; display: block; margin-bottom: 10px; }
-.zona-drop-verde  i { color: var(--verde); }
-.zona-drop-morado i { color: var(--morado); }
-.zona-drop strong { display: block; font-size: 15px; font-weight: 700; color: #222; margin-bottom: 4px; }
-.zona-drop span   { font-size: 12px; color: #888; }
-.zona-drop input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
-
-/* MENSAJE ÉXITO */
-.mensaje-exito { display: none; align-items: center; gap: 12px; border-radius: 8px; padding: 12px 16px; font-size: 14px; font-weight: 500; }
-.mensaje-exito.verde  { background-color: #e8f5e9; color: #1b5e20; border: 1px solid #a5d6a7; }
-.mensaje-exito.morado { background-color: #ede7f6; color: #4a148c; border: 1px solid #ce93d8; }
-.mensaje-exito i { font-size: 20px; }
-.mensaje-exito.verde  i { color: var(--verde); }
-.mensaje-exito.morado i { color: var(--morado); }
-
-.divisor-vertical { width: 1px; background-color: #e0e0e0; }
-
-/* HISTORIAL */
-.tarjeta-historial { background: var(--blanco); border-radius: 14px; border: 1px solid #ddd; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-.cabecera-historial { background-color: var(--guinda-oscuro); padding: 16px 24px; display: flex; align-items: center; gap: 12px; color: var(--blanco); font-size: 16px; font-weight: 600; }
-.cabecera-historial i { font-size: 18px; opacity: 0.85; }
-
-table { width: 100%; border-collapse: collapse; font-size: 14px; }
-thead th { text-align: left; padding: 14px 20px; color: #333; font-weight: 700; border-bottom: 2px solid #eee; background: #fafafa; }
-tbody tr { border-bottom: 1px solid #f0f0f0; transition: background 0.15s; }
-tbody tr:hover { background-color: #fafafa; }
-tbody td { padding: 13px 20px; color: #444; vertical-align: middle; }
-
-.celda-archivo { display: flex; align-items: center; gap: 10px; }
-.icono-fila { width: 30px; height: 30px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
-
-/* Columna borrar */
-thead th:last-child { width: 50px; }
-tbody td:last-child { text-align: center; }
-
-/* Mensaje historial vacío */
-#historialVacio { text-align: center; padding: 30px; color: #aaa; font-size: 14px; }
 
 @media (max-width: 700px) {
     .grid-importacion { grid-template-columns: 1fr; }
     .divisor-vertical { display: none; }
+}
+.tarjeta-crear-cuenta {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 24px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border: 1px solid #eee;
+}
+.cabecera-crear-cuenta {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #850121;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.tarjeta-crear-cuenta p {
+    color: #666;
+    font-size: 0.9rem;
+    margin-bottom: 16px;
+}
+.btn-crear-cuenta-config {
+    background-color: #850121;
+    color: #fff;
+    border: none;
+    border-radius: 50px;
+    padding: 12px 24px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+}
+.btn-crear-cuenta-config:hover {
+    background-color: #561C24;
+    transform: translateY(-2px);
 }
