@@ -50,8 +50,8 @@ def insertar_alumnos_usuarios(cursor, alumno):
     return cursor.lastrowid
 
 def insertar_alumnos(cursor, alumno, id_grupo, id_usuario):
-    sql = """INSERT INTO alumnos (Matricula, Nombre, Apellidos, Id_Grupo, Foto, Email, id_usuario, PAC)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+    sql = """INSERT INTO alumnos (Matricula, Nombre, Apellidos, Id_Grupo, id_usuario, PAC)
+            VALUES (%s, %s, %s, %s, %s, %s)
             ON DUPLICATE KEY UPDATE PAC = VALUES(PAC)"""
     apellidos = alumno["apellido.p"] + " " + alumno["apellido.m"]
     valores = (
@@ -59,8 +59,6 @@ def insertar_alumnos(cursor, alumno, id_grupo, id_usuario):
         alumno["nombre(s)"],
         apellidos,
         id_grupo,
-        None,
-        None,
         id_usuario,
         alumno["PAC"],
     )
@@ -227,7 +225,7 @@ for alumno in alumnos:
     id_usuario = insertar_alumnos_usuarios(cursor, alumno)
     insertar_alumnos(cursor, alumno, 40, id_usuario)
 
-id_importacion = insertar_importacion (cursor, 40,"FEBRERO - JULIO 2026", os.path.basename(r"C:\Users\crisf\OneDrive\Documentos\UPT\SEXTO CUATRIMESTRE_SERVICIO_SOCIAL_(TSU)\Proyecto_Documentacion\TACA_03AL4I.xls"), None)
+id_importacion = insertar_importacion (cursor, 40,"FEBRERO - JULIO 2026", os.path.basename(r"C:\Users\Victo\OneDrive\Documentos\Actividades\archivos de prueba\correos docentes.xlsx"), None)
 
 for calificacion in calificaciones:
     id_materia = mapa_materias [calificacion["materia"]]
