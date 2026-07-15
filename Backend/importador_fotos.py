@@ -19,7 +19,7 @@ def importar_fotos(ruta_carpeta_foto):
 
 if __name__ == "__main__":
     
-    fotos = importar_fotos(r"C:\Users\crisf\OneDrive\Documentos\UPT\SEXTO CUATRIMESTRE_SERVICIO_SOCIAL_(TSU)\Proyecto_Documentacion\Matricula Total")
+    fotos = importar_fotos(r"C:\Users\aleja\OneDrive\Documentos\Archivos_bd\Matricula Total")
     
     for f in fotos:
         print(f)
