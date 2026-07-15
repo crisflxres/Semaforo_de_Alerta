@@ -1,3 +1,12 @@
+document.addEventListener('DOMContentLoaded', function () {
+    const rolUsuario = parseInt(localStorage.getItem('rolUsuario'));
+
+    if (rolUsuario !== 1) {
+        alert('No tienes permisos para acceder a esta sección.');
+        window.location.href = 'inicio.html';
+    }
+});
+
 document.getElementById("btnHamburguesa").addEventListener("click", () => document.getElementById("sidebarOverlay").classList.add("open"));
 document.getElementById("btnCerrarSidebar").addEventListener("click", () => document.getElementById("sidebarOverlay").classList.remove("open"));
 
@@ -237,3 +246,6 @@ if (btnCerrarSesion) {
         window.location.href = 'index.html';
     });
 }
+document.getElementById('btnIrCrearCuenta').addEventListener('click', function () {
+    window.location.href = 'crear_cuenta.html'; 
+});

@@ -9,7 +9,7 @@ def leer_taca(ruta_archivo):
     """
     try:
         # Intento 1: formato HTML disfrazado (el más común)
-        tablas = pd.read_html(ruta_archivo, encoding='cp1252')
+        tablas = pd.read_html(ruta_archivo, encoding='utf-8')
         hoja = tablas[0]
         return hoja
     except Exception as error_html:
@@ -31,14 +31,15 @@ def limpiar_texto(valor):
         return ""
     return str(valor).strip()
 
-def importar_alumnos (hoja):
-    alumnos:list =[]
-    
+def importar_alumnos(hoja):
+    alumnos: list = []
+
     for i, fila in hoja.iterrows():
-        if str(fila[0]).startswith("M") and len(str(fila[0])) >= 15:
-            ultima_columna= hoja.shape[1] - 1
-            alumno:dict = {
-                "matricula": fila[0],
+        texto = str(fila[0])
+        if texto[1:].isdigit() and len(texto[1:]) >= 14:
+            ultima_columna = hoja.shape[1] - 1
+            alumno: dict = {
+                "matricula": texto[1:],
                 "apellido.p": limpiar_texto(fila[1]),
                 "apellido.m": limpiar_texto(fila[2]),
                 "nombre(s)": limpiar_texto(fila[3]),
@@ -90,7 +91,8 @@ def importar_calificaciones(hoja, materias):
     calificaciones:list = []
     
     for i, fila in hoja.iterrows():
-        if str(fila[0]).startswith("M") and len(str(fila[0])) >= 15:
+        texto = str(fila[0])
+        if texto[1:].isdigit() and len(texto[1:]) >= 14:
             for materia in materias:
                 P1 = limpiar_calificacion(fila[materia["columna"]])
                 P2 = limpiar_calificacion(fila[materia["columna"] + 1])
@@ -111,7 +113,7 @@ def importar_calificaciones(hoja, materias):
 
                 
                 calificacion:dict = {
-                    "matricula": fila[0],
+                    "matricula": texto[1:],
                     "materia": materia["nombre"],
                     "P1": P1,
                     "P2": P2,
