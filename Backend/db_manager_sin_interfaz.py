@@ -195,15 +195,15 @@ def insertar_docentes(cursor, docente):
     return cursor.lastrowid
 
 # Ahora una sola línea, sin importar si el archivo es HTML disfrazado o .xlsx real
-hoja = leer_taca(r"C:\Users\manuv\OneDrive\Documentos\6 Cuatri\Archivos proyecto\TACA_03AJ6L.xls")
+hoja = leer_taca(r"C:\Users\aleja\OneDrive\Documentos\SEXTO CUATRI-PROYECTO ESTADÍA\TACA_03AL4I (1).xlsx")
 
-Contactos = pd.read_excel(r"C:\Users\manuv\OneDrive\Documentos\6 Cuatri\Archivos proyecto\Matricula_Actual(2).xls")
+Contactos = pd.read_excel(r"C:\Users\aleja\OneDrive\Documentos\Matricula_Actual(2).xls")
 
-fotos = importar_fotos(r"c:\Users\manuv\OneDrive\Documentos\6 Cuatri\Archivos proyecto\Matricula Total")
+fotos = importar_fotos(r"C:\Users\aleja\OneDrive\Documentos\Archivos_bd\Matricula Total")
 
-hoja3 = pd.read_excel(r"C:\Users\manuv\OneDrive\Documentos\6 Cuatri\Archivos proyecto\Datos Programa.xlsx")
+hoja3 = pd.read_excel(r"C:\Users\aleja\OneDrive\Documentos\Archivos_bd\Datos Programa.xlsx", skiprows= 8)
 
-hoja_docentes = pd.read_excel(r"C:\Users\manuv\OneDrive\Documentos\6 Cuatri\Archivos proyecto\correos docentes.xlsx")
+hoja_docentes = pd.read_excel(r"C:\Users\aleja\OneDrive\Documentos\Archivos_bd\archivos de prueba\archivos de prueba\correos docentes.xlsx")
 
 hoja2 = Contactos
 

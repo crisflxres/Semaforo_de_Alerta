@@ -221,7 +221,7 @@ def crear_usuario():
         }), 500
 
 # --- Fotos de alumnos (agregado por tu compañero) ---
-CARPETA_FOTOS = r"c:\Users\manuv\OneDrive\Documentos\6 Cuatri\Archivos proyecto\Matricula Total"
+CARPETA_FOTOS = r"C:\Users\aleja\OneDrive\Documentos\Archivos_bd\Matricula Total"
 
 def construir_mapa_fotos(carpeta):
     mapa = {}
@@ -243,6 +243,8 @@ def get_foto(matricula):
         return send_file(ruta, mimetype="image/jpeg")
     print(f"No se encontró foto para matrícula: {nombre}")
     return "", 404
+
+
 
 
 @app.route('/recuperar', methods=['POST'])
