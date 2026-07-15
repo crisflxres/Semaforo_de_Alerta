@@ -21,6 +21,14 @@ def insertar_materia(cursor, materia, id_carrera, semestre, periodo):
     resultado = cursor.fetchone()
     return resultado[0]
 
+def normalizar_matricula(matricula):
+    """Quita el prefijo 'M' si existe, para que coincida con el formato
+    guardado en alumnos.Matricula (sin la M)."""
+    matricula = str(matricula).strip()
+    if matricula.upper().startswith("M") and matricula[1:].isdigit():
+        matricula = matricula[1:]
+    return matricula
+
 def insertar_alumnos_usuarios(cursor, alumno):
     # Si el usuario ya existe (misma matrícula como Email), no lo volvemos a crear
     cursor.execute("SELECT Id_Usuario FROM usuarios WHERE Email = %s", (alumno["matricula"],))
@@ -110,21 +118,21 @@ def insertar_alerta(cursor, matricula, periodo, materias_reprobadas, pac):
     return cursor.lastrowid
 
 def actualizar_correo(cursor, contacto):
+    matricula = normalizar_matricula(contacto["matricula"])
     sql = "UPDATE alumnos SET Email = %s WHERE Matricula = %s"
-    valores = (
-        contacto["correo"], 
-        contacto["matricula"]
-    )
-    cursor.execute(sql,valores)
+    valores = (contacto["correo"], matricula)
+    cursor.execute(sql, valores)
+    if cursor.rowcount == 0:
+        print(f"[AVISO] No se actualizó correo: matrícula '{matricula}' no encontrada en alumnos")
     return cursor.rowcount
 
 def actualizar_fotos(cursor, matricula, ruta):
+    matricula = normalizar_matricula(matricula)
     sql = "UPDATE alumnos SET Foto= %s WHERE Matricula = %s"
-    valores = (
-        ruta,
-        matricula
-    )
-    cursor.execute(sql,valores)
+    valores = (ruta, matricula)
+    cursor.execute(sql, valores)
+    if cursor.rowcount == 0:
+        print(f"[AVISO] No se actualizó foto: matrícula '{matricula}' no encontrada en alumnos")
     return cursor.rowcount
 
 def insertar_tutores_usuarios(cursor, tutor):

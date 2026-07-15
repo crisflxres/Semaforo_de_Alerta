@@ -1,7 +1,5 @@
 // ── VARIABLES GLOBALES ──────────────────────────────────────────────────────
 let docentes = [];
-let paginaActual = 1;
-const porPagina = 5;
 
 // ── CARGAR DOCENTES DESDE LA BD ─────────────────────────────────────────────
 async function cargarDocentes() {
@@ -26,10 +24,8 @@ function renderizar() {
     const filtrados = docentes.filter(d => d.nombre.toLowerCase().includes(term));
 
     lista.innerHTML = '';
-    const inicio = (paginaActual - 1) * porPagina;
-    const paginaDocentes = filtrados.slice(inicio, inicio + porPagina);
 
-    paginaDocentes.forEach((doc) => {
+    filtrados.forEach((doc) => {
         lista.innerHTML += `
         <div class="docente-card">
             <div><h3>${doc.nombre}</h3><p>${doc.email}</p><p>${doc.tel}</p><p>${doc.rol}</p></div>
@@ -39,44 +35,6 @@ function renderizar() {
             </div>
         </div>`;
     });
-
-    renderizarPaginacion(filtrados.length);
-}
-
-// ── PAGINACIÓN ───────────────────────────────────────────────────────────────
-function renderizarPaginacion(totalFiltrados) {
-    const totalPaginas = Math.ceil(totalFiltrados / porPagina);
-    const paginacion = document.getElementById('paginacion');
-    paginacion.innerHTML = '';
-
-    const btnAnterior = document.createElement('button');
-    btnAnterior.textContent = '‹';
-    btnAnterior.className = 'btn-pagina';
-    btnAnterior.disabled = paginaActual === 1;
-    btnAnterior.addEventListener('click', () => {
-        if (paginaActual > 1) { paginaActual--; renderizar(); }
-    });
-    paginacion.appendChild(btnAnterior);
-
-    for (let i = 1; i <= totalPaginas; i++) {
-        const btn = document.createElement('button');
-        btn.textContent = i;
-        btn.className = i === paginaActual ? 'btn-pagina activa' : 'btn-pagina';
-        btn.addEventListener('click', () => {
-            paginaActual = i;
-            renderizar();
-        });
-        paginacion.appendChild(btn);
-    }
-
-    const btnSiguiente = document.createElement('button');
-    btnSiguiente.textContent = '›';
-    btnSiguiente.className = 'btn-pagina';
-    btnSiguiente.disabled = paginaActual === totalPaginas;
-    btnSiguiente.addEventListener('click', () => {
-        if (paginaActual < totalPaginas) { paginaActual++; renderizar(); }
-    });
-    paginacion.appendChild(btnSiguiente);
 }
 
 // ── CRUD ─────────────────────────────────────────────────────────────────────
@@ -140,7 +98,6 @@ async function eliminar(id) {
 }
 
 document.getElementById('buscador').addEventListener('input', () => {
-    paginaActual = 1;
     renderizar();
 });
 
