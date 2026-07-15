@@ -193,13 +193,13 @@ def insertar_docentes(cursor, docente):
     return cursor.lastrowid
 
 # Ahora una sola línea, sin importar si el archivo es HTML disfrazado o .xlsx real
-hoja = leer_taca(r"C:\Users\manuv\OneDrive\Documentos\6 Cuatri\Archivos proyecto\TACA_03AJ6L.xls")
+hoja = leer_taca(r"C:\Users\Victo\OneDrive\Documentos\Actividades\TACA_03AJ6L.xls")
 
-Contactos = pd.read_excel(r"C:\Users\manuv\OneDrive\Documentos\6 Cuatri\Archivos proyecto\Matricula_Actual(2).xls")
+Contactos = pd.read_excel(r"C:\Users\Victo\OneDrive\Documentos\Actividades\Matricula_Actual(2).xls")
 
-fotos = importar_fotos(r"c:\Users\manuv\OneDrive\Documentos\6 Cuatri\Archivos proyecto\Matricula Total")
+fotos = importar_fotos(r"C:\Users\Victo\OneDrive\Documentos\Actividades\Matricula Total")
 
-hoja3 = pd.read_excel(r"C:\Users\manuv\OneDrive\Documentos\6 Cuatri\Archivos proyecto\Datos Programa.xlsx")
+hoja3 = pd.read_excel(r"C:\Users\Victo\OneDrive\Documentos\Actividades\Datos Programa.xlsx")
 
 hoja_docentes = pd.read_excel(r"C:\Users\Victo\OneDrive\Documentos\Actividades\archivos de prueba\correos docentes.xlsx")
 
@@ -225,7 +225,7 @@ for alumno in alumnos:
     id_usuario = insertar_alumnos_usuarios(cursor, alumno)
     insertar_alumnos(cursor, alumno, 40, id_usuario)
 
-id_importacion = insertar_importacion (cursor, 40,"FEBRERO - JULIO 2026", os.path.basename(r"C:\Users\crisf\OneDrive\Documentos\UPT\SEXTO CUATRIMESTRE_SERVICIO_SOCIAL_(TSU)\Proyecto_Documentacion\TACA_03AL4I.xls"), None)
+id_importacion = insertar_importacion (cursor, 40,"FEBRERO - JULIO 2026", os.path.basename(r"C:\Users\Victo\OneDrive\Documentos\Actividades\archivos de prueba\correos docentes.xlsx"), None)
 
 for calificacion in calificaciones:
     id_materia = mapa_materias [calificacion["materia"]]
