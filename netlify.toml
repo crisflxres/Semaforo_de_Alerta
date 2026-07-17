@@ -1,12 +1,8 @@
-[
-build
-]
+[build]
   base = "Frontend"
   publish = "Frontend"
 
-[[
-redirects
-]]
+[[redirects]]
   from = "/"
   to = "/html/index.html"
   status = 301
