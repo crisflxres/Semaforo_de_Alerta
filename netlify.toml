@@ -1,0 +1,12 @@
+[
+build
+]
+  base = "Frontend"
+  publish = "Frontend"
+
+[[
+redirects
+]]
+  from = "/"
+  to = "/html/index.html"
+  status = 301
