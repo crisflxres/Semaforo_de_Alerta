@@ -128,17 +128,34 @@ function procesarContactos(archivo) {
     const ahora = new Date();
     const fecha = ahora.toLocaleDateString('es-MX');
     const hora = ahora.toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' });
-    const registros = Math.floor(Math.random() * 500) + 1000;
     const urlArchivo = URL.createObjectURL(archivo);
+    
+    if (!silencioso) {
+        const msg = document.getElementById    ('exitoContactos');
+        const textoMsg = document.getElementById   ('textoExitoContactos');
+        textoMsg.textContent = `Archivo ${nombre}      cargado, ${registros} contactos vinculados.`;
+        msg.style.display = 'flex';
+    }
 
-    const msg = document.getElementById('exitoContactos');
-    const textoMsg = document.getElementById('textoExitoContactos');
-    textoMsg.textContent = `Archivo ${nombre} cargado, ${registros} contactos vinculados.`;
-    msg.style.display = 'flex';
-
-    agregarHistorial(nombre, fecha, hora, `${registros} regs`, 'contactos', urlArchivo, archivo.name);
+    agregarHistorial(nombre, fecha, hora, `${registros} regs`, 'contactos', urlArchivo, archivo.name, data.id_importacion);
 
     setTimeout(() => { msg.style.display = 'none'; }, 5000);
+}
+
+function leerCarpetaRecursiva(directoryEntry) {
+    return new Promise ((resolve, reject) => {
+        const lector = directoryEntry.createReader();
+        const archivosEncontrados = [];
+
+        function LeerSiguienteBloque() {
+            lector.readEntries((entradas) => {
+                if (entradas.length === 0) {
+                    resolve(archivosEncontrados)
+                }
+            }, reject);
+        }
+        LeerSiguienteBloque();
+    });
 }
 
 function agregarHistorial(nombre, fecha, hora, registros, tipo, urlArchivo, nombreArchivo, idImportacion) {
