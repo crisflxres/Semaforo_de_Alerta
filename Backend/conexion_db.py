@@ -6,8 +6,13 @@ def obtener_conexion():
     database_url = os.environ.get("DATABASE_URL")
 
     if database_url:
-        # Estamos en Render/producción: parseamos la URL de Aiven
         resultado = urlparse(database_url)
+        print("DATABASE_URL:", database_url)
+        print("HOST:", resultado.hostname)
+        print("PORT:", resultado.port)
+        print("USER:", resultado.username)
+        print("DB:", resultado.path)
+        
         conn = mysql.connector.connect(
             host=resultado.hostname,
             port=resultado.port,
@@ -15,7 +20,7 @@ def obtener_conexion():
             password=resultado.password,
             database=resultado.path.lstrip('/'),
             use_pure=True,
-            ssl_verify_cert=False
+            ssl_disabled=False
         )
     else:
         # Estamos en local con XAMPP (fallback para desarrollo)
