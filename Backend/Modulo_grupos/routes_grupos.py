@@ -13,9 +13,16 @@ def get_grupos():
         conexion = obtener_conexion()
         cursor = conexion.cursor(dictionary=True)
         cursor.execute("""
-            SELECT Id_Grupo, Nombre, Semestre, Turno
-            FROM grupos
-            ORDER BY Nombre
+            SELECT 
+                g.Id_Grupo, 
+                g.Nombre, 
+                g.Semestre, 
+                g.Turno,
+                COUNT(a.Matricula) AS Alumnos
+            FROM grupos g
+            LEFT JOIN alumnos a ON a.Id_Grupo = g.Id_Grupo AND a.Activo = 1
+            GROUP BY g.Id_Grupo, g.Nombre, g.Semestre, g.Turno
+            ORDER BY g.Nombre
         """)
         grupos = cursor.fetchall()
         cursor.close()

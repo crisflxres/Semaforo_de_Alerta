@@ -157,3 +157,82 @@ body {
 }
 
 #inputRol:focus { outline: none; border-color: #731a23;}
+
+/* --- DROPDOWN DE PERFIL (integrado desde Inicio) --- */
+.perfil-usuario {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.dropdown-perfil {
+    position: absolute;
+    top: 50px;
+    right: 0;
+    width: 180px;
+    background-color: #4a1222;
+    border-radius: 14px;
+    padding: 12px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+    z-index: 999;
+
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-10px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.dropdown-perfil.open {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+}
+
+.lista-dropdown-perfil {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin: 0;
+    padding: 0;
+}
+
+.lista-dropdown-perfil li a {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: #ffffff;
+    text-decoration: none;
+    font-size: 15px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    transition: background-color 0.2s ease;
+}
+
+.lista-dropdown-perfil li a:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.lista-dropdown-perfil li a i {
+    font-size: 16px;
+    width: 20px;
+    text-align: center;
+    color: #bc955c;
+}
+
+.divisor-dropdown {
+    height: 1px;
+    background-color: rgba(255, 255, 255, 0.15);
+    margin: 4px 0;
+}
+
+/* --- Animación del avatar (igual que en Inicio) --- */
+.perfil-usuario .user-avatar {
+    cursor: pointer;
+    user-select: none;
+    transition: transform 0.2s ease;
+}
+
+.perfil-usuario .user-avatar:active {
+    transform: scale(0.95);
+}
