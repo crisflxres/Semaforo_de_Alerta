@@ -66,7 +66,7 @@ const matricula = localStorage.getItem('matriculaSeleccionada');
 
 if (matricula) {
     // Datos del alumno
-    fetch('http://127.0.0.1:5000/api/alumnos')
+    fetch('https://semaforo-de-alerta.onrender.com/api/alumnos')
         .then(res => res.json())
         .then(data => {
             const alumno = data.lista.find(a => a.matricula === matricula);
@@ -79,12 +79,12 @@ if (matricula) {
                 carrera: alumno.carrera,
                 grupo: alumno.grupo,
                 turno: alumno.turno,
-                fotoUrl: `http://127.0.0.1:5000/fotos/${alumno.matricula}`
+                fotoUrl: `https://semaforo-de-alerta.onrender.com/fotos/${alumno.matricula}`
             });
         });
 
     // Calificaciones para el resumen
-    fetch(`http://127.0.0.1:5000/calificaciones/${matricula}`)
+    fetch(`https://semaforo-de-alerta.onrender.com/calificaciones/${matricula}`)
         .then(res => res.json())
         .then(respuesta => {
             if (!respuesta.success) return;

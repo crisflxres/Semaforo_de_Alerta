@@ -93,7 +93,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const matricula = localStorage.getItem('matriculaSeleccionada');
 
     if (matricula) {
-        fetch(`http://127.0.0.1:5000/calificaciones/${matricula}`)
+        fetch(`https://semaforo-de-alerta.onrender.com/calificaciones/${matricula}`)
             .then(res => res.json())
             .then(respuesta => {
                 if (!respuesta.success) return;

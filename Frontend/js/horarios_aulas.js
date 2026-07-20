@@ -23,7 +23,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         try {
 
-            const respuesta = await fetch("http://127.0.0.1:5000/api/aulas");
+            const respuesta = await fetch("https://semaforo-de-alerta.onrender.com/api/aulas");
             const resultado = await respuesta.json();
 
             if (resultado.success) {
@@ -72,7 +72,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Mostrar el siguiente ID disponible (solo informativo, el backend lo recalcula al guardar)
         try {
-            const respuesta = await fetch("http://127.0.0.1:5000/api/aulas/siguiente-id");
+            const respuesta = await fetch("https://semaforo-de-alerta.onrender.com/api/aulas/siguiente-id");
             const resultado = await respuesta.json();
             if (resultado.success) {
                 document.getElementById("inputIdAula").value = resultado.siguiente_id;
@@ -103,7 +103,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             try {
 
-                const respuesta = await fetch("http://127.0.0.1:5000/api/aulas", {
+                const respuesta = await fetch("https://semaforo-de-alerta.onrender.com/api/aulas", {
 
                     method: "POST",
 
@@ -150,7 +150,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             try {
 
-                const respuesta = await fetch(`http://127.0.0.1:5000/api/aulas/${id}`, {
+                const respuesta = await fetch(`https://semaforo-de-alerta.onrender.com/api/aulas/${id}`, {
 
                     method: "PUT",
 
@@ -319,7 +319,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         try {
 
-            const respuesta = await fetch(`http://127.0.0.1:5000/api/aulas/${aula.id}`, {
+            const respuesta = await fetch(`https://semaforo-de-alerta.onrender.com/api/aulas/${aula.id}`, {
                 method: "DELETE"
             });
 

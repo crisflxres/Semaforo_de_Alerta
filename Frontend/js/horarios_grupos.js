@@ -22,7 +22,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const colores = ["bg-rosa","bg-azul","bg-amarillo","bg-verde","bg-naranja",
                      "bg-morado","bg-azul_claro","bg-cafe","bg-gris","bg-rojo"];
 
-    fetch("http://localhost:5000/grupos")
+    fetch("https://semaforo-de-alerta.onrender.com/grupos")
         .then(res => res.json())
         .then(respuesta => {
             if (respuesta.success) {

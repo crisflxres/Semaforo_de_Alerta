@@ -89,7 +89,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 async function cargarDatosDashboard() {
     try {
-        const respuesta = await fetch('http://127.0.0.1:5000/api/dashboard-stats');
+        const respuesta = await fetch('https://semaforo-de-alerta.onrender.com/api/dashboard-stats');
         const data = await respuesta.json();
 
         if (data.success) {
