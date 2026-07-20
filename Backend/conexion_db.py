@@ -20,8 +20,9 @@ def obtener_conexion():
             password=resultado.password,
             database=resultado.path.lstrip('/'),
             use_pure=True,
-            ssl_verify_cert=False
+            ssl_disabled=False
         )
+        print("CONEXION AIVEN EXITOSA")
     else:
         # Estamos en local con XAMPP (fallback para desarrollo)
         conn = mysql.connector.connect(
