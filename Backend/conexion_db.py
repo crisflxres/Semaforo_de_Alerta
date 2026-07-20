@@ -12,7 +12,7 @@ def obtener_conexion():
         print("PORT:", resultado.port)
         print("USER:", resultado.username)
         print("DB:", resultado.path)
-        
+
         conn = mysql.connector.connect(
             host=resultado.hostname,
             port=resultado.port,
@@ -20,7 +20,7 @@ def obtener_conexion():
             password=resultado.password,
             database=resultado.path.lstrip('/'),
             use_pure=True,
-            ssl_disabled=False
+            ssl_verify_cert=False
         )
     else:
         # Estamos en local con XAMPP (fallback para desarrollo)
