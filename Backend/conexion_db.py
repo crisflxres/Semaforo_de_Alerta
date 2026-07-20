@@ -7,12 +7,7 @@ def obtener_conexion():
 
     if database_url:
         resultado = urlparse(database_url)
-        print("DATABASE_URL:", database_url)
-        print("HOST:", resultado.hostname)
-        print("PORT:", resultado.port)
-        print("USER:", resultado.username)
-        print("DB:", resultado.path)
-
+        
         conn = mysql.connector.connect(
             host=resultado.hostname,
             port=resultado.port,
@@ -22,7 +17,6 @@ def obtener_conexion():
             use_pure=True,
             ssl_disabled=False
         )
-        print("CONEXION AIVEN EXITOSA")
     else:
         # Estamos en local con XAMPP (fallback para desarrollo)
         conn = mysql.connector.connect(
