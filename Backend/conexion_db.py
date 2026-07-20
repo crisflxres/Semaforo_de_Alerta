@@ -6,8 +6,8 @@ def obtener_conexion():
     database_url = os.environ.get("DATABASE_URL")
 
     if database_url:
-        # Estamos en Render/producción: parseamos la URL de Aiven
         resultado = urlparse(database_url)
+        
         conn = mysql.connector.connect(
             host=resultado.hostname,
             port=resultado.port,
