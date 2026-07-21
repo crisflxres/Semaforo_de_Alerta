@@ -52,15 +52,15 @@ def insertar_alumnos_usuarios(cursor, alumno):
     return resultado[0]
 
 def insertar_alumnos(cursor, alumno, id_grupo, id_usuario):
-    sql = "INSERT INTO alumnos (Matricula, Nombre, Apellidos, Id_Grupo, Foto, Email, id_usuario, PAC) VALUES (%s, %s, %s, %s, %s, %s, %s, %s) ON DUPLICATE KEY UPDATE PAC = VALUES(PAC)" 
+    sql = """INSERT INTO alumnos (Matricula, Nombre, Apellidos, Id_Grupo, id_usuario, PAC)
+            VALUES (%s, %s, %s, %s, %s, %s)
+            ON DUPLICATE KEY UPDATE PAC = VALUES(PAC)"""
     apellidos = alumno["apellido.p"] + " " + alumno["apellido.m"]
     valores = (
         alumno["matricula"],
         alumno["nombre(s)"],
         apellidos,
         id_grupo,
-        None,
-        None,
         id_usuario,
         alumno["PAC"],
     )
