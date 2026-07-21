@@ -236,3 +236,35 @@ body {
 .perfil-usuario .user-avatar:active {
     transform: scale(0.95);
 }
+
+/* ==========================================================================
+   RESPONSIVE DESIGN
+   ========================================================================== */
+@media (max-width: 992px) {
+    .main-layout { flex-direction: column; }
+    .left-side, #panelRegistro { width: 100%; flex: none; }
+}
+
+@media (max-width: 768px) {
+    body { overflow: auto; height: auto; } /* en móvil dejamos que la página scrollee normal */
+    .logo { height: 32px; }
+
+    .tabs { flex-wrap: wrap; }
+    .tab-item { flex: 1 1 45%; font-size: 0.85rem; padding: 10px 6px; }
+
+    .controls { flex-direction: column; align-items: stretch; }
+    .search-bar { width: 100%; }
+
+    .docente-card {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    .docente-actions { align-self: flex-end; }
+}
+
+@media (max-width: 480px) {
+    .tab-item { flex: 1 1 100%; }
+    .container { padding: 0 12px; }
+    .tarjeta-menu-flotante { width: 240px; }
+}

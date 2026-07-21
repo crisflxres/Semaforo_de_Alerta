@@ -22,6 +22,14 @@ document.addEventListener("DOMContentLoaded", () => {
     ];
     const dias = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes"];
 
+    function normalizarTexto(txt) {
+        return txt.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
+    }
+
+    function diaCanonico(diaDB) {
+        return dias.find(d => normalizarTexto(d) === normalizarTexto(diaDB)) || diaDB;
+    }
+
     const coloresClase = [
         "#bbdefb", "#c8e6c9", "#e1bee7", "#b2ebf2",
         "#ffe0b2", "#fce4ec", "#fff9c4", "#dcedc8"
@@ -182,9 +190,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
             json.data.forEach(h => {
                 const label = labelDesdeHoraSQL(h.Hora_Inicio);
-                if (!label) return;
-                const key = `${label}|${h.Dia_Semana}|${h.Id_Grupo}|${h.Id_Materia}`;
-
+                const diaMatch = diaCanonico(h.Dia_Semana);
+                const key = `${label}|${diaMatch}|${h.Id_Grupo}|${h.Id_Materia}`;    
+                
                 clases[key] = {
                     materia: h.Materia,
                     docente: h.Docente,

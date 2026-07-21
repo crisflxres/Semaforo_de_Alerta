@@ -252,3 +252,70 @@ body { font-family: Arial, sans-serif; background-color: #fcfcfc; }
 .perfil-usuario .user-avatar:active {
     transform: scale(0.95);
 }
+
+/* ==========================================================================
+   RESPONSIVE DESIGN
+   ========================================================================== */
+@media (max-width: 992px) {
+    /* La tabla y el panel de nueva clase se apilan en vez de ir lado a lado */
+    .layout-horarios {
+        flex-direction: column;
+    }
+    .contenedor-horarios,
+    #panelNuevaClase {
+        width: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    /* Header: logo se hace más chico para dejar espacio al menú y al avatar */
+    .logo { height: 32px; }
+
+    /* Pestañas: en vez de una fila apretada, se envuelven en varias líneas */
+    .tabs {
+        flex-wrap: wrap;
+    }
+    .tab-item {
+        flex: 1 1 45%;
+        font-size: 0.85rem;
+        padding: 10px 6px;
+    }
+
+    /* Filtros: de 4 columnas a 2 */
+    .filtros-container {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    /* La cuadrícula de horarios es angosta: permite scroll horizontal en vez
+       de aplastar las 5 columnas de días */
+    .contenedor-horarios {
+        overflow-x: auto;
+    }
+    .grid-horarios {
+        min-width: 650px; /* asegura que cada columna de día siga siendo legible */
+    }
+}
+
+@media (max-width: 480px) {
+    .layout-horarios {
+        padding: 0 8px;
+    }
+
+    /* En pantallas muy chicas, una pestaña por línea */
+    .tab-item {
+        flex: 1 1 100%;
+    }
+
+    /* Filtros: una sola columna */
+    .filtros-container {
+        grid-template-columns: 1fr;
+    }
+    .filtro-item select {
+        max-width: 100%;
+    }
+
+    /* Menú flotante lateral un poco más angosto */
+    .tarjeta-menu-flotante {
+        width: 240px;
+    }
+}
