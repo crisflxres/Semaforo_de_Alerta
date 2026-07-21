@@ -447,16 +447,24 @@ body {
    RESPONSIVE DESIGN
    ========================================================================== */
 @media (max-width: 992px) {
-    .grid-semaforo { grid-template-columns: 1fr; }
-    .grid-info-docente { 
-        grid-template-columns: 1fr; 
-        gap: 16px;
-    }
-    .bloque-docente-perfil:not(:last-child)::after { display: none; }
-    .grid-accesos-grandes { grid-template-columns: 1fr; }
+    .main-layout { flex-direction: column; }
+    .inicio-container, #panelRegistro { width: 100%; }
+    .grid-tarjetas { grid-template-columns: repeat(2, 1fr); }
 }
 
 @media (max-width: 768px) {
-    .contenido-principal { padding: 20px; }
-    .header-institucional { padding: 0 20px; }
+    .logo { height: 32px; }
+
+    .tabs { flex-wrap: wrap; }
+    .tab-item { flex: 1 1 45%; font-size: 0.85rem; padding: 10px 6px; }
+
+    .contenedor-grupos { padding: 15px; margin: 15px auto; }
+    .header-grupos { flex-direction: column; align-items: stretch; gap: 10px; }
+    .input-buscar { width: 100%; }
+}
+
+@media (max-width: 480px) {
+    .tab-item { flex: 1 1 100%; }
+    .grid-tarjetas { grid-template-columns: 1fr; padding: 12px; }
+    .tarjeta-menu-flotante { width: 240px; }
 }

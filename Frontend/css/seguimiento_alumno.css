@@ -105,3 +105,29 @@ body { background-color: var(--bg-main); color: var(--text-dark); padding-bottom
 .opcion-activa-figma { background-color: #d4b483; border-radius: 12px; }
 .opcion-activa-figma a { color: #000 !important; font-weight: 600; padding: 10px 15px !important; }
 .opcion-activa-figma a i { color: #000; }
+
+/* ==========================================================================
+   RESPONSIVE DESIGN
+   ========================================================================== */
+@media (max-width: 992px) {
+    .main-layout { flex-direction: column; }
+    .seguimiento-alumno-container, #panelRegistro { width: 100%; }
+    .grid-tarjetas { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 768px) {
+    .logo { height: 32px; }
+
+    .tabs { flex-wrap: wrap; }
+    .tab-item { flex: 1 1 45%; font-size: 0.85rem; padding: 10px 6px; }
+
+    .contenedor-grupos { padding: 15px; margin: 15px auto; }
+    .header-grupos { flex-direction: column; align-items: stretch; gap: 10px; }
+    .input-buscar { width: 100%; }
+}
+
+@media (max-width: 480px) {
+    .tab-item { flex: 1 1 100%; }
+    .grid-tarjetas { grid-template-columns: 1fr; padding: 12px; }
+    .tarjeta-menu-flotante { width: 240px; }
+}
