@@ -7,9 +7,9 @@ from email.mime.text import MIMEText
 from email.mime.image import MIMEImage
 
 SMTP_SERVER   = "smtp.gmail.com"
-SMTP_PORT     = 587
+SMTP_PORT     = 465
 SMTP_EMAIL    = "vicmanu315623@gmail.com"
-SMTP_PASSWORD = "plpyyluikspahcdz"
+SMTP_PASSWORD = "rqzsmepyuctjjrey"
 
 def enviar_correo(destinatario, asunto, cuerpo_procesado, imagenes):
     """
@@ -34,8 +34,7 @@ def enviar_correo(destinatario, asunto, cuerpo_procesado, imagenes):
             img.add_header("Content-Disposition", "inline", filename=f"{cid}.{tipo}")
             msg.attach(img)
 
-        with smtplib.SMTP(SMTP_SERVER, SMTP_PORT) as servidor:
-            servidor.starttls()
+        with smtplib.SMTP_SSL(SMTP_SERVER, SMTP_PORT) as servidor:
             servidor.login(SMTP_EMAIL, SMTP_PASSWORD)
             servidor.sendmail(SMTP_EMAIL, destinatario, msg.as_string())
 
