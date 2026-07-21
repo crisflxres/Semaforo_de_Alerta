@@ -36,7 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- 2. CARGA DE DATOS DESDE BD ---
     async function cargarDatosAlumnos() {
         try {
-            const response = await fetch('http://127.0.0.1:5000/api/alumnos');
+            const response = await fetch('https://semaforo-de-alerta.onrender.com/api/alumnos');
             const data = await response.json();
 
             // Actualizar números en tarjetas
@@ -60,7 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const estadoClase = alumno.estado_alerta.toLowerCase().replace(' ', '-');
                 tr.innerHTML = `
                     <td class="avatar-cell">
-                        <img src= "http://127.0.0.1:5000/fotos/${alumno.matricula}"
+                        <img src= "https://semaforo-de-alerta.onrender.com/fotos/${alumno.matricula}"
                         style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;"
                         onerror=" this.outerHTML = '<i class= \\'fa-solid fa-circle-user\\'></i>'">
                     <td>${alumno.matricula}</td><td>${alumno.nombre}</td><td>${alumno.apellidos}</td>

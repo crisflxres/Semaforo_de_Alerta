@@ -87,7 +87,7 @@ let resumenBD = [];
 
 async function cargarGrupos() {
     try {
-        const res = await fetch('http://127.0.0.1:5000/alertas/grupos');
+        const res = await fetch('https://semaforo-de-alerta.onrender.com/alertas/grupos');
         const data = await res.json();
         if (data.ok) {
             const select = document.getElementById('selectGrupo');
@@ -101,7 +101,7 @@ async function cargarGrupos() {
 
 async function cargarResumen() {
     try {
-        const res = await fetch('http://127.0.0.1:5000/alertas/resumen');
+        const res = await fetch('https://semaforo-de-alerta.onrender.com/alertas/resumen');
         const data = await res.json();
         if (data.ok) resumenBD = data.datos;
     } catch (e) { console.error('Error cargando resumen:', e); }
@@ -109,7 +109,7 @@ async function cargarResumen() {
 
 async function cargarHistorial() {
     try {
-        const res = await fetch('http://127.0.0.1:5000/alertas/historial');
+        const res = await fetch('https://semaforo-de-alerta.onrender.com/alertas/historial');
         const data = await res.json();
         const contenedor = document.querySelector('.lista-historial');
         if (!contenedor) return;
@@ -165,7 +165,7 @@ async function abrirModalHistorial() {
     modal.style.display = 'flex';
 
     try {
-        const res = await fetch('http://127.0.0.1:5000/alertas/historial?completo=1');
+        const res = await fetch('https://semaforo-de-alerta.onrender.com/alertas/historial?completo=1');
         const data = await res.json();
 
         if (!data.ok || data.datos.length === 0) {
@@ -381,7 +381,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         btn.textContent = 'Enviando...';
 
         try {
-            const res = await fetch('http://127.0.0.1:5000/alertas/enviar', {
+            const res = await fetch('https://semaforo-de-alerta.onrender.com/alertas/enviar', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)

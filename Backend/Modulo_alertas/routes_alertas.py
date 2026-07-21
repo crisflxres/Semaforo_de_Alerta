@@ -103,15 +103,11 @@ def enviar_alerta():
         if alcance == "especifico" and grupo_id:
             alumnos = [a for a in alumnos if str(a.get("Id_Grupo")) == str(grupo_id)]
 
-        # 🔒 MODO PRUEBAS - Solo envía a este alumno (que ya tiene tu Gmail en la BD)
-        # 🔒 BORRAR esta línea cuando el proyecto ya se vaya a usar de verdad
-        alumnos = [a for a in alumnos if a["Matricula"] == "M23413070030003"]
-
         if not alumnos:
             return jsonify({"ok": False, "mensaje": "No hay alumnos que coincidan con los filtros"}), 404
 
         def proceso_envio():
-            # 👇 conexión se abre aquí, cada vez que esta función realmente corre
+            # conexión se abre aquí, cada vez que esta función realmente corre
             conexion = obtener_conexion()
             cursor = conexion.cursor()
 
@@ -122,22 +118,12 @@ def enviar_alerta():
             for alumno in alumnos:
                 destinos = []
 
-                # 🔒 MODO PRUEBAS - Forzamos tu correo real sin importar lo que tenga la BD
-                # 🔒 BORRAR este bloque y descomentar el original cuando ya no sea prueba
-                if "alumnos" in destinatarios:
-                    destinos.append(("Alumno", "vicmanu315623@gmail.com"))
-                if "tutores" in destinatarios:
-                    destinos.append(("Tutor", "vicmanu315623@gmail.com"))
-                if "docentes" in destinatarios:
-                    destinos.append(("Docente", "vicmanu315623@gmail.com"))
-
-                # ── Código original (descomentar cuando sea producción) ──
-                # if "alumnos" in destinatarios and alumno.get("Email"):
-                #     destinos.append(("Alumno", alumno["Email"]))
-                # if "tutores" in destinatarios and alumno.get("Correo_Tutor"):
-                #     destinos.append(("Tutor", alumno["Correo_Tutor"]))
-                # if "docentes" in destinatarios and alumno.get("Correo_Docente"):
-                #     destinos.append(("Docente", alumno["Correo_Docente"]))
+                if "alumnos" in destinatarios and alumno.get("Email"):
+                    destinos.append(("Alumno", alumno["Email"]))
+                if "tutores" in destinatarios and alumno.get("Correo_Tutor"):
+                    destinos.append(("Tutor", alumno["Correo_Tutor"]))
+                if "docentes" in destinatarios and alumno.get("Correo_Docente"):
+                    destinos.append(("Docente", alumno["Correo_Docente"]))
 
                 for rol, correo in destinos:
                     variables = {
@@ -174,6 +160,7 @@ def enviar_alerta():
             conexion.close()
 
             print(f"[Envío ejecutado] Enviados: {enviados}, Fallidos: {fallidos}")
+            return enviados, fallidos, detalles 
 
         if modalidad == "programar" and fecha_envio and hora_envio:
             fecha_hora_str = f"{fecha_envio} {hora_envio}"
@@ -187,10 +174,12 @@ def enviar_alerta():
                 "total_alumnos": len(alumnos)
             })
         else:
-            proceso_envio()
+            enviados, fallidos, detalles = proceso_envio()  
             return jsonify({
                 "ok": True,
-                "total_alumnos": len(alumnos)
+                "total_alumnos": len(alumnos),
+                "enviados": enviados,  
+                "fallidos": fallidos    
             })
 
     except Exception as e:
