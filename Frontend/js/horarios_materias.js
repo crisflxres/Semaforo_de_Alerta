@@ -22,7 +22,7 @@ let todasLasMaterias = [];
 const colores = ["bg-rosa","bg-azul","bg-amarillo","bg-verde","bg-naranja","bg-morado","bg-azul_claro","bg-cafe"];
 
 async function obtenerMaterias() {
-    const respuesta = await fetch("http://127.0.0.1:5000/api/materias");
+    const respuesta = await fetch("https://semaforo-de-alerta.onrender.com/api/materias");
     const datos = await respuesta.json();
 
     todasLasMaterias = datos.map(m => ({
@@ -75,7 +75,7 @@ async function iniciar() {
         if (!nombre) { alert("El nombre de la materia es obligatorio."); return; }
 
         if(indice === -1) {
-            await fetch("http://127.0.0.1:5000/api/materias", {
+            await fetch("https://semaforo-de-alerta.onrender.com/api/materias", {
                 method: "POST",
                 headers: { "Content-Type":     "application/json"},
                     body: JSON.stringify({
@@ -87,7 +87,7 @@ async function iniciar() {
                     })
             });
         } else {
-            await fetch("http://127.0.0.1:5000/api/materias", {
+            await fetch("https://semaforo-de-alerta.onrender.com/api/materias", {
                 method: "PUT",
                 headers: { "Content-Type": "application/json"},
                 body: JSON.stringify({
@@ -211,7 +211,7 @@ async function iniciar() {
     window.eliminarMateria = async (index) => {
     cerrarTodosLosMenus();
     if (confirm("¿Eliminar esta materia?")) {
-        await fetch("http://127.0.0.1:5000/api/materias", {
+        await fetch("https://semaforo-de-alerta.onrender.com/api/materias", {
             method: "DELETE",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -225,4 +225,32 @@ async function iniciar() {
 };
 
     iniciar();
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+    const avatarUsuario = document.getElementById('avatarUsuario');
+    const dropdownPerfil = document.getElementById('dropdownPerfil');
+
+    if (avatarUsuario && dropdownPerfil) {
+        avatarUsuario.addEventListener('click', (e) => {
+            e.stopPropagation();
+            dropdownPerfil.classList.toggle('open');
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!dropdownPerfil.contains(e.target) && e.target !== avatarUsuario) {
+                dropdownPerfil.classList.remove('open');
+            }
+        });
+    }
+
+    const btnCerrarSesion = document.getElementById('btnCerrarSesion');
+    if (btnCerrarSesion) {
+        btnCerrarSesion.addEventListener('click', (e) => {
+            e.preventDefault();
+            localStorage.removeItem('rolUsuario');
+            localStorage.removeItem('nombreUsuario');
+            window.location.href = 'index.html';
+        });
+    }
 });

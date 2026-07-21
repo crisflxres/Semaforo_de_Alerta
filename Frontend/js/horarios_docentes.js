@@ -1,9 +1,9 @@
-// ── VARIABLES GLOBALES ──────────────────────────────────────────────────────
+// VARIABLES GLOBALES 
 let docentes = [];
 
-// ── CARGAR DOCENTES DESDE LA BD ─────────────────────────────────────────────
+// CARGAR DOCENTES DESDE LA BD 
 async function cargarDocentes() {
-    const res = await fetch('http://127.0.0.1:5000/docentes');
+    const res = await fetch('https://semaforo-de-alerta.onrender.com/docentes');
     const data = await res.json();
     if (data.success) {
         docentes = data.data.map(d => ({
@@ -17,7 +17,7 @@ async function cargarDocentes() {
     }
 }
 
-// ── RENDERIZAR LISTA ─────────────────────────────────────────────────────────
+// RENDERIZAR LISTA 
 function renderizar() {
     const lista = document.getElementById('listaDocentes');
     const term = document.getElementById('buscador').value.toLowerCase();
@@ -37,7 +37,7 @@ function renderizar() {
     });
 }
 
-// ── CRUD ─────────────────────────────────────────────────────────────────────
+// CRUD 
 document.getElementById('btnNuevoDocente').addEventListener('click', () => {
     document.getElementById('inputNombre').value = '';
     document.getElementById('inputEmail').value = '';
@@ -64,13 +64,13 @@ document.getElementById('btnGuardar').addEventListener('click', async () => {
     };
 
     if (indice !== "-1") {
-        await fetch(`http://127.0.0.1:5000/docentes/${indice}`, {
+        await fetch(`https://semaforo-de-alerta.onrender.com/docentes/${indice}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(datos)
         });
     } else {
-        await fetch('http://127.0.0.1:5000/docentes', {
+        await fetch('https://semaforo-de-alerta.onrender.com/docentes', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(datos)
@@ -93,7 +93,7 @@ function editar(id) {
 }
 
 async function eliminar(id) {
-    await fetch(`http://127.0.0.1:5000/docentes/${id}`, { method: 'DELETE' });
+    await fetch(`https://semaforo-de-alerta.onrender.com/docentes/${id}`, { method: 'DELETE' });
     await cargarDocentes();
 }
 
@@ -101,7 +101,7 @@ document.getElementById('buscador').addEventListener('input', () => {
     renderizar();
 });
 
-// ── MENÚ HAMBURGUESA ─────────────────────────────────────────────────────────
+// MENÚ HAMBURGUESA 
 document.getElementById('btnHamburguesa').addEventListener('click', () => {
     document.getElementById('sidebarOverlay').classList.add('open');
 });
@@ -118,3 +118,31 @@ document.getElementById('sidebarOverlay').addEventListener('click', (e) => {
 
 // ── INICIO ───────────────────────────────────────────────────────────────────
 cargarDocentes();
+
+document.addEventListener('DOMContentLoaded', () => {
+    const avatarUsuario = document.getElementById('avatarUsuario');
+    const dropdownPerfil = document.getElementById('dropdownPerfil');
+
+    if (avatarUsuario && dropdownPerfil) {
+        avatarUsuario.addEventListener('click', (e) => {
+            e.stopPropagation();
+            dropdownPerfil.classList.toggle('open');
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!dropdownPerfil.contains(e.target) && e.target !== avatarUsuario) {
+                dropdownPerfil.classList.remove('open');
+            }
+        });
+    }
+
+    const btnCerrarSesion = document.getElementById('btnCerrarSesion');
+    if (btnCerrarSesion) {
+        btnCerrarSesion.addEventListener('click', (e) => {
+            e.preventDefault();
+            localStorage.removeItem('rolUsuario');
+            localStorage.removeItem('nombreUsuario');
+            window.location.href = 'index.html';
+        });
+    }
+});

@@ -1,5 +1,5 @@
 // Ajusta esto si tu backend corre en otra IP/puerto
-const API_BASE = "http://127.0.0.1:5000";
+const API_BASE = "https://semaforo-de-alerta.onrender.com";
 
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -21,6 +21,14 @@ document.addEventListener("DOMContentLoaded", () => {
         "18:55 - 19:45", "19:45 - 20:35"
     ];
     const dias = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes"];
+
+    function normalizarTexto(txt) {
+        return txt.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
+    }
+
+    function diaCanonico(diaDB) {
+        return dias.find(d => normalizarTexto(d) === normalizarTexto(diaDB)) || diaDB;
+    }
 
     const coloresClase = [
         "#bbdefb", "#c8e6c9", "#e1bee7", "#b2ebf2",
@@ -182,9 +190,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
             json.data.forEach(h => {
                 const label = labelDesdeHoraSQL(h.Hora_Inicio);
-                if (!label) return;
-                const key = `${label}|${h.Dia_Semana}|${h.Id_Grupo}|${h.Id_Materia}`;
-
+                const diaMatch = diaCanonico(h.Dia_Semana);
+                const key = `${label}|${diaMatch}|${h.Id_Grupo}|${h.Id_Materia}`;    
+                
                 clases[key] = {
                     materia: h.Materia,
                     docente: h.Docente,
@@ -577,4 +585,32 @@ document.addEventListener("DOMContentLoaded", () => {
         await cargarCatalogos();
         await cargarHorarios();
     })();
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+    const avatarUsuario = document.getElementById('avatarUsuario');
+    const dropdownPerfil = document.getElementById('dropdownPerfil');
+
+    if (avatarUsuario && dropdownPerfil) {
+        avatarUsuario.addEventListener('click', (e) => {
+            e.stopPropagation();
+            dropdownPerfil.classList.toggle('open');
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!dropdownPerfil.contains(e.target) && e.target !== avatarUsuario) {
+                dropdownPerfil.classList.remove('open');
+            }
+        });
+    }
+
+    const btnCerrarSesion = document.getElementById('btnCerrarSesion');
+    if (btnCerrarSesion) {
+        btnCerrarSesion.addEventListener('click', (e) => {
+            e.preventDefault();
+            localStorage.removeItem('rolUsuario');
+            localStorage.removeItem('nombreUsuario');
+            window.location.href = 'index.html';
+        });
+    }
 });

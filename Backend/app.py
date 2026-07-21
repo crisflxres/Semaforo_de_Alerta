@@ -300,6 +300,30 @@ def recuperar():
             "success": False,
             "message": f"Error: {err}"
         }), 500   # <-- FALTABA este 500, sin él el return quedaba roto
+    
+@app.route('/test-db')
+def test_db():
+    try:
+        conexion = obtener_conexion()
+        cursor = conexion.cursor()
+
+        cursor.execute("SELECT 1")
+        resultado = cursor.fetchone()
+
+        cursor.close()
+        conexion.close()
+
+        return jsonify({
+            "conexion": "correcta",
+            "resultado": resultado
+        })
+
+    except Exception as e:
+        return jsonify({
+            "error": str(e)
+        }), 500
+
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0",port=port)

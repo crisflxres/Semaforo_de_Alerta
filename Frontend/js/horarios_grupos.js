@@ -22,14 +22,14 @@ document.addEventListener("DOMContentLoaded", () => {
     const colores = ["bg-rosa","bg-azul","bg-amarillo","bg-verde","bg-naranja",
                      "bg-morado","bg-azul_claro","bg-cafe","bg-gris","bg-rojo"];
 
-    fetch("http://localhost:5000/grupos")
+    fetch("https://semaforo-de-alerta.onrender.com/grupos")
         .then(res => res.json())
         .then(respuesta => {
             if (respuesta.success) {
                 todosLosGrupos = respuesta.data.map((g, i) => ({
                     id:      g.Id_Grupo,
                     nombre:  g.Nombre,
-                    alumnos: 0,
+                    alumnos: g.Alumnos,
                     turno:   g.Turno,
                     color:   colores[i % colores.length]
                 }));
@@ -209,4 +209,32 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     renderizar();
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+    const avatarUsuario = document.getElementById('avatarUsuario');
+    const dropdownPerfil = document.getElementById('dropdownPerfil');
+
+    if (avatarUsuario && dropdownPerfil) {
+        avatarUsuario.addEventListener('click', (e) => {
+            e.stopPropagation();
+            dropdownPerfil.classList.toggle('open');
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!dropdownPerfil.contains(e.target) && e.target !== avatarUsuario) {
+                dropdownPerfil.classList.remove('open');
+            }
+        });
+    }
+
+    const btnCerrarSesion = document.getElementById('btnCerrarSesion');
+    if (btnCerrarSesion) {
+        btnCerrarSesion.addEventListener('click', (e) => {
+            e.preventDefault();
+            localStorage.removeItem('rolUsuario');
+            localStorage.removeItem('nombreUsuario');
+            window.location.href = 'index.html';
+        });
+    }
 });
