@@ -141,19 +141,52 @@ async function cargarHistorial() {
     }
 }
 
-function actualizarTotal() {
+// ── TOTAL (CORREGIDO: ahora sí respeta el filtro de grupo específico) ───────
+async function actualizarTotal() {
     if (!nivelActual) return;
-    const nivel = resumenBD.find(d => d.Nivel_Alerta === nivelActual);
+
     const checkboxes = document.querySelectorAll('input[name="destinatarios"]:checked');
+    const alcance = document.querySelector('input[name="alcance"]:checked')?.value;
+    const grupoId = document.getElementById('selectGrupo')?.value;
+
     let total = 0;
-    if (nivel) {
-        checkboxes.forEach(c => {
-            if (c.value === 'alumnos') total += nivel.Total_Alumnos;
-            if (c.value === 'tutores') total += nivel.Total_Tutores;
-            if (c.value === 'docentes') total += nivel.Total_Docentes;
-        });
+
+    if (alcance === 'especifico' && grupoId) {
+        try {
+            const res = await fetch(`http://127.0.0.1:5000/alertas/alumnos?nivel=${nivelActual}`);
+            const data = await res.json();
+            console.log('--- DEBUG actualizarTotal ---');
+            console.log('nivel:', nivelActual, '| grupoId seleccionado:', grupoId);
+            console.log('total alumnos regresados por la API:', data.datos?.length);
+            console.log('primeros 3 alumnos:', data.datos?.slice(0,3)); 
+
+            if (data.ok) {
+                const alumnosGrupo = data.datos.filter(a => String(a.Id_Grupo) === String(grupoId));
+                console.log('alumnos que coinciden con el grupo:', alumnosGrupo.length);
+                console.log('campos del primer alumno del grupo:', alumnosGrupo[0]);
+
+                checkboxes.forEach(c => {
+                    if (c.value === 'alumnos') total += alumnosGrupo.filter(a => a.Email).length;
+                    if (c.value === 'tutores') total += alumnosGrupo.filter(a => a.Correo_Tutor).length;
+                    if (c.value === 'docentes') total += alumnosGrupo.filter(a => a.Correo_Docente).length;
+                });
+            }
+        } catch (e) {
+            console.error('Error calculando total por grupo:', e);
+        }
+    } else {
+        const nivel = resumenBD.find(d => d.Nivel_Alerta === nivelActual);
+        if (nivel) {
+            checkboxes.forEach(c => {
+                if (c.value === 'alumnos') total += nivel.Total_Alumnos;
+                if (c.value === 'tutores') total += nivel.Total_Tutores;
+                if (c.value === 'docentes') total += nivel.Total_Docentes;
+            });
+        }
     }
+
     document.getElementById('resumenTotal').textContent = total;
+    
 }
 
 async function abrirModalHistorial() {
@@ -265,30 +298,30 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    document.getElementById('btnVerde')?.addEventListener('click', () => {
+    document.getElementById('btnVerde')?.addEventListener('click', async () => {
         limpiarSemaforo(); document.getElementById('btnVerde').classList.add('active-verde');
         document.getElementById('resumenTipo').textContent = 'Regulares';
-        nivelActual = 'Verde'; actualizarTotal();
+        nivelActual = 'Verde'; await actualizarTotal();
         aplicarPlantilla();
     });
 
-    document.getElementById('btnAmarillo')?.addEventListener('click', () => {
+    document.getElementById('btnAmarillo')?.addEventListener('click', async () => {
         limpiarSemaforo(); document.getElementById('btnAmarillo').classList.add('active-amarillo');
         document.getElementById('resumenTipo').textContent = 'En Riesgo';
-        nivelActual = 'Amarillo'; actualizarTotal();
+        nivelActual = 'Amarillo'; await actualizarTotal();
         aplicarPlantilla();
     });
 
-    document.getElementById('btnRojo')?.addEventListener('click', () => {
+    document.getElementById('btnRojo')?.addEventListener('click', async () => {
         limpiarSemaforo(); document.getElementById('btnRojo').classList.add('active-rojo');
         document.getElementById('resumenTipo').textContent = 'Riesgo Crítico';
-        nivelActual = 'Rojo'; actualizarTotal();
+        nivelActual = 'Rojo'; await actualizarTotal();
         aplicarPlantilla();
     });
 
     // Alcance
     document.querySelectorAll('input[name="alcance"]').forEach(radio => {
-        radio.addEventListener('change', (e) => {
+        radio.addEventListener('change', async (e) => {
             const select = document.getElementById('selectGrupo');
             const resumenAlcance = document.getElementById('resumenAlcance');
             if (e.target.value === 'especifico') {
@@ -298,12 +331,14 @@ document.addEventListener('DOMContentLoaded', async () => {
                 select.disabled = true;
                 resumenAlcance.textContent = 'Todos los grupos';
             }
+            await actualizarTotal();
         });
     });
 
-    document.getElementById('selectGrupo')?.addEventListener('change', (e) => {
+    document.getElementById('selectGrupo')?.addEventListener('change', async (e) => {
         const texto = e.target.options[e.target.selectedIndex].text;
         document.getElementById('resumenAlcance').textContent = `Grupo: ${texto}`;
+        await actualizarTotal();
     });
 
     // Programación
@@ -319,13 +354,13 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Destinatarios
     document.querySelectorAll('input[name="destinatarios"]').forEach(check => {
-        check.addEventListener('change', () => {
+        check.addEventListener('change', async () => {
             check.parentElement.classList.toggle('is-selected', check.checked);
             const seleccionados = [...document.querySelectorAll('input[name="destinatarios"]:checked')]
                 .map(c => c.parentNode.textContent.trim());
             document.getElementById('resumenDestinatarios').textContent =
                 seleccionados.length > 0 ? seleccionados.join(', ') : '0 seleccionados';
-            actualizarTotal();
+            await actualizarTotal();
         });
     });
 

@@ -221,7 +221,7 @@ def crear_usuario():
         }), 500
 
 # --- Fotos de alumnos (agregado por tu compañero) ---
-CARPETA_FOTOS = r"C:\Users\manuv\OneDrive\Documentos\6 Cuatri\Archivos proyecto\Matricula Total"
+CARPETA_FOTOS = r"C:\Users\Victo\OneDrive\Documentos\Actividades\Matricula Total"
 
 def construir_mapa_fotos(carpeta):
     mapa = {}
