@@ -153,7 +153,7 @@ async function actualizarTotal() {
 
     if (alcance === 'especifico' && grupoId) {
         try {
-            const res = await fetch(`http://127.0.0.1:5000/alertas/alumnos?nivel=${nivelActual}`);
+            const res = await fetch(`https://semaforo-de-alerta.onrender.com/alertas/alumnos?nivel=${nivelActual}`);
             const data = await res.json();
             console.log('--- DEBUG actualizarTotal ---');
             console.log('nivel:', nivelActual, '| grupoId seleccionado:', grupoId);
