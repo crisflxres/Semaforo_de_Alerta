@@ -446,17 +446,60 @@ body {
 /* ==========================================================================
    RESPONSIVE DESIGN
    ========================================================================== */
+/* Tablet*/
 @media (max-width: 992px) {
-    .grid-semaforo { grid-template-columns: 1fr; }
-    .grid-info-docente { 
-        grid-template-columns: 1fr; 
-        gap: 16px;
-    }
-    .bloque-docente-perfil:not(:last-child)::after { display: none; }
-    .grid-accesos-grandes { grid-template-columns: 1fr; }
+    .contenido-principal {padding: 24px 20px;} 
+    .grid-semaforo {grid-template-columns: repeat(2, 1fr);}
+    .tarjeta-semaforo:last-child {grid-column: 1 / -1;}
+    .grid-info-docente {grid-template-columns: 1fr 1fr; row-gap: 20px;}
+    .bloque-docente-perfil:last-child { grid-column: 1 / -1; }
+    .bloque-docente-perfil::after {display: none;}
+    .tarjeta-menu-flotante {width: 260px;}
 }
+/* Celulares*/
+@media (max-width: 600px) {
+   .header-institucional {padding: 0 16px; height: 56px;}
+   .logo-centro img {height: 30px;}
+   .perfil-usuario .avatar {width: 34px; height: 34px; font-size: 14px;}
 
-@media (max-width: 768px) {
-    .contenido-principal { padding: 20px; }
-    .header-institucional { padding: 0 20px; }
+   .contenido-principal {padding: 16px; gap: 20px;}
+   .titulo-panel {font-size: 24px;}
+
+   .contenedor-vista-docente,
+   .contenedor-informacion-docente {padding: 16px;}
+
+   .texto-alumnos-registrados {font-size: 17px;}
+   .texto-alumnos-registrados strong {font-size: 20px;}
+
+    .grid-semaforo {grid-template-columns: 1fr; gap: 14px;}
+    .tarjeta-semaforo {
+        min-height: unset;
+        height: auto;
+        justify-content: flex-start;
+        gap: 12px;
+        padding: 18px 16px;
+    }
+    .numero-semaforo {font-size: 38px;}
+    .label-semaforo {font-size: 18px;}
+    .icono-semaforo-card {width: 38px; height: 38px; font-size: 16px;}
+    .descripcion-semaforo {margin-top: 0;}
+    .link-ver-mas-nuevo {margin-top: 0;}
+
+    .grid-info-docente {grid-template-columns: 1fr; row-gap: 16px;}
+    .bloque-docente-perfil::after {display: none !important;}
+    .icono-docente-bg {width: 44px; height: 44px; font-size: 18px;}
+
+    .grid-accesos-grandes {grid-template-columns: 1fr; gap: 16px;}
+    .tarjeta-acceso-guinda {
+        min-height: unset;
+        height: auto; 
+        justify-content: flex-start;
+        gap: 12px;
+        padding: 22px 20px;
+    }
+    .icono-acceso-grande {width: 56px; height: 56px; font-size: 26px;}
+    .texto-acceso h3 {font-size: 22px;}
+    .btn-ir-acceso { align-self: stretch; text-align: center; margin-top: 0;}
+
+    .tarjeta-menu-flotante {width: 230px; padding: 20px 18px;}
 }

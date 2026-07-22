@@ -2,7 +2,7 @@
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #fcfcfc; }
 
-/* --- 2. HEADER --- */
+/* --- 2. HEADER/Perfil --- */
 .main-header {
     display: flex; justify-content: space-between; align-items: center;
     background-color: #4A0A18; padding: 10px 20px; color: white;
@@ -75,7 +75,7 @@ body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #fcfcfc; }
 .panel-actions { display: flex; gap: 10px; }
 .hidden { display: none !important; }
 
-/* --- 7. GRID --- */
+/* --- 7. GRID/fondo de tarje --- */
 .grid-tarjetas {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -94,7 +94,7 @@ body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #fcfcfc; }
     position: relative; min-height: 120px;
 }
 
-/* Ícono circular */
+/* Ícono circular/Tarjetas de grupo */
 .icono-grupo {
     width: 65px; height: 65px; border-radius: 50%;
     display: flex; align-items: center; justify-content: center;
@@ -189,5 +189,112 @@ body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #fcfcfc; }
     display: flex; align-items: center; gap: 12px;
     color: #fff; text-decoration: none; font-size: 18px; padding: 8px 10px;
 }
+.lista-menu-flotante li a span { text-decoration: underline; }
+.opcion-activa-figma a span { text-decoration: none !important; }
 .opcion-activa-figma { background-color: #d4b483; border-radius: 12px; }
 .opcion-activa-figma a { color: #000 !important; font-weight: 600; padding: 10px 15px !important; }
+
+/* --- DROPDOWN DE PERFIL (integrado desde Inicio) --- */
+.perfil-usuario {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.dropdown-perfil {
+    position: absolute;
+    top: 50px;
+    right: 0;
+    width: 180px;
+    background-color: #4a1222;
+    border-radius: 14px;
+    padding: 12px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+    z-index: 999;
+
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-10px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.dropdown-perfil.open {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+}
+
+.lista-dropdown-perfil {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin: 0;
+    padding: 0;
+}
+
+.lista-dropdown-perfil li a {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: #ffffff;
+    text-decoration: none;
+    font-size: 15px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    transition: background-color 0.2s ease;
+}
+
+.lista-dropdown-perfil li a:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.lista-dropdown-perfil li a i {
+    font-size: 16px;
+    width: 20px;
+    text-align: center;
+    color: #bc955c;
+}
+
+.divisor-dropdown {
+    height: 1px;
+    background-color: rgba(255, 255, 255, 0.15);
+    margin: 4px 0;
+}
+
+/* --- Animación del avatar (igual que en Inicio) --- */
+.perfil-usuario .user-avatar {
+    cursor: pointer;
+    user-select: none;
+    transition: transform 0.2s ease;
+}
+
+.perfil-usuario .user-avatar:active {
+    transform: scale(0.95);
+}
+
+/* ==========================================================================
+   RESPONSIVE DESIGN
+   ========================================================================== */
+@media (max-width: 992px) {
+    .main-layout { flex-direction: column; }
+    .grupos-container, #panelRegistro { width: 100%; }
+    .grid-tarjetas { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 768px) {
+    .logo { height: 32px; }
+
+    .tabs { flex-wrap: wrap; }
+    .tab-item { flex: 1 1 45%; font-size: 0.85rem; padding: 10px 6px; }
+
+    .contenedor-grupos { padding: 15px; margin: 15px auto; }
+    .header-grupos { flex-direction: column; align-items: stretch; gap: 10px; }
+    .input-buscar { width: 100%; }
+}
+
+@media (max-width: 480px) {
+    .tab-item { flex: 1 1 100%; }
+    .grid-tarjetas { grid-template-columns: 1fr; padding: 12px; }
+    .tarjeta-menu-flotante { width: 240px; }
+}

@@ -88,6 +88,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     filtroEstado.value = estadoFiltro;
                     filtrarTabla();
                 }
+            } else {
+                // Restaurar filtros guardados al volver de Seguimiento Académico
+                restaurarFiltros();
             }
 
         } catch (error) {
@@ -135,6 +138,31 @@ document.addEventListener('DOMContentLoaded', () => {
         llenarSelect(document.getElementById('filtro-estado'), estados);
     }
 
+    function guardarFiltros() {
+        const filtros = {
+            texto: inputBuscar.value,
+            grupo: document.getElementById('filtro-grupo').value,
+            carrera: document.getElementById('filtro-carrera').value,
+            semestre: document.getElementById('filtro-semestre').value,
+            turno: document.getElementById('filtro-turno').value,
+            estado: document.getElementById('filtro-estado').value
+        };
+        sessionStorage.setItem('filtrosAlumnos', JSON.stringify(filtros));
+    }
+
+    function restaurarFiltros() {
+        const guardado = sessionStorage.getItem('filtrosAlumnos');
+        if (!guardado) return;
+        const filtros = JSON.parse(guardado);
+        inputBuscar.value = filtros.texto || '';
+        document.getElementById('filtro-grupo').value    = filtros.grupo || 'Todos';
+        document.getElementById('filtro-carrera').value  = filtros.carrera || 'Todos';
+        document.getElementById('filtro-semestre').value = filtros.semestre || 'Todos';
+        document.getElementById('filtro-turno').value    = filtros.turno || 'Todos';
+        document.getElementById('filtro-estado').value   = filtros.estado || 'Todos';
+        filtrarTabla();
+    }
+
     function filtrarTabla() {
         const texto = inputBuscar.value.toLowerCase();
         const grupo = document.getElementById('filtro-grupo').value;
@@ -154,6 +182,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             fila.style.display = (coincideTexto && coincideGrupo && coincideTurno && coincideSemestre && coincideCarrera && coincideEstado) ? '' : 'none';
         });
+        guardarFiltros();
     }
 
     if (inputBuscar) inputBuscar.addEventListener('input', filtrarTabla);
