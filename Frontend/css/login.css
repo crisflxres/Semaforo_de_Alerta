@@ -152,25 +152,46 @@ body {
 /* ==========================================================================
    RESPONSIVE DESIGN
    ========================================================================== */
-@media (max-width: 992px) {
-    .main-layout { flex-direction: column; }
-    .login-container, #panelRegistro { width: 100%; }
-    .grid-tarjetas { grid-template-columns: repeat(2, 1fr); }
+/* Tablets*/
+@media (max-width: 900px) {
+    .login-wrapper { 
+        flex-direction: column;
+        justify-content: center;
+        padding: 40px 6%; 
+        gap: 32px;
+    }
+    .info-lado{
+        max-width: 100%;
+        align-items: center;
+        text-align: center;
+        padding-right: 0;
+    }
+    .formulario-lado {
+        width: 100%;
+        justify-content: center;
+    }
 }
+/* Celulares */
+@media (max-width: 600px) {
+    .header-institucional {
+        padding: 12px 5%;
+        min-height: auto;
+        justify-content: center;
+        text-align: center;
+        gap: 10px;
+    }
+    .logo-cecyteh, .logo-gobierno { height: 38px; }
+    .nombre-colegio { font-size: 0.8rem; }
+    .login-wrapper { padding: 28px 5%; }
 
-@media (max-width: 768px) {
-    .logo { height: 32px; }
+    .tarjeta-login {
+        padding: 32px 24px;
+        border-radius: 20px;
+    }
+    .tarjeta-login h2 { font-size: 1.7rem; }
 
-    .tabs { flex-wrap: wrap; }
-    .tab-item { flex: 1 1 45%; font-size: 0.85rem; padding: 10px 6px; }
-
-    .contenedor-grupos { padding: 15px; margin: 15px auto; }
-    .header-grupos { flex-direction: column; align-items: stretch; gap: 10px; }
-    .input-buscar { width: 100%; }
-}
-
-@media (max-width: 480px) {
-    .tab-item { flex: 1 1 100%; }
-    .grid-tarjetas { grid-template-columns: 1fr; padding: 12px; }
-    .tarjeta-menu-flotante { width: 240px; }
+    .grupo-input { margin-bottom: 18px; }
+    .input-icono-wrapper input { padding: 15px 32px 15px 48px; font-size: 0.95rem; }
+    .input-icono-wrapper > i { left: 16px; font-size: 18px; }
+    .btn-iniciar{ height: 52px !important; font-size: 1rem !important; }
 }
