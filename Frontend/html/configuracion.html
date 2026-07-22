@@ -54,7 +54,7 @@
 
         <div class="tarjeta-importacion">
             <div class="grid-importacion">
-                <div class="seccion-importar">
+                <div class="seccion-importar-TACA">
                     <h3><div class="icono-tipo icono-verde-bg"><i class="fa-solid fa-file-lines"></i></div>Datos Académicos</h3>
                     <p>Importar Excel de calificaciones</p>
                     <input type="file" id="inputAcademico" multiple style="display:none;" onchange="manejarArchivo(this, 'academico')">
@@ -66,16 +66,15 @@
                     <div class="mensaje-exito verde" id="exitoAcademico"><i class="fa-solid fa-circle-check"></i><span id="textoExitoAcademico"></span></div>
                 </div>
 
-                <div class="divisor-vertical"></div>
-
-                <div class="seccion-importar">
+            <div class="divisor-vertical"></div>
+                <div class="seccion-importar-contactos">
                     <h3><div class="icono-tipo icono-morado-bg"><i class="fa-solid fa-address-book"></i></div>Contactos</h3>
-                    <p>Importar Excel de contactos</p>
-                    <input type="file" id="inputContactos" style="display:none;" onchange="manejarArchivo(this, 'contactos')">
-                    <div class="zona-drop zona-drop-morado" id="dropContactos" onclick="document.getElementById('inputContactos').click()" ondragover="event.preventDefault(); this.classList.add('dragover')" ondragleave="this.classList.remove('dragover')" ondrop="manejarDrop(event, 'contactos')">
+                    <p>Importar Excel de contactos o carpeta de fotos</p>
+                    <input type="file" id="inputContactos" multiple style="display:none;" onchange="manejarArchivo(this, 'contactos')">
+                    <div class="zona-drop zona-drop-morado" id="dropContactos" onclick="document.getElementById('inputContactos').click()" ondragover="event.preventDefault(); this.classList.add('dragover')" ondragleave="this.classList.remove('dragover')" ondrop="manejarDropContactos(event)">
                         <i class="fa-solid fa-cloud-arrow-up"></i>
-                        <strong>Seleccionar archivo</strong>
-                        <span>o arrastra tu archivo aquí</span>
+                        <strong>Seleccionar archivos</strong>
+                        <span>o arrastra archivos .xls/.xlsx, o una carpeta de fotos</span>
                     </div>
                     <div class="mensaje-exito morado" id="exitoContactos"><i class="fa-solid fa-circle-check"></i><span id="textoExitoContactos"></span></div>
                 </div>
@@ -95,7 +94,7 @@
         <div class="tarjeta-historial">
             <div class="cabecera-historial"><i class="fa-solid fa-clock-rotate-left"></i> Historial de Importaciones</div>
             <div class="tabla-scroll">
-                <table> 
+                <table>
                     <thead><tr><th>Archivo</th><th>Fecha de importación</th><th>Registros</th><th>Acciones</th></tr></thead>
                     <tbody id="cuerpoHistorial"></tbody>
                 </table>

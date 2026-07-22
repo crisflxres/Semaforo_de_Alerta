@@ -33,12 +33,12 @@ function procesarArchivos(archivos, tipo) {
     if (tipo === 'academico') {
         procesarVariosAcademicos(archivos);
     } else {
-        // Contactos sigue siendo un solo archivo por ahora
-        procesarContactos(archivos[0]);
+        procesarVariosContactos(archivos);
     }
 }
 
-/* ACADÉMICO (TACA) — soporta varios archivos, procesados en secuencia */
+/* ================== ACADÉMICO (TACA) ================== */
+
 async function procesarVariosAcademicos(archivos) {
     const msg = document.getElementById('exitoAcademico');
     const textoMsg = document.getElementById('textoExitoAcademico');
@@ -51,7 +51,7 @@ async function procesarVariosAcademicos(archivos) {
         textoMsg.textContent = `Importando ${archivo.name} (${i + 1}/${archivos.length})...`;
         msg.style.display = 'flex';
 
-        const resultado = await procesarAcademico(archivo, true); // true = modo silencioso (no muestra su propio mensaje individual)
+        const resultado = await procesarAcademico(archivo, true);
 
         if (resultado.exito) {
             exitosos++;
@@ -70,8 +70,6 @@ async function procesarVariosAcademicos(archivos) {
     setTimeout(() => { msg.style.display = 'none'; }, 7000);
 }
 
-/* Procesa un solo archivo TACA. Devuelve { exito, mensaje } para que
-   procesarVariosAcademicos pueda armar el resumen final. */
 async function procesarAcademico(archivo, silencioso = false) {
     const nombre = archivo.name.replace(/\.[^/.]+$/, "");
     const ahora = new Date();
@@ -122,41 +120,202 @@ function mostrarErrorAcademico(mensaje) {
     setTimeout(() => { msg.style.display = 'none'; }, 5000);
 }
 
-/* CONTACTOS — todavía simulado, lo conectamos cuando hagamos esa ruta */
-function procesarContactos(archivo) {
+/* ================== CONTACTOS ================== */
+
+async function procesarVariosContactos(archivos) {
+    const msg = document.getElementById('exitoContactos');
+    const textoMsg = document.getElementById('textoExitoContactos');
+
+    let exitosos = 0;
+    let fallidos = [];
+
+    for (let i = 0; i < archivos.length; i++) {
+        const archivo = archivos[i];
+        textoMsg.textContent = `Importando ${archivo.name} (${i + 1}/${archivos.length})...`;
+        msg.style.display = 'flex';
+
+        const resultado = await procesarContactos(archivo, true);
+
+        if (resultado.exito) {
+            exitosos++;
+        } else {
+            fallidos.push({ nombre: archivo.name, mensaje: resultado.mensaje });
+        }
+    }
+
+    if (fallidos.length === 0) {
+        textoMsg.textContent = `${exitosos} archivo(s) importado(s) correctamente.`;
+    } else {
+        const detalleFallos = fallidos.map(f => `${f.nombre}: ${f.mensaje}`).join(' | ');
+        textoMsg.textContent = `${exitosos} importado(s), ${fallidos.length} con error → ${detalleFallos}`;
+    }
+    msg.style.display = 'flex';
+    setTimeout(() => { msg.style.display = 'none'; }, 7000);
+}
+
+async function procesarContactos(archivo, silencioso = false) {
     const nombre = archivo.name.replace(/\.[^/.]+$/, "");
     const ahora = new Date();
     const fecha = ahora.toLocaleDateString('es-MX');
     const hora = ahora.toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' });
     const urlArchivo = URL.createObjectURL(archivo);
-    
-    if (!silencioso) {
-        const msg = document.getElementById    ('exitoContactos');
-        const textoMsg = document.getElementById   ('textoExitoContactos');
-        textoMsg.textContent = `Archivo ${nombre}      cargado, ${registros} contactos vinculados.`;
-        msg.style.display = 'flex';
+
+    const formData = new FormData();
+    formData.append("archivo", archivo);
+
+    try {
+        const respuesta = await fetch(`${API_BASE}/configuracion/importar-contactos`, {
+            method: "POST",
+            body: formData,
+        });
+        const data = await respuesta.json();
+
+        if (!respuesta.ok || !data.success) {
+            const mensajeError = data.mensaje || "Error al importar el archivo";
+            if (!silencioso) mostrarErrorContactos(mensajeError);
+            return { exito: false, mensaje: mensajeError };
+        }
+
+        if (!silencioso) {
+            const msg = document.getElementById('exitoContactos');
+            const textoMsg = document.getElementById('textoExitoContactos');
+            textoMsg.textContent = `Archivo ${nombre} cargado, ${data.registros} contactos vinculados.`;
+            msg.style.display = 'flex';
+            setTimeout(() => { msg.style.display = 'none'; }, 5000);
+        }
+
+        agregarHistorial(nombre, fecha, hora, `${data.registros} regs`, 'contactos', urlArchivo, archivo.name, data.id_importacion);
+        return { exito: true, mensaje: "" };
+
+    } catch (error) {
+        console.error("Error al conectar con el servidor:", error);
+        const mensajeError = "No se pudo conectar con el servidor";
+        if (!silencioso) mostrarErrorContactos(mensajeError);
+        return { exito: false, mensaje: mensajeError };
     }
+}
 
-    agregarHistorial(nombre, fecha, hora, `${registros} regs`, 'contactos', urlArchivo, archivo.name, data.id_importacion);
-
+function mostrarErrorContactos(mensaje) {
+    const msg = document.getElementById('exitoContactos');
+    const textoMsg = document.getElementById('textoExitoContactos');
+    textoMsg.textContent = mensaje;
+    msg.style.display = 'flex';
     setTimeout(() => { msg.style.display = 'none'; }, 5000);
 }
 
+/* ================== FOTOS (carpeta arrastrada) ================== */
+
+async function procesarCarpetaFotos(archivos) {
+    const msg = document.getElementById('exitoContactos');
+    const textoMsg = document.getElementById('textoExitoContactos');
+
+    if (!archivos || archivos.length === 0) {
+        textoMsg.textContent = "La carpeta no contiene archivos válidos.";
+        msg.style.display = 'flex';
+        setTimeout(() => { msg.style.display = 'none'; }, 5000);
+        return;
+    }
+
+    textoMsg.textContent = `Subiendo ${archivos.length} foto(s)...`;
+    msg.style.display = 'flex';
+
+    const formData = new FormData();
+    archivos.forEach((archivo) => {
+        // fullPath conserva la ruta relativa dentro de la carpeta (ej. "Matricula Total/12345.jpg")
+        const rutaRelativa = archivo.webkitRelativePath || archivo.fullPath || archivo.name;
+        formData.append("fotos", archivo, rutaRelativa);
+    });
+
+    try {
+        const respuesta = await fetch(`${API_BASE}/configuracion/importar-fotos`, {
+            method: "POST",
+            body: formData,
+        });
+        const data = await respuesta.json();
+
+        if (!respuesta.ok || !data.success) {
+            textoMsg.textContent = data.mensaje || "Error al importar las fotos";
+            msg.style.display = 'flex';
+            setTimeout(() => { msg.style.display = 'none'; }, 5000);
+            return;
+        }
+
+        textoMsg.textContent = `${data.registros} foto(s) vinculada(s) correctamente.`;
+        msg.style.display = 'flex';
+        setTimeout(() => { msg.style.display = 'none'; }, 5000);
+
+        agregarHistorial("Carpeta de fotos", new Date().toLocaleDateString('es-MX'), new Date().toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' }), `${data.registros} regs`, 'contactos', null, null, data.id_importacion);
+
+    } catch (error) {
+        console.error("Error al conectar con el servidor:", error);
+        textoMsg.textContent = "No se pudo conectar con el servidor";
+        msg.style.display = 'flex';
+        setTimeout(() => { msg.style.display = 'none'; }, 5000);
+    }
+}
+
+/* ================== DETECCIÓN ARCHIVO vs CARPETA (drag & drop en Contactos) ================== */
+
+async function manejarDropContactos(event) {
+    event.preventDefault();
+    event.currentTarget.classList.remove('dragover');
+
+    const items = event.dataTransfer.items;
+    const archivosSueltos = [];
+    let carpetaEncontrada = null;
+
+    for (let i = 0; i < items.length; i++) {
+        const entry = items[i].webkitGetAsEntry();
+        if (!entry) continue;
+
+        if (entry.isDirectory) {
+            carpetaEncontrada = entry;
+        } else if (entry.isFile) {
+            archivosSueltos.push(items[i].getAsFile());
+        }
+    }
+
+    if (carpetaEncontrada) {
+        const archivosDeFotos = await leerCarpetaRecursiva(carpetaEncontrada);
+        procesarCarpetaFotos(archivosDeFotos);
+    } else if (archivosSueltos.length > 0) {
+        procesarVariosContactos(archivosSueltos);
+    }
+}
+
 function leerCarpetaRecursiva(directoryEntry) {
-    return new Promise ((resolve, reject) => {
+    return new Promise((resolve, reject) => {
         const lector = directoryEntry.createReader();
         const archivosEncontrados = [];
 
-        function LeerSiguienteBloque() {
-            lector.readEntries((entradas) => {
+        function leerSiguienteBloque() {
+            lector.readEntries(async (entradas) => {
+
                 if (entradas.length === 0) {
-                    resolve(archivosEncontrados)
+                    resolve(archivosEncontrados);
+                    return;
                 }
+
+                for (const entrada of entradas) {
+                    if (entrada.isFile) {
+                        const archivoReal = await new Promise((res) => entrada.file(res));
+                        archivosEncontrados.push(archivoReal);
+
+                    } else if (entrada.isDirectory) {
+                        const archivosDeSubcarpeta = await leerCarpetaRecursiva(entrada);
+                        archivosEncontrados.push(...archivosDeSubcarpeta);
+                    }
+                }
+
+                leerSiguienteBloque();
             }, reject);
         }
-        LeerSiguienteBloque();
+
+        leerSiguienteBloque();
     });
 }
+
+/* ================== HISTORIAL ================== */
 
 function agregarHistorial(nombre, fecha, hora, registros, tipo, urlArchivo, nombreArchivo, idImportacion) {
     const tbody = document.getElementById('cuerpoHistorial');
@@ -213,8 +372,6 @@ function actualizarVacio() {
     document.getElementById('historialVacio').style.display = document.getElementById('cuerpoHistorial').rows.length === 0 ? 'block' : 'none';
 }
 
-/* CARGAR HISTORIAL REAL DESDE EL BACKEND */
-
 function cargarHistorial() {
     fetch(`${API_BASE}/configuracion/historial`)
         .then(res => res.json())
@@ -223,7 +380,6 @@ function cargarHistorial() {
             const tbody = document.getElementById('cuerpoHistorial');
             tbody.innerHTML = '';
             data.data.forEach(item => {
-                console.log(item.fecha);
                 const fechaObj = new Date(item.fecha);
                 const fecha = fechaObj.toLocaleDateString('es-MX');
                 const hora = fechaObj.toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' });
@@ -236,7 +392,8 @@ function cargarHistorial() {
 }
 document.addEventListener('DOMContentLoaded', cargarHistorial);
 
-/* LÓGICA INTERACTIVA DEL DROPDOWN DE PERFIL (CONECTADA AL CSS COMPLETAMENTE) */
+/* ================== PERFIL / SESIÓN ================== */
+
 const avatarUsuario = document.getElementById('avatarUsuario');
 const dropdownPerfil = document.getElementById('dropdownPerfil');
 
@@ -253,7 +410,6 @@ if (avatarUsuario && dropdownPerfil) {
     });
 }
 
-/* CERRAR SESIÓN: borra los datos guardados del login y redirige */
 const btnCerrarSesion = document.getElementById('btnCerrarSesion');
 if (btnCerrarSesion) {
     btnCerrarSesion.addEventListener('click', (e) => {
@@ -264,5 +420,5 @@ if (btnCerrarSesion) {
     });
 }
 document.getElementById('btnIrCrearCuenta').addEventListener('click', function () {
-    window.location.href = 'crear_cuenta.html'; 
+    window.location.href = 'crear_cuenta.html';
 });

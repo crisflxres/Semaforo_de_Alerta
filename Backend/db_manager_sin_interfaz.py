@@ -103,10 +103,10 @@ def actualizar_correo(cursor, contacto):
         print(f"[AVISO] No se actualizó correo: matrícula '{matricula}' no encontrada en alumnos")
     return cursor.rowcount
 
-def actualizar_fotos(cursor, matricula, ruta):
+def actualizar_fotos(cursor, matricula, contenido_bytes):
     matricula = normalizar_matricula(matricula)
-    sql = "UPDATE alumnos SET Foto= %s WHERE Matricula = %s"
-    valores = (ruta, matricula)
+    sql = "UPDATE alumnos SET Foto = %s WHERE Matricula = %s"
+    valores = (contenido_bytes, matricula)
     cursor.execute(sql, valores)
     if cursor.rowcount == 0:
         print(f"[AVISO] No se actualizó foto: matrícula '{matricula}' no encontrada en alumnos")
