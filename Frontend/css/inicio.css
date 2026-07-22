@@ -446,25 +446,60 @@ body {
 /* ==========================================================================
    RESPONSIVE DESIGN
    ========================================================================== */
-@media (max-width: 992px) {
-    .main-layout { flex-direction: column; }
-    .inicio-container, #panelRegistro { width: 100%; }
-    .grid-tarjetas { grid-template-columns: repeat(2, 1fr); }
+/* Tablet*/
+@media (max-with: 992px) {
+    .contenido-principal {padding: 24px 20px;} 
+    .grid-semaforo {grid-template-columns: repeat(2, 1fr);}
+    .tarjeta-semaforo:last-child {grid-column: 1 / -1;}
+    .grid-info-docente {grid-template-columns: 1fr 1fr; row-gap: 20px;}
+    .bloque-docente-perfil:last-child { grid-column: 1 / -1; }
+    .bloque-docente-perfil::after {display: none;}
+    .tarjeta-menu-flotante {width: 260px;}
 }
+/* Celulares*/
+@media (max-width: 600px) {
+   .header-institucional {padding: 0 16px; height: 56px;}
+   .logo-centro img {height: 30px;}
+   .perfil-usuario .avatar {width: 34px; height: 34px; font-size: 14px;}
 
-@media (max-width: 768px) {
-    .logo { height: 32px; }
+   .contenido-principal {padding: 16px; gap: 20px;}
+   .titulo-panel {font-size: 24px;}
 
-    .tabs { flex-wrap: wrap; }
-    .tab-item { flex: 1 1 45%; font-size: 0.85rem; padding: 10px 6px; }
+   .contenedor-vista-docente,
+   .contenedor-informacion-docente {padding: 16px;}
 
-    .contenedor-grupos { padding: 15px; margin: 15px auto; }
-    .header-grupos { flex-direction: column; align-items: stretch; gap: 10px; }
-    .input-buscar { width: 100%; }
-}
+   .texto-alumnos-registrados {font-size: 17px;}
+   .texto-alumnos-registrados strong {font-size: 20px;}
 
-@media (max-width: 480px) {
-    .tab-item { flex: 1 1 100%; }
-    .grid-tarjetas { grid-template-columns: 1fr; padding: 12px; }
-    .tarjeta-menu-flotante { width: 240px; }
+    .grid-semaforo {grid-template-columns: 1fr; gap: 14px;}
+    .tarjeta-semaforo {
+        min-height: unset;
+        height: auto;
+        justify-content: flex-start;
+        gap: 12px;
+        padding: 18px 16px;
+    }
+    .numero-semaforo {font-size: 38px;}
+    .label-semaforo {font-size: 18px;}
+    .icono-semaforo-card {width: 38px; height: 38px; font-size: 16px;}
+    .descripcion-semaforo {margin-top: 0;}
+    .link-ver-mas-nuevo {margin-top: 0;}
+
+    .grid-info-docente {grid-template-columns: 1fr; row-gap: 16px;}
+    .bloque.docente-perfil::after {display: none !important;}
+    .icono-docente-bg {width: 44px; height: 44px; font-size: 18px;}
+
+    .grid-accesos-grandes {grid-template-columns: 1fr; gap: 16px;}
+    .tarjeta-acceso-guinda {
+        min-height: unset;
+        height: auto; 
+        justify-content: flex-start;
+        gap: 12px;
+        padding: 22px 20px;
+    }
+    .icono-acceso-grande {width: 56px; height: 56px; font-size: 26px;}
+    .texto-acceso h3 {font-size: 22px;}
+    .btn-ir-acceso { align-self: stretch; text-align: center; margin-top: 0;}
+
+    .tarjeta-menu-flotante {width: 230px; padding: 20px 18px;}
 }
