@@ -447,7 +447,7 @@ body {
    RESPONSIVE DESIGN
    ========================================================================== */
 /* Tablet*/
-@media (max-with: 992px) {
+@media (max-width: 992px) {
     .contenido-principal {padding: 24px 20px;} 
     .grid-semaforo {grid-template-columns: repeat(2, 1fr);}
     .tarjeta-semaforo:last-child {grid-column: 1 / -1;}
@@ -486,7 +486,7 @@ body {
     .link-ver-mas-nuevo {margin-top: 0;}
 
     .grid-info-docente {grid-template-columns: 1fr; row-gap: 16px;}
-    .bloque.docente-perfil::after {display: none !important;}
+    .bloque-docente-perfil::after {display: none !important;}
     .icono-docente-bg {width: 44px; height: 44px; font-size: 18px;}
 
     .grid-accesos-grandes {grid-template-columns: 1fr; gap: 16px;}
