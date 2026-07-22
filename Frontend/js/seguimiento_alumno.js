@@ -19,11 +19,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const elNombre          = document.getElementById('txt-nombre');
     const elMatricula       = document.getElementById('txt-matricula');
+    const elCorreo          = document.getElementById('txt-correo');
+    const elCarrera         = document.getElementById('txt-carrera');
+    const elGrupo           = document.getElementById('txt-grupo');
+    const elTurno           = document.getElementById('txt-turno');
     const elEstado          = document.getElementById('txt-estado');
+    const elBadgeReprobadas  = document.getElementById('txt-reprobadas');
     const foto              = document.getElementById('foto-alumno');
-    const elCarrera         = document.querySelector('.student-details p:nth-of-type(2)');
-    const elGrupoTurno      = document.querySelector('.student-details p:nth-of-type(3)');
-    const elBadgeReprobadas = document.querySelector('.badge-reprobadas');
 
     fetch('https://semaforo-de-alerta.onrender.com/api/alumnos')
         .then(res => res.json())
@@ -41,8 +43,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (elNombre)    elNombre.textContent = `${alumno.nombre} ${alumno.apellidos}`.toUpperCase();
             if (elMatricula) elMatricula.textContent = alumno.matricula;
-            if (elCarrera)   elCarrera.innerHTML = `<strong>Carrera:</strong> ${alumno.carrera}`;
-            if (elGrupoTurno) elGrupoTurno.innerHTML = `<strong>Grupo:</strong> ${alumno.grupo} &nbsp;&nbsp;&nbsp;&nbsp; <strong>Turno:</strong> ${alumno.turno}`;
+            if (elCorreo)    elCorreo.textContent = alumno.email;
+            if (elCarrera)   elCarrera.textContent = alumno.carrera;
+            if (elGrupo)     elGrupo.textContent = alumno.grupo;
+            if (elTurno)     elTurno.textContent = alumno.turno;
             if (elBadgeReprobadas) elBadgeReprobadas.textContent = `Materias reprobadas: ${alumno.materias_reprobadas}`;
 
             if (elEstado) {

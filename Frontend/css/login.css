@@ -158,15 +158,18 @@ body {
         flex-direction: column;
         justify-content: center;
         padding: 40px 6%; 
-        gap: 32px;
+        gap: 30px;
+        min-height: auto; 
     }
     .info-lado{
+        flex: none; 
         max-width: 100%;
         align-items: center;
         text-align: center;
         padding-right: 0;
     }
     .formulario-lado {
+        flex: none;
         width: 100%;
         justify-content: center;
     }
