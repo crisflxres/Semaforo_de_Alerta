@@ -5,7 +5,6 @@ import uuid
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.image import MIMEImage
-from .correo_service import SMTP_SERVER, SMTP_PORT, SMTP_EMAIL, SMTP_PASSWORD
 
 SMTP_SERVER   = "smtp.gmail.com"
 SMTP_PORT     = 465
