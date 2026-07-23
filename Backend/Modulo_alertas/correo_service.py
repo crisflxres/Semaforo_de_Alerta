@@ -5,24 +5,19 @@ import uuid
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.image import MIMEImage
+from .correo_service import SMTP_SERVER, SMTP_PORT, SMTP_EMAIL, SMTP_PASSWORD
 
 SMTP_SERVER   = "smtp.gmail.com"
 SMTP_PORT     = 465
 SMTP_EMAIL    = "vicmanu315623@gmail.com"
 SMTP_PASSWORD = "rqzsmepyuctjjrey"
 
-def enviar_correo(destinatario, asunto, cuerpo_procesado, imagenes):
-    """
-    Envía un correo a un destinatario.
-    Recibe el cuerpo YA procesado (sin base64) y las imágenes ya extraídas,
-    y las adjunta como embebidas (Content-ID) para que se vean en Gmail/Outlook.
-    Devuelve True si se envió, False si falló.
-    """
+def enviar_correo(servidor, destinatario, asunto, cuerpo_procesado, imagenes):
     try:
         msg = MIMEMultipart("related")
         msg["Subject"] = asunto
-        msg["From"]    = SMTP_EMAIL
-        msg["To"]      = destinatario
+        msg["From"] = SMTP_EMAIL
+        msg["To"] = destinatario
 
         msg_alt = MIMEMultipart("alternative")
         msg_alt.attach(MIMEText(cuerpo_procesado, "html"))
@@ -34,16 +29,12 @@ def enviar_correo(destinatario, asunto, cuerpo_procesado, imagenes):
             img.add_header("Content-Disposition", "inline", filename=f"{cid}.{tipo}")
             msg.attach(img)
 
-        with smtplib.SMTP_SSL(SMTP_SERVER, SMTP_PORT) as servidor:
-            servidor.login(SMTP_EMAIL, SMTP_PASSWORD)
-            servidor.sendmail(SMTP_EMAIL, destinatario, msg.as_string())
-
+        servidor.sendmail(SMTP_EMAIL, destinatario, msg.as_string())
         return True
 
     except Exception as e:
         print(f"Error al enviar correo a {destinatario}: {e}")
         return False
-
 
 def extraer_imagenes_base64(cuerpo_html):
     """
