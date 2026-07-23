@@ -636,22 +636,6 @@ body {
     margin: 0 8px;
 }
 
-.btn-vista-previa {
-    margin-left: auto !important;
-    background-color: #f7f3f4 !important;
-    border: 1.5px solid var(--guinda-principal) !important;
-    color: var(--guinda-principal) !important;
-    font-weight: 600 !important;
-    font-size: 14px !important;
-    border-radius: 20px !important;
-    padding: 0 20px !important;
-    width: auto !important;
-    height: 36px !important;
-    display: flex !important;
-    align-items: center !important;
-    gap: 8px !important;
-}
-
 .div-editor-editable {
     width: 100%;
     border: none;
@@ -785,25 +769,117 @@ body {
 /* ==========================================================================
    RESPONSIVE DESIGN
    ========================================================================== */
-@media (max-width: 992px) {
-    .main-layout { flex-direction: column; }
-    .alertas-container, #panelRegistro { width: 100%; }
-    .grid-tarjetas { grid-template-columns: repeat(2, 1fr); }
+/* Tablet */
+@media (max-width: 900px) {
+    .contenedor-config-figma, .tarjeta-config { padding: 20px; }
+
+    .selector-tipo-alerta, .selector-destinatarios { gap: 12px; }
+    .btn-tipo {
+        flex-direction: column;
+        gap: 8px;
+        font-size: 13px;
+        padding: 14px 8px;
+    }
+    .icono-semaforo { width: 34px; height: 34px; font-size: 16px; }
+    .check-destinatario-figma { padding: 14px 8px; font-size: 13px; }
+
+    .encabezado-asunto { flex-wrap: wrap; }
+    .btn-insertar-variable { font-size: 13px; }
 }
 
-@media (max-width: 768px) {
-    .logo { height: 32px; }
+/* Celulares */
+@media (max-width: 600px) {
+    html, body { overflow-x: hidden; max-width: 100%; }
 
-    .tabs { flex-wrap: wrap; }
-    .tab-item { flex: 1 1 45%; font-size: 0.85rem; padding: 10px 6px; }
+    /* --- HEADER --- */
+    .header-institucional { padding: 10px 16px; height: 56px; }
+    .logo-centro img { height: 30px; }
+    .perfil-usuario .avatar { width: 32px; height: 32px; font-size: 13px; }
 
-    .contenedor-grupos { padding: 15px; margin: 15px auto; }
-    .header-grupos { flex-direction: column; align-items: stretch; gap: 10px; }
-    .input-buscar { width: 100%; }
-}
+    /* --- LAYOUT GENERAL --- */
+    .dashboard-alertas { padding: 0 14px; margin: 16px auto; gap: 14px; min-width: 0; }
+    .columna-configuracion { min-width: 0; }
+    .titulo-modulo { font-size: 20px; }
+    .subtitulo-modulo { font-size: 12px; margin-bottom: 16px; }
+    .contenedor-config-figma, .tarjeta-config, .tarjeta-lateral { padding: 14px; min-width: 0; }
+    .seccion-bloque { margin-bottom: 20px; }
+    .seccion-bloque h3 { font-size: 13px; margin-bottom: 10px; }
 
-@media (max-width: 480px) {
-    .tab-item { flex: 1 1 100%; }
-    .grid-tarjetas { grid-template-columns: 1fr; padding: 12px; }
-    .tarjeta-menu-flotante { width: 240px; }
+    /* --- TIPO DE ALERTA: 3 columnas, sin desbordar --- */
+    .selector-tipo-alerta { gap: 5px; min-width: 0; }
+    .btn-tipo {
+        min-width: 0;
+        flex-direction: column;
+        gap: 4px;
+        font-size: 9px;
+        padding: 8px 2px;
+        white-space: normal;
+        line-height: 1.1;
+        text-align: center;
+        border-radius: 8px;
+    }
+    .icono-semaforo { width: 18px; height: 18px; font-size: 9px; }
+
+    /* --- DESTINATARIOS: 3 columnas, sin desbordar --- */
+    .selector-destinatarios { gap: 5px; min-width: 0; }
+    .check-destinatario-figma {
+        min-width: 0;
+        padding: 8px 2px;
+        font-size: 9px;
+        line-height: 1.1;
+        border-radius: 8px;
+    }
+    .check-destinatario-figma::after {
+        width: 14px !important; height: 14px !important;
+        font-size: 7px !important; top: -5px !important; right: -5px !important;
+    }
+
+    /* --- ALCANCE Y PROGRAMACIÓN: 2 columnas lado a lado --- */
+    .distribucion-inferior-figma {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    .linea-divisoria-vertical { display: none; }
+
+    .columna-alcance h3, .columna-programacion h3 { font-size: 12px; margin-bottom: 8px; }
+    .opcion-radio-figma { font-size: 11px; gap: 6px; margin-bottom: 8px; }
+    .opcion-radio-figma input[type="radio"] { width: 16px; height: 16px; border-width: 1.5px; }
+    .opcion-radio-figma input[type="radio"]:checked { border-width: 4px; }
+
+    .select-control, .inputs-fecha-hora input { font-size: 11px; padding: 8px; }
+    .columna-programacion > div[style*="display: flex"] { gap: 10px !important; }
+    .inputs-fecha-hora { gap: 6px; }
+    .mini-label-figma { font-size: 10px; }
+
+    /* --- ASUNTO DEL CORREO --- */
+    .encabezado-asunto {
+        display: grid !important;
+        grid-template-columns: 1fr auto;
+        grid-template-areas:
+            "label variable"
+            "input input";
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 18px;
+    }
+    .encabezado-asunto label { grid-area: label; font-size: 14px; }
+    .contenedor-dropdown-variables { grid-area: variable; width: auto !important; }
+    .input-asunto { grid-area: input; width: 100% !important; font-size: 13px; padding: 10px 12px; }
+    .btn-insertar-variable { font-size: 11px; padding: 0 10px; height: 36px; }
+
+    /* --- REDACTA TU MENSAJE --- */
+    .cuerpo-mensaje label { font-size: 14px; }
+    .barra-herramientas-editor { flex-wrap: wrap; gap: 4px; padding: 8px 10px; }
+    .barra-herramientas-editor button { width: 28px; height: 28px; font-size: 13px; }
+    .div-editor-editable { padding: 14px; min-height: 160px; font-size: 13.5px; }
+
+    /* --- ENVIAR ALERTA --- */
+    .btn-enviar-accion-rojo { width: 100%; justify-content: center; padding: 14px 20px; font-size: 15px; }
+
+    /* --- RESUMEN LATERAL --- */
+    .tarjeta-lateral h3 { font-size: 14px; }
+    .columna-lateral { display: grid; grid-template-columns: 1fr; gap: 14px; }
+    .item-resumen { flex-wrap: wrap; }
+
+    .tarjeta-menu-flotante { width: 230px; padding: 20px 18px; }
 }

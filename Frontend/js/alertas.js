@@ -441,8 +441,4 @@ document.addEventListener('DOMContentLoaded', async () => {
             btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Enviar Alerta';
         }
     });
-
-    document.getElementById('btnVistaPrevia')?.addEventListener('click', () => {
-        alert('Abriendo panel de previsualización adaptativa...');
-    });
 });
