@@ -8,6 +8,9 @@
     --bg-main: #f4f6f9;
     --bg-regular: #eaf7ed;
     --brand-green: #2da13c;
+    --alert-yellow: #f1c40f;
+    --alert-red: #e74c3c;
+    --text-badge-riesgo: #4a1222;
 }
 
 /* --- GENERAL --- */
@@ -60,7 +63,19 @@ body { background-color: var(--bg-main); color: var(--text-dark); padding-bottom
 
 .badges-row { display: flex; gap: 10px; margin-top: 15px; }
 .badge-reprobadas { background-color: var(--white); padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: 500; border: 1px solid #a44e4e; }
-.badge-estado-regular { background-color: var(--brand-green); color: var(--white); padding: 6px 20px; border-radius: 20px; font-size: 13px; font-weight: 600; }
+
+.badge-estado-regular,
+.badge-estado-riesgo,
+.badge-estado-critico {
+    padding: 6px 20px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.badge-estado-regular { background-color: var(--brand-green); color: var(--white); }
+.badge-estado-riesgo  { background-color: var(--alert-yellow); color: var(--text-badge-riesgo); }
+.badge-estado-critico { background-color: var(--alert-red); color: var(--white); }
 
 .tutor-details { border-left: 2px solid var(--brand-maroon-dark); padding-left: 25px; height: 80%; display: flex; flex-direction: column; justify-content: center; }
 .tutor-details h4 { color: #8e443d; font-size: 16px; margin-bottom: 10px; }
@@ -151,7 +166,7 @@ body { background-color: var(--bg-main); color: var(--text-dark); padding-bottom
     .student-details p { font-size: 13.5px; }
     
     .badges-row { flex-direction: column; align-items: stretch; gap: 10px; margin-top: 12px; }
-    .badge-reprobadas, .badge-estado-regular { text-align: center; font-size: 13px; padding: 8px 14px; }
+    .badge-reprobadas, .badge-estado-regular, .badge-estado-riesgo, .badge-estado-critico { text-align: center; font-size: 13px; padding: 8px 14px; }
 
     .tutor-details {
         border-left: none;
