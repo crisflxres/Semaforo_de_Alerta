@@ -12,21 +12,20 @@ SMTP_EMAIL    = "vicmanu315623@gmail.com"
 SMTP_PASSWORD = "rqzsmepyuctjjrey"
 
 def enviar_correo(destinatario, asunto, cuerpo_procesado, imagenes):
-    """
-    Envía un correo a un destinatario.
-    Recibe el cuerpo YA procesado (sin base64) y las imágenes ya extraídas,
-    y las adjunta como embebidas (Content-ID) para que se vean en Gmail/Outlook.
-    Devuelve True si se envió, False si falló.
-    """
     try:
+        print("=== INICIO enviar_correo ===")
+        print(f"Destinatario: {destinatario}")
+
         msg = MIMEMultipart("related")
         msg["Subject"] = asunto
-        msg["From"]    = SMTP_EMAIL
-        msg["To"]      = destinatario
+        msg["From"] = SMTP_EMAIL
+        msg["To"] = destinatario
 
         msg_alt = MIMEMultipart("alternative")
         msg_alt.attach(MIMEText(cuerpo_procesado, "html"))
         msg.attach(msg_alt)
+
+        print("Mensaje creado")
 
         for cid, tipo, datos in imagenes:
             img = MIMEImage(datos, _subtype=tipo)
@@ -34,9 +33,20 @@ def enviar_correo(destinatario, asunto, cuerpo_procesado, imagenes):
             img.add_header("Content-Disposition", "inline", filename=f"{cid}.{tipo}")
             msg.attach(img)
 
+        print("Imágenes agregadas")
+
+        print("Conectando a SMTP...")
         with smtplib.SMTP_SSL(SMTP_SERVER, SMTP_PORT) as servidor:
+
+            print("Conectado")
+
             servidor.login(SMTP_EMAIL, SMTP_PASSWORD)
+            print("Login correcto")
+
             servidor.sendmail(SMTP_EMAIL, destinatario, msg.as_string())
+            print("Correo enviado")
+
+        print("=== FIN enviar_correo ===")
 
         return True
 
