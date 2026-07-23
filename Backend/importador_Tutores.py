@@ -1,6 +1,5 @@
-import pandas as pd
-
 def importar_tutores(hoja):
+    import pandas as pd
     tutores: list =[]
     
     for i, fila in hoja.iterrows():

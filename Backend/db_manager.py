@@ -1,11 +1,6 @@
 from importador_TACA import leer_taca, importar_alumnos, importar_materias, importar_calificaciones
-from importador_Contactos import importar_correos_electronicos
-from importador_fotos import importar_fotos
-from importador_Tutores import importar_tutores
 from conexion_db import obtener_conexion
-import pandas as pd
 import bcrypt
-import os
 
 def insertar_materia(cursor, materia, id_carrera, semestre, periodo):
     sql = "INSERT IGNORE INTO materias (Nombre, Semestre, Id_Carrera, Periodo, Tipo) VALUES (%s, %s, %s, %s, %s)"
