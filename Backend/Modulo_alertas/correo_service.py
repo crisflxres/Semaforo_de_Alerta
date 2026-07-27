@@ -36,7 +36,7 @@ def enviar_correo(destinatario, asunto, cuerpo_procesado, imagenes):
             "https://api.brevo.com/v3/smtp/email",
             headers={
                 "accept": "application/json",
-                "api-key": BREVO_API_KEY,
+                "api-key": SENDINBLUE_API_KEY ,
                 "content-type": "application/json"
             },
             json=payload,
