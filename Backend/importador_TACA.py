@@ -1,6 +1,5 @@
-import pandas as pd
-
 def leer_taca(ruta_archivo):
+    import pandas as pd
     """
     Lee un archivo TACA sin importar si es HTML disfrazado (.xls) 
     o un archivo Excel binario real (.xlsx).

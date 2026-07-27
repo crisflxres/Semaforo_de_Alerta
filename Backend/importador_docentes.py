@@ -1,6 +1,6 @@
-import pandas as pd
-
 def importar_docentes(hoja):
+    import pandas as pd
+
     docentes: list = []
     
     for i, fila in hoja.iterrows():
