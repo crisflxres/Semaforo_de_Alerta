@@ -1,4 +1,3 @@
-import smtplib
 from flask import Blueprint, request, jsonify
 from .services import obtener_alumnos_por_alerta, obtener_grupos, obtener_resumen_destinatarios
 from .correo_service import enviar_correo, reemplazar_variables, extraer_imagenes_base64
@@ -6,7 +5,6 @@ from conexion_db import obtener_conexion
 from datetime import datetime
 from zoneinfo import ZoneInfo
 from .scheduler_config import scheduler
-from .correo_service import SMTP_SERVER, SMTP_PORT, SMTP_EMAIL, SMTP_PASSWORD
 
 alerta_bp = Blueprint("alertas", __name__, url_prefix="/alertas")
 
@@ -116,47 +114,44 @@ def enviar_alerta():
             fallidos = 0
             detalles = []
 
-            with smtplib.SMTP_SSL(SMTP_SERVER, 587) as servidor:
-                servidor.login(SMTP_EMAIL, SMTP_PASSWORD)
+            alumnos_procesados = alumnos
+            for alumno in alumnos_procesados:
+                destinos = []
+                if "alumnos" in destinatarios and alumno.get("Email"):
+                    destinos.append(("Alumno", alumno["Email"]))
+                if "tutores" in destinatarios and alumno.get("Correo_Tutor"):
+                    destinos.append(("Tutor", alumno["Correo_Tutor"]))
+                if "docentes" in destinatarios and alumno.get("Correo_Docente"):
+                    destinos.append(("Docente", alumno["Correo_Docente"]))
 
-                for alumno in alumnos:
-                    destinos = []
-                    if "alumnos" in destinatarios and alumno.get("Email"):
-                        destinos.append(("Alumno", alumno["Email"]))
-                    if "tutores" in destinatarios and alumno.get("Correo_Tutor"):
-                        destinos.append(("Tutor", alumno["Correo_Tutor"]))
-                    if "docentes" in destinatarios and alumno.get("Correo_Docente"):
-                        destinos.append(("Docente", alumno["Correo_Docente"]))
+                for rol, correo in destinos:
+                    variables = {
+                        "destinatario": rol,
+                        "nombre": alumno["Nombre"],
+                        "apellidos": alumno["Apellidos"],
+                        "matricula": alumno["Matricula"],
+                        "carrera": alumno["Carrera"],
+                        "grupo": alumno["Grupo"],
+                        "materias_reprobadas": alumno.get("Materias_Reprobadas", 0),                            "pac": alumno.get("PAC", ""),
+                        "estatus": alumno.get("Nivel_Alerta", ""),
+                    }
+                    asunto = reemplazar_variables(asunto_plantilla, variables)
+                    cuerpo = reemplazar_variables(mensaje_plantilla, variables)
+                    cuerpo, imagenes = extraer_imagenes_base64(cuerpo)
 
-                    for rol, correo in destinos:
-                        variables = {
-                            "destinatario": rol,
-                            "nombre": alumno["Nombre"],
-                            "apellidos": alumno["Apellidos"],
-                            "matricula": alumno["Matricula"],
-                            "carrera": alumno["Carrera"],
-                            "grupo": alumno["Grupo"],
-                            "materias_reprobadas": alumno.get("Materias_Reprobadas", 0),
-                            "pac": alumno.get("PAC", ""),
-                            "estatus": alumno.get("Nivel_Alerta", ""),
-                        }
-                        asunto = reemplazar_variables(asunto_plantilla, variables)
-                        cuerpo = reemplazar_variables(mensaje_plantilla, variables)
-                        cuerpo, imagenes = extraer_imagenes_base64(cuerpo)
+                    ok_envio = enviar_correo(correo, asunto, cuerpo, imagenes)
+                    enviados += 1 if ok_envio else 0
+                    fallidos += 0 if ok_envio else 1
+                    detalles.append({"matricula": alumno["Matricula"], "destinatario": rol, "correo": correo, "ok": ok_envio})
 
-                        ok_envio = enviar_correo(servidor, correo, asunto, cuerpo, imagenes)
-                        enviados += 1 if ok_envio else 0
-                        fallidos += 0 if ok_envio else 1
-                        detalles.append({"matricula": alumno["Matricula"], "destinatario": rol, "correo": correo, "ok": ok_envio})
+                    estado = "Enviado" if ok_envio else "Error"
+                    fecha_local = datetime.now(ZONA_MX).replace(tzinfo=None)
 
-                        estado = "Enviado" if ok_envio else "Error"
-                        fecha_local = datetime.now(ZONA_MX).replace(tzinfo=None)
-
-                        sql_notif = """INSERT INTO notificaciones 
-                            (Matricula, Destinatario, Asunto, Cuerpo, Estado, Id_Alerta, Fecha_Enviado)
-                            VALUES (%s, %s, %s, %s, %s, %s, %s)"""
-                        valores_notif = (alumno["Matricula"], correo, asunto, cuerpo, estado, None, fecha_local)
-                        cursor.execute(sql_notif, valores_notif)
+                    sql_notif = """INSERT INTO notificaciones 
+                        (Matricula, Destinatario, Asunto, Cuerpo, Estado, Id_Alerta, Fecha_Enviado)
+                        VALUES (%s, %s, %s, %s, %s, %s, %s)"""
+                    valores_notif = (alumno["Matricula"], correo, asunto, cuerpo, estado, None, fecha_local)
+                    cursor.execute(sql_notif, valores_notif)
 
             conexion.commit()
             cursor.close()
