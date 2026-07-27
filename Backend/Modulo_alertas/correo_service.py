@@ -7,7 +7,7 @@ from email.mime.text import MIMEText
 from email.mime.image import MIMEImage
 
 SMTP_SERVER   = "smtp.gmail.com"
-SMTP_PORT     = 465
+SMTP_PORT     = 587
 SMTP_EMAIL    = "vicmanu315623@gmail.com"
 SMTP_PASSWORD = "rqzsmepyuctjjrey"
 

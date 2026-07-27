@@ -116,7 +116,7 @@ def enviar_alerta():
             fallidos = 0
             detalles = []
 
-            with smtplib.SMTP_SSL(SMTP_SERVER, SMTP_PORT) as servidor:
+            with smtplib.SMTP_SSL(SMTP_SERVER, 587) as servidor:
                 servidor.login(SMTP_EMAIL, SMTP_PASSWORD)
 
                 for alumno in alumnos:
