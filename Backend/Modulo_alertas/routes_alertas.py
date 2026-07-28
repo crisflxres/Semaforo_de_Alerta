@@ -132,7 +132,8 @@ def enviar_alerta():
                         "matricula": alumno["Matricula"],
                         "carrera": alumno["Carrera"],
                         "grupo": alumno["Grupo"],
-                        "materias_reprobadas": alumno.get("Materias_Reprobadas", 0),                            "pac": alumno.get("PAC", ""),
+                        "materias_reprobadas": alumno.get("Materias_Reprobadas", 0),                            
+                        "pac": alumno.get("PAC", ""),
                         "estatus": alumno.get("Nivel_Alerta", ""),
                     }
                     asunto = reemplazar_variables(asunto_plantilla, variables)
@@ -164,20 +165,58 @@ def enviar_alerta():
             fecha_hora_str = f"{fecha_envio} {hora_envio}"
             fecha_hora_dt = datetime.strptime(fecha_hora_str, "%Y-%m-%d %H:%M")
 
-            scheduler.add_job(proceso_envio, "date", run_date=fecha_hora_dt)
+            conexion = obtener_conexion()
+            cursor = conexion.cursor()
+
+            total_programados = 0
+            for alumno in alumnos:
+                destinos = []
+                if "alumnos" in destinatarios and alumno.get("Email"):
+                    destinos.append(("Alumno", alumno["Email"]))
+                if "tutores" in destinatarios and alumno.get("Correo_Tutor"):
+                    destinos.append(("Tutor", alumno["Correo_Tutor"]))
+                if "docentes" in destinatarios and alumno.get("Correo_Docente"):
+                    destinos.append(("Docente", alumno["Correo_Docente"]))
+
+                for rol, correo in destinos:
+                    variables = {
+                        "destinatario": rol,
+                        "nombre": alumno["Nombre"],
+                        "apellidos": alumno["Apellidos"],
+                        "matricula": alumno["Matricula"],
+                        "carrera": alumno["Carrera"],
+                        "grupo": alumno["Grupo"],
+                        "materias_reprobadas": alumno.get("Materias_Reprobadas", 0),
+                        "pac": alumno.get("PAC", ""),
+                        "estatus": alumno.get("Nivel_Alerta", ""),
+                    }
+                    asunto = reemplazar_variables(asunto_plantilla, variables)
+                    cuerpo = reemplazar_variables(mensaje_plantilla, variables)
+                    cuerpo, _ = extraer_imagenes_base64(cuerpo)
+
+                    sql_notif = """INSERT INTO notificaciones 
+                        (Matricula, Destinatario, Asunto, Cuerpo, Estado, Id_Alerta, Fecha_Enviado)
+                        VALUES (%s, %s, %s, %s, %s, %s, %s)"""
+                    cursor.execute(sql_notif, (alumno["Matricula"], correo, asunto, cuerpo, "Programado", None, fecha_hora_dt))
+                    total_programados += 1
+
+            conexion.commit()
+            cursor.close()
+            conexion.close()
 
             return jsonify({
                 "ok": True,
                 "mensaje": f"Envío programado para {fecha_hora_str}",
-                "total_alumnos": len(alumnos)
+                "total_alumnos": len(alumnos),
+                "total_programados": total_programados
             })
         else:
-            enviados, fallidos, detalles = proceso_envio()  
+            enviados, fallidos, detalles = proceso_envio()
             return jsonify({
                 "ok": True,
                 "total_alumnos": len(alumnos),
-                "enviados": enviados,  
-                "fallidos": fallidos    
+                "enviados": enviados,
+                "fallidos": fallidos
             })
 
     except Exception as e:
@@ -208,5 +247,41 @@ def historial_notificaciones():
                 f["Fecha_Enviado"] = f["Fecha_Enviado"].strftime("%d/%m/%Y %I:%M %p")
 
         return jsonify({"ok": True, "total": len(filas), "datos": filas})
+    except Exception as e:
+        return jsonify({"ok": False, "mensaje": str(e)}), 500
+
+@alerta_bp.route("/procesar-pendientes", methods=["GET"])
+def procesar_pendientes():
+    try:
+        conexion = obtener_conexion()
+        cursor = conexion.cursor(dictionary=True)
+
+        ahora = datetime.now(ZONA_MX).replace(tzinfo=None)
+
+        cursor.execute("""
+            SELECT * FROM notificaciones
+            WHERE Estado = 'Programado' AND Fecha_Enviado <= %s
+        """, (ahora,))
+        pendientes = cursor.fetchall()
+
+        enviados = 0
+        fallidos = 0
+
+        for noti in pendientes:
+            ok_envio = enviar_correo(noti["Destinatario"], noti["Asunto"], noti["Cuerpo"], [])
+            nuevo_estado = "Enviado" if ok_envio else "Error"
+
+            cursor.execute(
+                "UPDATE notificaciones SET Estado = %s WHERE Id_Notificacion = %s",
+                (nuevo_estado, noti["Id_Notificacion"])
+            )
+            enviados += 1 if ok_envio else 0
+            fallidos += 0 if ok_envio else 1
+
+        conexion.commit()
+        cursor.close()
+        conexion.close()
+
+        return jsonify({"ok": True, "procesados": len(pendientes), "enviados": enviados, "fallidos": fallidos})
     except Exception as e:
         return jsonify({"ok": False, "mensaje": str(e)}), 500

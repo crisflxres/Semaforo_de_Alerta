@@ -442,3 +442,4 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     });
 });
+fetch('https://semaforo-de-alerta.onrender.com/alertas/procesar-pendientes').catch(() => {});
