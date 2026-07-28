@@ -10,9 +10,9 @@ load_dotenv()
 
 FRONTEND_URL_BASE = "https://semaforo-de-alerta.onrender.com/Semaforo_de_Alerta/Frontend/html/nueva_contrasena.html"
 
-SENDINBLUE_API_KEY = os.getenv("SENDINBLUE_API_KEY")
-BROVO_SENDER_EMAIL = os.getenv("semaalert@gmail.com")
-BROVO_SENDER_NAME = os.getenv("Sistema de Alertas CECyTEH")
+SENDINBLUE_API_KEY = os.environ.get("SENDINBLUE_API_KEY")
+BROVO_SENDER_EMAIL = "semaalert@gmail.com"
+BROVO_SENDER_NAME = "Sistema de Alertas CECyTEH"
 
 
 def enviar_correo_recuperacion(destinatario, token):
