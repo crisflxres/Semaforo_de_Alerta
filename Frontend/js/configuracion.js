@@ -11,7 +11,7 @@ document.getElementById("btnHamburguesa").addEventListener("click", () => docume
 document.getElementById("btnCerrarSidebar").addEventListener("click", () => document.getElementById("sidebarOverlay").classList.remove("open"));
 
 // Cambia esto si tu Flask corre en otra URL/puerto
-const API_BASE = "https://semaforo-de-alerta.onrender.com";
+const API_BASE = "http://localhost:5000";
 
 function manejarArchivo(input, tipo) {
     if (input.files && input.files.length > 0) {
@@ -205,25 +205,40 @@ function mostrarErrorContactos(mensaje) {
 
 /* ================== FOTOS (carpeta arrastrada) ================== */
 
-async function procesarCarpetaFotos(archivos) {
-    const msg = document.getElementById('exitoContactos');
-    const textoMsg = document.getElementById('textoExitoContactos');
+const TAMANO_LOTE_FOTOS = 100;
+let lotesFallidos = []; // guarda { numero, archivos, mensaje } de los lotes que fallaron
 
-    if (!archivos || archivos.length === 0) {
-        textoMsg.textContent = "La carpeta no contiene archivos válidos.";
-        msg.style.display = 'flex';
-        setTimeout(() => { msg.style.display = 'none'; }, 5000);
-        return;
+function bloquearZonaContactos(bloquear) {
+    const zona = document.getElementById('dropContactos');
+    const input = document.getElementById('inputContactos');
+    if (bloquear) {
+        zona.classList.add('deshabilitada');
+        input.disabled = true;
+    } else {
+        zona.classList.remove('deshabilitada');
+        input.disabled = false;
     }
+}
 
-    textoMsg.textContent = `Subiendo ${archivos.length} foto(s)...`;
-    msg.style.display = 'flex';
+function actualizarBarraProgreso(porcentaje, texto) {
+    const container = document.getElementById('barraProgresoFotosContainer');
+    const relleno = document.getElementById('barraProgresoFotosRelleno');
+    const textoEl = document.getElementById('barraProgresoFotosTexto');
 
+    container.style.display = 'block';
+    relleno.style.width = `${porcentaje}%`;
+    textoEl.textContent = texto;
+}
+
+function ocultarBarraProgreso() {
+    document.getElementById('barraProgresoFotosContainer').style.display = 'none';
+}
+
+/* Sube UN lote de fotos. Regresa { exito, registros, mensaje } */
+async function subirLoteFotos(lote) {
     const formData = new FormData();
-    archivos.forEach((archivo) => {
-        // fullPath conserva la ruta relativa dentro de la carpeta (ej. "Matricula Total/12345.jpg")
-        const rutaRelativa = archivo.webkitRelativePath || archivo.fullPath || archivo.name;
-        formData.append("fotos", archivo, rutaRelativa);
+    lote.forEach((archivo) => {
+        formData.append("fotos", archivo, archivo.name);
     });
 
     try {
@@ -234,25 +249,151 @@ async function procesarCarpetaFotos(archivos) {
         const data = await respuesta.json();
 
         if (!respuesta.ok || !data.success) {
-            textoMsg.textContent = data.mensaje || "Error al importar las fotos";
-            msg.style.display = 'flex';
-            setTimeout(() => { msg.style.display = 'none'; }, 5000);
-            return;
+            return { exito: false, registros: 0, mensaje: data.mensaje || "Error desconocido" };
         }
-
-        textoMsg.textContent = `${data.registros} foto(s) vinculada(s) correctamente.`;
-        msg.style.display = 'flex';
-        setTimeout(() => { msg.style.display = 'none'; }, 5000);
-
-        agregarHistorial("Carpeta de fotos", new Date().toLocaleDateString('es-MX'), new Date().toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' }), `${data.registros} regs`, 'contactos', null, null, data.id_importacion);
+        return { exito: true, registros: data.registros, mensaje: "" };
 
     } catch (error) {
-        console.error("Error al conectar con el servidor:", error);
-        textoMsg.textContent = "No se pudo conectar con el servidor";
-        msg.style.display = 'flex';
-        setTimeout(() => { msg.style.display = 'none'; }, 5000);
+        return { exito: false, registros: 0, mensaje: "No se pudo conectar con el servidor" };
     }
 }
+
+async function procesarCarpetaFotos(archivos) {
+    const msg = document.getElementById('exitoContactos');
+    const textoMsg = document.getElementById('textoExitoContactos');
+    const btnReintentar = document.getElementById('btnReintentarFotos');
+
+    if (!archivos || archivos.length === 0) {
+        textoMsg.textContent = "La carpeta no contiene archivos válidos.";
+        msg.style.display = 'flex';
+        setTimeout(() => { msg.style.display = 'none'; }, 5000);
+        return;
+    }
+
+    bloquearZonaContactos(true);
+    btnReintentar.style.display = 'none';
+    lotesFallidos = [];
+
+    try {
+        const totalLotes = Math.ceil(archivos.length / TAMANO_LOTE_FOTOS);
+        let totalRegistros = 0;
+
+        for (let i = 0; i < totalLotes; i++) {
+            const inicio = i * TAMANO_LOTE_FOTOS;
+            const lote = archivos.slice(inicio, inicio + TAMANO_LOTE_FOTOS);
+            const numeroLote = i + 1;
+
+            const porcentaje = Math.round((numeroLote / totalLotes) * 100);
+            actualizarBarraProgreso(porcentaje, `Subiendo lote ${numeroLote} de ${totalLotes} (${lote.length} fotos)...`);
+
+            const resultado = await subirLoteFotos(lote);
+
+            if (resultado.exito) {
+                totalRegistros += resultado.registros;
+            } else {
+                lotesFallidos.push({ numero: numeroLote, archivos: lote, mensaje: resultado.mensaje });
+            }
+        }
+
+        await finalizarImportacionFotos(totalRegistros);
+        mostrarReporteFinalFotos(totalRegistros);
+
+    } catch (error) {
+        console.error("Error inesperado al procesar fotos:", error);
+        textoMsg.textContent = "Ocurrió un error inesperado durante la importación.";
+        msg.style.display = 'flex';
+
+    } finally {
+        bloquearZonaContactos(false);
+        ocultarBarraProgreso();
+    }
+}
+
+async function finalizarImportacionFotos(totalRegistros) {
+    try {
+        const respuesta = await fetch(`${API_BASE}/configuracion/finalizar-importacion-fotos`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ registros: totalRegistros }),
+        });
+        const data = await respuesta.json();
+
+        agregarHistorial(
+            "Carpeta de fotos",
+            new Date().toLocaleDateString('es-MX'),
+            new Date().toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' }),
+            `${totalRegistros} regs`,
+            'contactos',
+            null,
+            null,
+            data.id_importacion
+        );
+    } catch (error) {
+        console.error("Error al finalizar importación de fotos:", error);
+    }
+}
+
+function mostrarReporteFinalFotos(totalRegistros) {
+    const msg = document.getElementById('exitoContactos');
+    const textoMsg = document.getElementById('textoExitoContactos');
+    const btnReintentar = document.getElementById('btnReintentarFotos');
+
+    if (lotesFallidos.length === 0) {
+        textoMsg.textContent = `${totalRegistros} foto(s) vinculada(s) correctamente. Sin errores.`;
+    } else {
+        const fotosFallidas = lotesFallidos.reduce((suma, l) => suma + l.archivos.length, 0);
+        textoMsg.textContent = `${totalRegistros} foto(s) vinculada(s). ${lotesFallidos.length} lote(s) fallaron (${fotosFallidas} fotos sin subir).`;
+        btnReintentar.style.display = 'flex';
+    }
+
+    msg.style.display = 'flex';
+    setTimeout(() => { msg.style.display = 'none'; }, 8000);
+}
+
+async function reintentarLotesFallidos() {
+    if (lotesFallidos.length === 0) return;
+
+    const btnReintentar = document.getElementById('btnReintentarFotos');
+    btnReintentar.style.display = 'none';
+    bloquearZonaContactos(true);
+
+    const lotesAReintentar = [...lotesFallidos];
+    lotesFallidos = [];
+    let totalRegistros = 0;
+
+    try {
+        for (let i = 0; i < lotesAReintentar.length; i++) {
+            const loteInfo = lotesAReintentar[i];
+            actualizarBarraProgreso(
+                Math.round(((i + 1) / lotesAReintentar.length) * 100),
+                `Reintentando lote ${loteInfo.numero} (${i + 1}/${lotesAReintentar.length})...`
+            );
+
+            const resultado = await subirLoteFotos(loteInfo.archivos);
+
+            if (resultado.exito) {
+                totalRegistros += resultado.registros;
+            } else {
+                lotesFallidos.push({ ...loteInfo, mensaje: resultado.mensaje });
+            }
+        }
+
+        if (totalRegistros > 0) {
+            await finalizarImportacionFotos(totalRegistros);
+        }
+
+        mostrarReporteFinalFotos(totalRegistros);
+
+    } catch (error) {
+        console.error("Error inesperado al reintentar fotos:", error);
+
+    } finally {
+        bloquearZonaContactos(false);
+        ocultarBarraProgreso();
+    }
+}
+
+document.getElementById('btnReintentarFotos').addEventListener('click', reintentarLotesFallidos);
 
 /* ================== DETECCIÓN ARCHIVO vs CARPETA (drag & drop en Contactos) ================== */
 
@@ -261,7 +402,8 @@ async function manejarDropContactos(event) {
     event.currentTarget.classList.remove('dragover');
 
     const items = event.dataTransfer.items;
-    const archivosSueltos = [];
+    const archivosExcel = [];
+    const archivosFotos = [];
     let carpetaEncontrada = null;
 
     for (let i = 0; i < items.length; i++) {
@@ -270,16 +412,31 @@ async function manejarDropContactos(event) {
 
         if (entry.isDirectory) {
             carpetaEncontrada = entry;
+
         } else if (entry.isFile) {
-            archivosSueltos.push(items[i].getAsFile());
+            const archivo = items[i].getAsFile();
+            const extension = archivo.name.split('.').pop().toLowerCase();
+
+            if (extension === 'xls' || extension === 'xlsx') {
+                archivosExcel.push(archivo);
+            } else if (extension === 'jpg' || extension === 'jpeg') {
+                archivosFotos.push(archivo);
+            }
+            // cualquier otra extensión se ignora silenciosamente
         }
     }
 
     if (carpetaEncontrada) {
         const archivosDeFotos = await leerCarpetaRecursiva(carpetaEncontrada);
         procesarCarpetaFotos(archivosDeFotos);
-    } else if (archivosSueltos.length > 0) {
-        procesarVariosContactos(archivosSueltos);
+    }
+
+    if (archivosExcel.length > 0) {
+        procesarVariosContactos(archivosExcel);
+    }
+
+    if (archivosFotos.length > 0) {
+        procesarCarpetaFotos(archivosFotos);
     }
 }
 

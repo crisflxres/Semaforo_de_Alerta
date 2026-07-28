@@ -8,17 +8,16 @@ import pandas as pd
 import bcrypt
 import os
 
-def insertar_materia(cursor, materia, id_carrera, semestre, periodo):
-    sql = "INSERT IGNORE INTO materias (Nombre, Semestre, Id_Carrera, Periodo, Tipo) VALUES (%s, %s, %s, %s, %s)"
+def insertar_materia(cursor, materia, id_carrera, semestre):
+    sql = "INSERT IGNORE INTO materias (Nombre, Semestre, Id_Carrera, Tipo) VALUES (%s, %s, %s, %s)"
     valores = (
         materia["nombre"], 
         semestre, 
         id_carrera, 
-        periodo, 
         materia["tipo"]
     )
     cursor.execute(sql, valores)
-    cursor.execute("SELECT Id_Materia FROM materias WHERE Nombre = %s AND Id_Carrera = %s AND Periodo = %s", (materia["nombre"], id_carrera, periodo))
+    cursor.execute("SELECT Id_Materia FROM materias WHERE Nombre = %s AND Id_Carrera = %s", (materia["nombre"], id_carrera))
     resultado = cursor.fetchone()
     return resultado[0]
 
@@ -67,24 +66,22 @@ def insertar_alumnos(cursor, alumno, id_grupo, id_usuario):
     resultado = cursor.fetchone()
     return resultado[0]
 
-def insertar_importacion(cursor, id_grupo, periodo, archivo,importador_por):
-    sql = "INSERT INTO importaciones (Id_grupo, Periodo, archivo, importado_por) VALUES (%s, %s, %s, %s)"
+def insertar_importacion(cursor, id_grupo, archivo,importador_por):
+    sql = "INSERT INTO importaciones (Id_grupo, archivo, importado_por) VALUES (%s, %s, %s)"
     valores = (
         id_grupo,
-        periodo,
         archivo,
         importador_por,
     )
     cursor.execute(sql, valores)
     return cursor.lastrowid
 
-def insertar_calificaciones(cursor, calificacion, id_materia, id_importacion, periodo, aprobado):
-    sql = "INSERT INTO calificaciones (Matricula, Id_Materia, Id_Importacion, Periodo, P1, P2, P3, PR, Aprobado) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)ON DUPLICATE KEY UPDATE P1= VALUES (P1), P2 = VALUES(P2), P3 = VALUES(P3), PR =  VALUES(PR)"
+def insertar_calificaciones(cursor, calificacion, id_materia, id_importacion, aprobado):
+    sql = "INSERT INTO calificaciones (Matricula, Id_Materia, Id_Importacion, P1, P2, P3, PR, Aprobado) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)ON DUPLICATE KEY UPDATE P1= VALUES (P1), P2 = VALUES(P2), P3 = VALUES(P3), PR =  VALUES(PR)"
     valores = (
         calificacion["matricula"],
         id_materia,
         id_importacion,
-        periodo,
         calificacion["P1"],
         calificacion["P2"],
         calificacion["P3"],
@@ -136,12 +133,11 @@ def obtener_mapa_grupos(cursor):
     cursor.execute("SELECT Id_Grupo, Nombre FROM grupos")
     return {nombre: id_grupo for (id_grupo, nombre) in cursor.fetchall()}
 
-def insertar_tutor_grupo(cursor, id_usuario, id_grupo, periodo):
-    sql = "INSERT IGNORE INTO tutor_grupo (Id_Usuario, Id_Grupo, Periodo) VALUES (%s, %s, %s)"
+def insertar_tutor_grupo(cursor, id_usuario, id_grupo):
+    sql = "INSERT IGNORE INTO tutor_grupo (Id_Usuario, Id_Grupo) VALUES (%s, %s)"
     valores = (
         id_usuario,
-        id_grupo,
-        periodo
+        id_grupo
     )
     cursor.execute(sql, valores)
     return cursor.lastrowid
@@ -157,15 +153,15 @@ def calcular_id_nivel(cursor, materias_reprobadas):
     resultado = cursor.fetchone()
     return resultado[0] if resultado else None
 
-def insertar_alerta(cursor, matricula, periodo, materias_reprobadas, pac):
+def insertar_alerta(cursor, matricula, materias_reprobadas, pac):
     id_nivel = calcular_id_nivel(cursor, materias_reprobadas)
-    sql = """INSERT INTO alertas (Matricula, Periodo, Id_Nivel, Materias_Reprobadas, PAC, Fecha_Calculo)
-            VALUES (%s, %s, %s, %s, %s, NOW())
+    sql = """INSERT INTO alertas (Matricula, Id_Nivel, Materias_Reprobadas, PAC, Fecha_Calculo)
+            VALUES (%s, %s, %s, %s, NOW())
             ON DUPLICATE KEY UPDATE Id_Nivel = VALUES(Id_Nivel),
                                     Materias_Reprobadas = VALUES(Materias_Reprobadas),
                                     PAC = VALUES(PAC),
                                     Fecha_Calculo = NOW()"""
-    valores = (matricula, periodo, id_nivel, materias_reprobadas, pac)
+    valores = (matricula, id_nivel, materias_reprobadas, pac)
     cursor.execute(sql, valores)
     return cursor.lastrowid
 
@@ -193,15 +189,15 @@ def insertar_docentes(cursor, docente):
     return cursor.lastrowid
 
 # Ahora una sola línea, sin importar si el archivo es HTML disfrazado o .xlsx real
-hoja = leer_taca(r"C:\Users\Victo\OneDrive\Documentos\Actividades\TACA_03AJ6L.xls")
+hoja = leer_taca(r"C:\Users\crisf\OneDrive\Documentos\UPT\SEXTO CUATRIMESTRE_SERVICIO_SOCIAL_(TSU)\Proyecto_Documentacion\TACA_03AJ6L.xls")
 
-Contactos = pd.read_excel(r"C:\Users\Victo\OneDrive\Documentos\Actividades\Matricula_Actual(2).xls")
+Contactos = pd.read_excel(r"C:\Users\crisf\OneDrive\Documentos\UPT\SEXTO CUATRIMESTRE_SERVICIO_SOCIAL_(TSU)\Proyecto_Documentacion\proyecto 2026\Matricula_Actual(2).xls")
 
-fotos = importar_fotos(r"C:\Users\Victo\OneDrive\Documentos\Actividades\Matricula Total")
+fotos = importar_fotos(r"C:\Users\crisf\OneDrive\Documentos\UPT\SEXTO CUATRIMESTRE_SERVICIO_SOCIAL_(TSU)\Proyecto_Documentacion\Matricula Total")
 
-hoja3 = pd.read_excel(r"C:\Users\Victo\OneDrive\Documentos\Actividades\Datos Programa.xlsx")
+hoja3 = pd.read_excel(r"C:\Users\crisf\OneDrive\Documentos\UPT\SEXTO CUATRIMESTRE_SERVICIO_SOCIAL_(TSU)\Proyecto_Documentacion\Datos Programa.xlsx")
 
-hoja_docentes = pd.read_excel(r"C:\Users\Victo\OneDrive\Documentos\Actividades\archivos de prueba\correos docentes.xlsx")
+hoja_docentes = pd.read_excel(r"C:\Users\crisf\OneDrive\Documentos\UPT\SEXTO CUATRIMESTRE_SERVICIO_SOCIAL_(TSU)\Proyecto_Documentacion\archivos de prueba\correos docentes.xlsx")
 
 hoja2 = Contactos
 
@@ -218,18 +214,18 @@ cursor = conexion.cursor()
 
 mapa_materias = {}
 for materia in materias:
-    id_materia = insertar_materia(cursor, materia, 2, 6, "FEBRERO - JULIO 2026")
+    id_materia = insertar_materia(cursor, materia, 2, 6)
     mapa_materias[materia["nombre"]] = id_materia
 
 for alumno in alumnos:
     id_usuario = insertar_alumnos_usuarios(cursor, alumno)
     insertar_alumnos(cursor, alumno, 40, id_usuario)
 
-id_importacion = insertar_importacion (cursor, 40,"FEBRERO - JULIO 2026", os.path.basename(r"C:\Users\Victo\OneDrive\Documentos\Actividades\archivos de prueba\correos docentes.xlsx"), None)
+id_importacion = insertar_importacion (cursor, 40, os.path.basename(r"C:\Users\Victo\OneDrive\Documentos\Actividades\archivos de prueba\correos docentes.xlsx"), None)
 
 for calificacion in calificaciones:
     id_materia = mapa_materias [calificacion["materia"]]
-    insertar_calificaciones(cursor, calificacion, id_materia, id_importacion, "FEBRERO - JULIO 2026", calificacion["aprobado"])
+    insertar_calificaciones(cursor, calificacion, id_materia, id_importacion, calificacion["aprobado"])
 
 for contacto in contactos:
     actualizar_correo(cursor, contacto)
@@ -245,7 +241,7 @@ for tutor in tutores:
     if id_grupo is None:
         print(f"Aviso: el grupo '{tutor['grupo']}' del tutor {tutor['tutor']} no existe en la tabla grupos. Se omite.")
         continue
-    insertar_tutor_grupo(cursor, id_usuario, id_grupo, "FEBRERO - JULIO 2026")
+    insertar_tutor_grupo(cursor, id_usuario, id_grupo)
 
 # Calcular e insertar alertas por alumno
 reprobadas_por_alumno = {}
@@ -257,7 +253,7 @@ for calificacion in calificaciones:
 for alumno in alumnos:
     matricula = alumno["matricula"]
     reprobadas = reprobadas_por_alumno.get(matricula, 0)
-    insertar_alerta(cursor, matricula, "FEBRERO - JULIO 2026", reprobadas, alumno["PAC"])
+    insertar_alerta(cursor, matricula, reprobadas, alumno["PAC"])
 
 for docente in docentes:
     insertar_docentes(cursor, docente)

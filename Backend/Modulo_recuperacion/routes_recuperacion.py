@@ -15,7 +15,13 @@ MINUTOS_EXPIRACION = 30
 
 @recuperacion_bp.route('/api/recuperar-password', methods=['POST'])
 def solicitar_recuperacion():
-    datos = request.get_json()
+    datos = request.get_json(silent=True)
+    if not datos:
+        return jsonify({
+            "success": False,
+            "message": "Solicitud inválida."
+        }), 400
+
     email = datos.get('email', '').strip()
 
     if not email:
@@ -29,7 +35,7 @@ def solicitar_recuperacion():
         cursor = conexion.cursor(dictionary=True)
 
         cursor.execute(
-            "SELECT Id_Usuario FROM usuarios WHERE Email = %s AND Activo = 1",
+            "SELECT Id_Usuario, reset_expiracion FROM usuarios WHERE Email = %s AND Activo = 1",
             (email,)
         )
         usuario = cursor.fetchone()
@@ -43,6 +49,16 @@ def solicitar_recuperacion():
             return jsonify({
                 "success": True,
                 "message": "Si el correo existe en nuestro sistema, recibirás un enlace para restablecer tu contraseña."
+            })
+
+        # Si ya existe un token vigente (aún no expira), no generamos otro.
+        # Evita que soliciten muchos correos seguidos y saturen el envío.
+        if usuario['reset_expiracion'] and datetime.now() < usuario['reset_expiracion']:
+            cursor.close()
+            conexion.close()
+            return jsonify({
+                "success": True,
+                "message": "Ya se envió un enlace de recuperación. Revisa tu correo (incluyendo spam) antes de solicitar otro."
             })
 
         token = secrets.token_urlsafe(32)
@@ -79,7 +95,13 @@ def solicitar_recuperacion():
 
 @recuperacion_bp.route('/api/nueva-password', methods=['POST'])
 def actualizar_password():
-    datos = request.get_json()
+    datos = request.get_json(silent=True)
+    if not datos:
+        return jsonify({
+            "success": False,
+            "message": "Solicitud inválida."
+        }), 400
+
     token = datos.get('token', '').strip()
     nueva_password = datos.get('password', '').strip()
 
