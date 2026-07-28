@@ -2,6 +2,7 @@ import os
 import re
 import base64
 import uuid
+import requests
 
 SENDINBLUE_API_KEY = os.environ.get("SENDINBLUE_API_KEY")
 BREVO_SENDER_EMAIL = "semaalert@gmail.com"
