@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-FRONTEND_URL_BASE = "https://semaforo-de-alerta.onrender.com/html/nueva_contrasena.html" #ruta
+FRONTEND_URL_BASE = "https://sema-cecyteh.netlify.app/html/nueva_contrasena.html" #ruta de netlify y carpeta
 
 SENDINBLUE_API_KEY = os.environ.get("SENDINBLUE_API_KEY")
 BROVO_SENDER_EMAIL = "semaalert@gmail.com"
