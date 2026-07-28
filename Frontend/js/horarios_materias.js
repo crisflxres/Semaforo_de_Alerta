@@ -14,29 +14,105 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 // --- 2. DATOS ---
+// 👉 Mientras pruebas en local, deja esta línea así.
+// Cuando quieras volver a producción, cambia solo esta constante:
+// const BASE_URL = "https://semaforo-de-alerta.onrender.com";
+const BASE_URL = "https://semaforo-de-alerta.onrender.com";
+
+
+
+// --- 2. DATOS ---
+// 👉 Esta es la URL de producción (Render). Si necesitas volver a
+// probar en local, comenta esta línea y descomenta la de abajo:
+
+// const BASE_URL = "http://127.0.0.1:5000";
+
+
+
+
+
+// 👉 Rol del usuario guardado al hacer login. El backend lo exige
+// en el header X-Id-Rol para dejar pasar cualquier petición a /api/*.
+function obtenerHeadersAuth(conContentType = false) {
+    const headers = {
+        "X-Id-Rol": localStorage.getItem("rolUsuario") || ""
+    };
+    if (conContentType) {
+        headers["Content-Type"] = "application/json";
+    }
+    return headers;
+}
+
 const itemsPorPagina = 12;
 let paginaActual  = 1;
 let textoBusqueda = "";
 
 let todasLasMaterias = [];
+let todasLasCarreras = [];
 const colores = ["bg-rosa","bg-azul","bg-amarillo","bg-verde","bg-naranja","bg-morado","bg-azul_claro","bg-cafe"];
 
 async function obtenerMaterias() {
-    const respuesta = await fetch("https://semaforo-de-alerta.onrender.com/api/materias");
-    const datos = await respuesta.json();
+    try {
+        const respuesta = await fetch(`${BASE_URL}/api/materias`, {
+            headers: obtenerHeadersAuth()
+        });
+        if (!respuesta.ok) {
+            console.error(`Error al cargar materias: HTTP ${respuesta.status}`);
+            return;
+        }
+        const datos = await respuesta.json();
 
-    todasLasMaterias = datos.map(m => ({
-        id_materia: m.Id_Materia,
-        nombre: m.Nombre,
-        semestre: m.Semestre,
-        clave_carrera: m.Id_Carrera,
-        periodo: m.Periodo,
-        tipo_materia: m.Tipo,
-        color: colores[Math.floor(Math.random() * colores.length)]  // resolvemos esto en un momento
-    }));
+        todasLasMaterias = datos.map(m => ({
+            id_materia: m.Id_Materia,
+            nombre: m.Nombre,
+            semestre: m.Semestre,
+            clave_carrera: m.Id_Carrera,
+            tipo_materia: m.Tipo,
+            color: colores[Math.floor(Math.random() * colores.length)]  // resolvemos esto en un momento
+        }));
+    } catch (err) {
+        console.error("No se pudo conectar a /api/materias:", err);
+    }
+}
+
+// Trae el catálogo de carreras para llenar el select del panel.
+async function obtenerCarreras() {
+    try {
+        const respuesta = await fetch(`${BASE_URL}/api/carreras`, {
+            headers: obtenerHeadersAuth()
+        });
+        if (!respuesta.ok) {
+            console.error(`Error al cargar carreras: HTTP ${respuesta.status}`);
+            return;
+        }
+        const datos = await respuesta.json();
+
+        todasLasCarreras = datos.map(c => ({
+            id_carrera: c.Id_Carrera,
+            nombre: c.Nombre,
+            clave: c.Clave
+        }));
+    } catch (err) {
+        console.error("No se pudo conectar a /api/carreras:", err);
+        return;
+    }
+
+    llenarSelectCarreras();
+}
+
+function llenarSelectCarreras() {
+    const select = document.getElementById("inputCarreraMateria");
+    if (!select) return;
+
+    // Deja el placeholder y agrega una opción por cada carrera
+    select.innerHTML = `<option value="" disabled selected>Clave de Carrera</option>`;
+    todasLasCarreras.forEach(c => {
+        select.innerHTML += `<option value="${c.id_carrera}">${c.clave}</option>`;
+    });
 }
 
 async function iniciar() {
+    await obtenerCarreras();
     await obtenerMaterias();
     renderizar();
 }
@@ -53,8 +129,7 @@ async function iniciar() {
         document.getElementById("indiceEdicion").value      = "-1";
         document.getElementById("inputNombreMateria").value     = "";
         document.getElementById("inputSemestreMateria").value   = "";
-        document.getElementById("inputClave_Carrera").value = "";
-        document.getElementById("inputPeriodo").value = "";
+        document.getElementById("inputCarreraMateria").value = "";
         document.getElementById("inputTipoMateria").value = "";
         panelRegistro.classList.remove("hidden");
     });
@@ -67,39 +142,54 @@ async function iniciar() {
     btnGuardar.addEventListener("click", async () => {
         const indice = parseInt(document.getElementById("indiceEdicion").value);
         const nombre = document.getElementById("inputNombreMateria").value.trim();
-        const semestre   = document.getElementById("inputSemestreMateria").value.trim();
-        const clave_carrera = document.getElementById("inputClave_Carrera").value.trim();
-        const periodo = document.getElementById("inputPeriodo").value.trim();
-        const tipo_materia = document.getElementById("inputTipoMateria").value.trim();
+        const semestre   = document.getElementById("inputSemestreMateria").value;
+        const clave_carrera = document.getElementById("inputCarreraMateria").value;
+        const tipo_materia = document.getElementById("inputTipoMateria").value;
 
         if (!nombre) { alert("El nombre de la materia es obligatorio."); return; }
+        if (!semestre) { alert("Selecciona el semestre."); return; }
+        if (!clave_carrera) { alert("Selecciona la carrera."); return; }
+        if (!tipo_materia) { alert("Selecciona el tipo de materia."); return; }
 
-        if(indice === -1) {
-            await fetch("https://semaforo-de-alerta.onrender.com/api/materias", {
-                method: "POST",
-                headers: { "Content-Type":     "application/json"},
+        try {
+            let respuesta;
+            if (indice === -1) {
+                respuesta = await fetch(`${BASE_URL}/api/materias`, {
+                    method: "POST",
+                    headers: obtenerHeadersAuth(true),
                     body: JSON.stringify({
                         Nombre: nombre,
                         Semestre: semestre,
                         Clave_Carrera: clave_carrera,
-                        Periodo: periodo,
                         Tipo: tipo_materia
                     })
-            });
-        } else {
-            await fetch("https://semaforo-de-alerta.onrender.com/api/materias", {
-                method: "PUT",
-                headers: { "Content-Type": "application/json"},
-                body: JSON.stringify({
-                    Id_Materia: todasLasMaterias[indice].id_materia,
-                    Nombre: nombre,
-                    Semestre: semestre,
-                    Clave_Carrera: clave_carrera,
-                    Periodo: periodo,
-                    Tipo: tipo_materia
-                })
-            });
+                });
+            } else {
+                respuesta = await fetch(`${BASE_URL}/api/materias`, {
+                    method: "PUT",
+                    headers: obtenerHeadersAuth(true),
+                    body: JSON.stringify({
+                        Id_Materia: todasLasMaterias[indice].id_materia,
+                        Nombre: nombre,
+                        Semestre: semestre,
+                        Clave_Carrera: clave_carrera,
+                        Tipo: tipo_materia
+                    })
+                });
+            }
+
+            if (!respuesta.ok) {
+                const errorTexto = await respuesta.text();
+                console.error(`Error al guardar materia: HTTP ${respuesta.status}`, errorTexto);
+                alert(`No se pudo guardar la materia (HTTP ${respuesta.status}). Revisa la consola.`);
+                return;
+            }
+        } catch (err) {
+            console.error("Error de red al guardar materia:", err);
+            alert("No se pudo conectar con el servidor.");
+            return;
         }
+
         await obtenerMaterias();
         renderizar();
 
@@ -200,8 +290,7 @@ async function iniciar() {
         const m = todasLasMaterias[index];
         document.getElementById("inputNombreMateria").value     = m.nombre || "";
         document.getElementById("inputSemestreMateria").value   = m.semestre || "";
-        document.getElementById("inputClave_Carrera").value = m.clave_carrera || "";
-        document.getElementById("inputPeriodo").value = m.periodo || "";
+        document.getElementById("inputCarreraMateria").value = m.clave_carrera || "";
         document.getElementById("inputTipoMateria").value = m.tipo_materia || "";
         document.getElementById("indiceEdicion").value      = index;
         panelRegistro.classList.remove("hidden");
@@ -209,20 +298,33 @@ async function iniciar() {
 
     // --- 9. ELIMINAR ---
     window.eliminarMateria = async (index) => {
-    cerrarTodosLosMenus();
-    if (confirm("¿Eliminar esta materia?")) {
-        await fetch("https://semaforo-de-alerta.onrender.com/api/materias", {
-            method: "DELETE",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                Id_Materia: todasLasMaterias[index].id_materia
-            })
-        });
+        cerrarTodosLosMenus();
+        if (confirm("¿Eliminar esta materia?")) {
+            try {
+                const respuesta = await fetch(`${BASE_URL}/api/materias`, {
+                    method: "DELETE",
+                    headers: obtenerHeadersAuth(true),
+                    body: JSON.stringify({
+                        Id_Materia: todasLasMaterias[index].id_materia
+                    })
+                });
 
-        await obtenerMaterias();
-        renderizar();
-    }
-};
+                if (!respuesta.ok) {
+                    const errorTexto = await respuesta.text();
+                    console.error(`Error al eliminar materia: HTTP ${respuesta.status}`, errorTexto);
+                    alert(`No se pudo eliminar la materia (HTTP ${respuesta.status}). Revisa la consola.`);
+                    return;
+                }
+            } catch (err) {
+                console.error("Error de red al eliminar materia:", err);
+                alert("No se pudo conectar con el servidor.");
+                return;
+            }
+
+            await obtenerMaterias();
+            renderizar();
+        }
+    };
 
     iniciar();
 });

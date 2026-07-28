@@ -70,12 +70,30 @@
             <!-- Columna derecha: panel de registro (oculto por defecto) -->
             <div id="panelRegistro" class="hidden">
                 <h3>Registro de Materia</h3>
-                
+
                 <input type="text" id="inputNombreMateria" placeholder="Nombre">
-                <input type="text" id="inputSemestreMateria" placeholder="Semestre">
-                <input type="text" id="inputClave_Carrera" placeholder="Clave de Carrera">
-                <input type="text" id="inputPeriodo" placeholder="Periodo">
-                <input type="text" id="inputTipoMateria" placeholder="Tipo de Materia">
+
+                <select id="inputSemestreMateria">
+                    <option value="" disabled selected>Semestre</option>
+                    <option value="1">1° Semestre</option>
+                    <option value="2">2° Semestre</option>
+                    <option value="3">3° Semestre</option>
+                    <option value="4">4° Semestre</option>
+                    <option value="5">5° Semestre</option>
+                    <option value="6">6° Semestre</option>
+                </select>
+
+                <select id="inputCarreraMateria">
+                    <option value="" disabled selected>Clave de Carrera</option>
+                </select>
+
+                <select id="inputTipoMateria">
+                    <option value="" disabled selected>Tipo de Materia</option>
+                    <option value="basica">Básica</option>
+                    <option value="optativa">Optativa</option>
+                    <option value="modulo">Módulo</option>
+                    <option value="submodulo">Submódulo</option>
+                </select>
 
                 <input type="hidden" id="indiceEdicion" value="-1">
                 <div class="panel-actions">
