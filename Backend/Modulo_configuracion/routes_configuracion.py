@@ -1,10 +1,16 @@
 import os
 import re
+import shutil
 import tempfile
+import pandas as pd
 from werkzeug.utils import secure_filename
 from flask import Blueprint, jsonify, request
-from db_manager import importar_taca_completo
+from db_manager import importar_taca_completo, actualizar_correo, actualizar_fotos, insertar_importacion
+from importador_Contactos import importar_correos_electronicos
+from importador_fotos import importar_fotos
 from conexion_db import obtener_conexion
+from PIL import Image, ImageOps
+from io import BytesIO
 
 configuracion_bp = Blueprint(
     "configuracion",
@@ -13,6 +19,7 @@ configuracion_bp = Blueprint(
 )
 
 EXTENSIONES_PERMITIDAS = {".xls", ".xlsx"}
+EXTENSIONES_FOTOS_PERMITIDAS = {".jpg", ".jpeg"}
 
 MAPA_SEMESTRES = {
     "primero": 1, "segundo": 2, "tercero": 3, "cuarto": 4,
@@ -22,11 +29,6 @@ MAPA_SEMESTRES = {
 
 
 def extraer_nombre_grupo(nombre_archivo):
-    """
-    Extrae el código de grupo a partir del nombre del archivo TACA.
-    Funciona con nombres como 'TACA_03AL4I.xls' o 'meca_TACA_03U6A.xls'.
-    Devuelve el código en mayúsculas (ej. '03AL4I') o None si no lo encuentra.
-    """
     nombre_sin_extension = os.path.splitext(nombre_archivo)[0]
     coincidencia = re.search(r'TACA_([A-Za-z0-9]+)', nombre_sin_extension, re.IGNORECASE)
     if not coincidencia:
@@ -35,10 +37,6 @@ def extraer_nombre_grupo(nombre_archivo):
 
 
 def obtener_datos_grupo(nombre_grupo):
-    """
-    Busca el grupo por nombre en la tabla `grupos` y devuelve
-    (id_grupo, id_carrera, semestre_numero) o None si no existe.
-    """
     conexion = obtener_conexion()
     cursor = conexion.cursor(dictionary=True)
     cursor.execute(
@@ -59,6 +57,28 @@ def obtener_datos_grupo(nombre_grupo):
         raise ValueError(f"No se reconoce el semestre '{fila['Semestre']}' del grupo '{nombre_grupo}'")
 
     return fila["Id_Grupo"], fila["Id_Carrera"], semestre_numero
+
+def comprimir_foto(ruta_archivo, ancho_maximo=400, calidad=75):
+    """
+    Abre una foto, la redimensiona si es más ancha que ancho_maximo
+    (conservando proporción), la convierte a JPEG comprimido,
+    y regresa los bytes listos para guardar en la BD.
+    """
+    imagen = Image.open(ruta_archivo)
+    imagen = ImageOps.exif_transpose(imagen)
+    # Si la imagen viene en modo raro (ej. PNG con transparencia, CMYK), la pasamos a RGB
+    if imagen.mode != "RGB":
+        imagen = imagen.convert("RGB")
+
+    # Redimensionar solo si es más ancha que el máximo permitido
+    if imagen.width > ancho_maximo:
+        proporcion = ancho_maximo / imagen.width
+        nuevo_alto = int(imagen.height * proporcion)
+        imagen = imagen.resize((ancho_maximo, nuevo_alto), Image.LANCZOS)
+
+    buffer = BytesIO()
+    imagen.save(buffer, format="JPEG", quality=calidad, optimize=True)
+    return buffer.getvalue()
 
 
 @configuracion_bp.route("/prueba", methods=["GET"])
@@ -90,7 +110,7 @@ def historial_importaciones():
         conexion = obtener_conexion()
         cursor = conexion.cursor(dictionary=True)
         cursor.execute("""
-            SELECT i.id_importacion, i.archivo, i.fecha, i.periodo,
+            SELECT i.id_importacion, i.archivo, i.fecha,
                     g.Nombre AS grupo,
                     (SELECT COUNT(*) FROM calificaciones c WHERE c.Id_Importacion = i.id_importacion) AS registros
             FROM importaciones i
@@ -98,11 +118,10 @@ def historial_importaciones():
             ORDER BY i.fecha DESC
         """)
         filas = cursor.fetchall()
-        # Convertir datetime a texto 
         for fila in filas:
             if fila["fecha"]:
                 fila["fecha"] = fila["fecha"].strftime("%Y-%m-%d %H:%M:%S")
-                
+
         cursor.close()
         conexion.close()
         return jsonify({"success": True, "data": filas})
@@ -126,7 +145,6 @@ def importar_taca():
     if extension not in EXTENSIONES_PERMITIDAS:
         return jsonify({"success": False, "mensaje": "Formato no soportado, sube un .xls o .xlsx"}), 400
 
-    # Extraer el grupo del nombre del archivo y buscar sus datos reales en la BD
     nombre_grupo = extraer_nombre_grupo(nombre_archivo)
     if nombre_grupo is None:
         return jsonify({
@@ -147,7 +165,6 @@ def importar_taca():
         }), 400
 
     id_grupo, id_carrera, semestre = datos_grupo
-    periodo = request.form.get("periodo", "FEBRERO - JULIO 2026")
 
     ruta_temporal = os.path.join(tempfile.gettempdir(), nombre_archivo)
     archivo.save(ruta_temporal)
@@ -159,7 +176,6 @@ def importar_taca():
             id_grupo=id_grupo,
             id_carrera=id_carrera,
             semestre=semestre,
-            periodo=periodo,
             importado_por=None,
         )
     except Exception as e:
@@ -175,4 +191,133 @@ def importar_taca():
         "registros": resultado["alumnos"],
         "id_importacion": resultado["id_importacion"],
         "detalle": resultado,
+    })
+
+
+@configuracion_bp.route("/importar-contactos", methods=["POST"])
+def importar_contactos():
+    if "archivo" not in request.files:
+        return jsonify({"success": False, "mensaje": "No se envió ningún archivo"}), 400
+
+    archivo = request.files["archivo"]
+
+    if archivo.filename == "":
+        return jsonify({"success": False, "mensaje": "Nombre de archivo vacío"}), 400
+
+    nombre_archivo = secure_filename(archivo.filename)
+    extension = os.path.splitext(nombre_archivo)[1].lower()
+
+    if extension not in EXTENSIONES_PERMITIDAS:
+        return jsonify({"success": False, "mensaje": "Formato no soportado, sube un .xls o .xlsx"}), 400
+
+    ruta_temporal = os.path.join(tempfile.gettempdir(), nombre_archivo)
+    archivo.save(ruta_temporal)
+
+    try:
+        hoja = pd.read_excel(ruta_temporal)
+        contactos = importar_correos_electronicos(hoja)
+
+        conexion = obtener_conexion()
+        cursor = conexion.cursor()
+
+        actualizados = 0
+        for contacto in contactos:
+            filas_afectadas = actualizar_correo(cursor, contacto)
+            actualizados += filas_afectadas
+
+        id_importacion = insertar_importacion(cursor, None, nombre_archivo, None)
+
+        conexion.commit()
+        cursor.close()
+        conexion.close()
+
+    except Exception as e:
+        return jsonify({"success": False, "mensaje": f"Error al importar contactos: {str(e)}"}), 500
+    finally:
+        if os.path.exists(ruta_temporal):
+            os.remove(ruta_temporal)
+
+    return jsonify({
+        "success": True,
+        "mensaje": "Contactos importados correctamente",
+        "archivo": nombre_archivo,
+        "registros": actualizados,
+        "id_importacion": id_importacion,
+    }) 
+
+
+@configuracion_bp.route("/importar-fotos", methods=["POST"])
+def importar_fotos_route():
+    archivos = request.files.getlist("fotos")
+
+    if not archivos:
+        return jsonify({"success": False, "mensaje": "No se enviaron fotos"}), 400
+
+    carpeta_temporal = tempfile.mkdtemp(prefix="fotos_import_")
+
+    try:
+        # Guardamos cada archivo en la carpeta temporal, aplanado (sin subcarpetas).
+        # importar_fotos() recorre con os.walk y solo le importa el nombre del
+        # archivo (número = matrícula), no en qué subcarpeta esté.
+        for archivo in archivos:
+            nombre_base = os.path.basename(archivo.filename)
+            extension = os.path.splitext(nombre_base)[1].lower()
+            if extension not in EXTENSIONES_FOTOS_PERMITIDAS:
+                continue  # ignora archivos que no sean .jpg/.jpeg 
+            nombre_seguro = secure_filename(nombre_base)
+            ruta_destino = os.path.join(carpeta_temporal, nombre_seguro)
+            archivo.save(ruta_destino)
+
+        fotos_encontradas = importar_fotos(carpeta_temporal)
+
+        conexion = obtener_conexion()
+        cursor = conexion.cursor()
+
+        actualizadas = 0
+        for foto in fotos_encontradas:
+            try:
+                contenido_bytes = comprimir_foto(foto["ruta"])
+            except Exception as e:
+                print(f"[AVISO] No se pudo procesar la foto de {foto['matricula']}: {e}")
+                continue
+
+            filas_afectadas = actualizar_fotos(cursor, foto["matricula"], contenido_bytes)
+            actualizadas += filas_afectadas
+
+        conexion.commit()
+        cursor.close()
+        conexion.close()
+
+    except Exception as e:
+        return jsonify({"success": False, "mensaje": f"Error al importar fotos: {str(e)}"}), 500
+    finally:
+        shutil.rmtree(carpeta_temporal, ignore_errors=True)
+
+    return jsonify({
+        "success": True,
+        "mensaje": "Lote de fotos importado correctamente",
+        "registros": actualizadas,
+    })
+
+@configuracion_bp.route("/finalizar-importacion-fotos", methods=["POST"])
+def finalizar_importacion_fotos():
+    """Se llama UNA sola vez, después de subir todos los lotes de fotos,
+    para dejar un solo registro en el Historial con el total acumulado."""
+    datos = request.get_json()
+    total_registros = datos.get("registros", 0)
+
+    try:
+        conexion = obtener_conexion()
+        cursor = conexion.cursor()
+        id_importacion = insertar_importacion(cursor, None, "Carpeta de fotos", None)
+        conexion.commit()
+        cursor.close()
+        conexion.close()
+    except Exception as e:
+        return jsonify({"success": False, "mensaje": str(e)}), 500
+
+    return jsonify({
+        "success": True,
+        "id_importacion": id_importacion,
+        "registros": total_registros,
     })

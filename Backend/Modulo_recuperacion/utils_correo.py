@@ -14,7 +14,7 @@ from dotenv import load_dotenv
 load_dotenv()  # lee el archivo .env y carga las variables
 
 # URL base del frontend donde vive nueva_contrasena.html
-FRONTEND_URL_BASE = "https://semaforo-de-alerta.onrender.com/Semaforo_de_Alerta/Frontend/html/nueva_contrasena.html"
+FRONTEND_URL_BASE = "https://semaforo-de-alerta.onrender.com"
 
 # --- Credenciales de correo (ahora vienen del .env, no están aquí escritas) ---
 REMITENTE = os.getenv("CORREO_REMITENTE")

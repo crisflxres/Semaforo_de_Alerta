@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 10-07-2026 a las 22:28:49
+-- Tiempo de generación: 27-07-2026 a las 21:32:57
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -30,7 +30,6 @@ SET time_zone = "+00:00";
 CREATE TABLE `alertas` (
   `Id_Alerta` int(10) UNSIGNED NOT NULL,
   `Matricula` varchar(20) NOT NULL,
-  `Periodo` varchar(20) NOT NULL,
   `Id_Nivel` tinyint(3) UNSIGNED NOT NULL,
   `Materias_Reprobadas` tinyint(3) UNSIGNED NOT NULL DEFAULT 0,
   `PAC` decimal(4,2) DEFAULT NULL,
@@ -48,7 +47,7 @@ CREATE TABLE `alumnos` (
   `Nombre` varchar(100) NOT NULL,
   `Apellidos` varchar(150) NOT NULL,
   `Id_Grupo` smallint(5) UNSIGNED NOT NULL,
-  `Foto` varchar(500) DEFAULT NULL,
+  `Foto` longblob DEFAULT NULL,
   `Email` varchar(150) DEFAULT NULL,
   `Activo` tinyint(1) NOT NULL DEFAULT 1,
   `Id_Usuario` int(10) UNSIGNED NOT NULL,
@@ -113,7 +112,6 @@ CREATE TABLE `calificaciones` (
   `Matricula` varchar(20) NOT NULL,
   `Id_Materia` smallint(5) UNSIGNED NOT NULL,
   `Id_Importacion` int(10) UNSIGNED NOT NULL,
-  `Periodo` varchar(35) NOT NULL,
   `P1` decimal(4,2) DEFAULT NULL,
   `P2` decimal(4,2) DEFAULT NULL,
   `P3` decimal(4,2) DEFAULT NULL,
@@ -231,8 +229,7 @@ CREATE TABLE `horarios` (
 
 CREATE TABLE `importaciones` (
   `id_importacion` int(10) UNSIGNED NOT NULL,
-  `id_grupo` smallint(5) UNSIGNED NOT NULL,
-  `periodo` varchar(35) NOT NULL,
+  `id_grupo` smallint(5) UNSIGNED DEFAULT NULL,
   `archivo` varchar(255) DEFAULT NULL,
   `importado_por` int(10) UNSIGNED DEFAULT NULL,
   `fecha` datetime NOT NULL DEFAULT current_timestamp()
@@ -249,7 +246,6 @@ CREATE TABLE `materias` (
   `Nombre` varchar(200) NOT NULL,
   `Semestre` tinyint(3) UNSIGNED NOT NULL,
   `Id_Carrera` smallint(5) UNSIGNED NOT NULL,
-  `Periodo` varchar(35) NOT NULL,
   `Tipo` enum('basica','optativa','modulo','submodulo') NOT NULL DEFAULT 'basica'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_spanish_ci;
 
@@ -351,8 +347,7 @@ INSERT INTO `roles` (`Id_Rol`, `Nombre`, `Descripcion`) VALUES
 CREATE TABLE `tutor_grupo` (
   `Id_Tutor_Grupo` int(10) UNSIGNED NOT NULL,
   `Id_Usuario` int(10) UNSIGNED NOT NULL,
-  `Id_Grupo` smallint(5) UNSIGNED NOT NULL,
-  `Periodo` varchar(35) NOT NULL
+  `Id_Grupo` smallint(5) UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_spanish_ci;
 
 -- --------------------------------------------------------
@@ -384,7 +379,7 @@ CREATE TABLE `usuarios` (
 --
 ALTER TABLE `alertas`
   ADD PRIMARY KEY (`Id_Alerta`),
-  ADD UNIQUE KEY `UQ_Alerta_Periodo` (`Matricula`,`Periodo`),
+  ADD UNIQUE KEY `UQ_Alerta_Matricula` (`Matricula`),
   ADD KEY `FK_Alerta_Nivel` (`Id_Nivel`);
 
 --
@@ -406,7 +401,7 @@ ALTER TABLE `aulas`
 --
 ALTER TABLE `calificaciones`
   ADD PRIMARY KEY (`Id_Calificacion`),
-  ADD UNIQUE KEY `UQ_Alumno_Materia_Periodo` (`Matricula`,`Id_Materia`,`Periodo`),
+  ADD UNIQUE KEY `UQ_Alumno_Materia` (`Matricula`,`Id_Materia`),
   ADD KEY `FK_Cal_Materia` (`Id_Materia`),
   ADD KEY `FK_Cal_Importacion` (`Id_Importacion`);
 
@@ -448,7 +443,7 @@ ALTER TABLE `importaciones`
 --
 ALTER TABLE `materias`
   ADD PRIMARY KEY (`Id_Materia`),
-  ADD UNIQUE KEY `UQ_Materia_Carrera_Periodo` (`Nombre`,`Id_Carrera`,`Periodo`),
+  ADD UNIQUE KEY `UQ_Materia_Carrera` (`Nombre`,`Id_Carrera`),
   ADD KEY `FK_Materia_Carrera` (`Id_Carrera`);
 
 --
@@ -494,7 +489,7 @@ ALTER TABLE `roles`
 --
 ALTER TABLE `tutor_grupo`
   ADD PRIMARY KEY (`Id_Tutor_Grupo`),
-  ADD UNIQUE KEY `UQ_Tutor_Grupo_Periodo` (`Id_Usuario`,`Id_Grupo`,`Periodo`),
+  ADD UNIQUE KEY `UQ_Tutor_Grupo` (`Id_Usuario`,`Id_Grupo`),
   ADD KEY `FK_TutorGrupo_Grupo` (`Id_Grupo`);
 
 --
