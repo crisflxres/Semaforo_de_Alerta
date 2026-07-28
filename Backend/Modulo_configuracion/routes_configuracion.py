@@ -3,9 +3,10 @@ import re
 import shutil
 import tempfile
 import pandas as pd
+from concurrent.futures import ThreadPoolExecutor
 from werkzeug.utils import secure_filename
 from flask import Blueprint, jsonify, request
-from db_manager import importar_taca_completo, actualizar_correo, actualizar_fotos, insertar_importacion
+from db_manager import importar_taca_completo, actualizar_correos_bulk, actualizar_fotos_bulk, insertar_importacion
 from importador_Contactos import importar_correos_electronicos
 from importador_fotos import importar_fotos
 from conexion_db import obtener_conexion
@@ -220,10 +221,7 @@ def importar_contactos():
         conexion = obtener_conexion()
         cursor = conexion.cursor()
 
-        actualizados = 0
-        for contacto in contactos:
-            filas_afectadas = actualizar_correo(cursor, contacto)
-            actualizados += filas_afectadas
+        actualizados = actualizar_correos_bulk(cursor, contactos)
 
         id_importacion = insertar_importacion(cursor, None, nombre_archivo, None)
 
@@ -270,19 +268,25 @@ def importar_fotos_route():
 
         fotos_encontradas = importar_fotos(carpeta_temporal)
 
+        def _comprimir_foto_segura(foto):
+            try:
+                return {"matricula": foto["matricula"], "contenido_bytes": comprimir_foto(foto["ruta"])}
+            except Exception as e:
+                print(f"[AVISO] No se pudo procesar la foto de {foto['matricula']}: {e}")
+                return None
+
+        # Pillow libera el GIL durante resize/save, así que varios hilos
+        # sí aceleran esto en vez de procesar las fotos una por una.
+        with ThreadPoolExecutor(max_workers=os.cpu_count() or 4) as executor:
+            fotos_comprimidas = [
+                resultado for resultado in executor.map(_comprimir_foto_segura, fotos_encontradas)
+                if resultado is not None
+            ]
+
         conexion = obtener_conexion()
         cursor = conexion.cursor()
 
-        actualizadas = 0
-        for foto in fotos_encontradas:
-            try:
-                contenido_bytes = comprimir_foto(foto["ruta"])
-            except Exception as e:
-                print(f"[AVISO] No se pudo procesar la foto de {foto['matricula']}: {e}")
-                continue
-
-            filas_afectadas = actualizar_fotos(cursor, foto["matricula"], contenido_bytes)
-            actualizadas += filas_afectadas
+        actualizadas = actualizar_fotos_bulk(cursor, fotos_comprimidas)
 
         conexion.commit()
         cursor.close()
