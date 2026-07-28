@@ -1,6 +1,5 @@
-import pandas as pd
-
 def importar_correos_electronicos (hoja):
+    import pandas as pd
     contactos: list =[]
     
     for i, fila in hoja.iterrows():

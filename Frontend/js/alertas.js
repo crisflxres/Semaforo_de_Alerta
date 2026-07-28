@@ -442,3 +442,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     });
 });
+//Revisa pendientes apenas  carga la pagina
+fetch('https://semaforo-de-alerta.onrender.com/alertas/procesar-pendientes').catch(() => {});
+//Y sigue revisando cada 60 segundos mientras la pagina este abierta
+setInterval(() => {
+    fetch('https://semaforo-de-alerta.onrender.com/alertas/procesar-pendientes').catch(() => {});
+}, 60000);

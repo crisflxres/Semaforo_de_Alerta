@@ -34,3 +34,7 @@ webencodings==0.5.1
 Werkzeug==3.1.8
 xlrd==2.0.2
 zipp==3.23.1
+gunicorn==23.0.0
+python-dotenv==1.0.1
+requests==2.34.0
+sib_api_v3_sdk==7.6.0
