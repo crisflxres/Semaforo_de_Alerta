@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-FRONTEND_URL_BASE = "https://semaforo-de-alerta.onrender.com/Frontend/html/nueva_contrasena.html"
+FRONTEND_URL_BASE = "https://semaforo-de-alerta.onrender.com/html/nueva_contrasena.html" #ruta
 
 SENDINBLUE_API_KEY = os.environ.get("SENDINBLUE_API_KEY")
 BROVO_SENDER_EMAIL = "semaalert@gmail.com"
