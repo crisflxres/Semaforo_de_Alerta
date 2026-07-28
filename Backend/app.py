@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify, send_file
 import os
+from io import BytesIO
 
 # 1. FUNCIÓN DE CONEXIÓN A TU MYSQL WORKBENCH (CONFIGURADA PARA XAMPP) EN conexion_db.py
 from conexion_db import obtener_conexion
@@ -222,32 +223,25 @@ def crear_usuario():
             "message": f"Error al crear usuario: {err}"
         }), 500
 
-# --- Fotos de alumnos (agregado por tu compañero) ---
-CARPETA_FOTOS = r"C:\Users\Victo\OneDrive\Documentos\Actividades\Matricula Total"
-
-def construir_mapa_fotos(carpeta):
-    mapa = {}
-    for raiz, dirs, archivos in os.walk(carpeta):
-        for archivo in archivos:
-            nombre, ext = os.path.splitext(archivo)
-            if ext.lower() in [".jpg", ".jpeg"]:
-                clave = nombre.lstrip("M")
-                mapa[clave] = os.path.join(raiz, archivo)
-    return mapa
-
-MAPA_FOTOS = construir_mapa_fotos(CARPETA_FOTOS)
-
 @app.route('/fotos/<matricula>')
 def get_foto(matricula):
     nombre = matricula.lstrip("M")
-    ruta = MAPA_FOTOS.get(nombre)
-    if ruta:
-        return send_file(ruta, mimetype="image/jpeg")
+    try:
+        conexion = obtener_conexion()
+        cursor = conexion.cursor()
+        cursor.execute("SELECT Foto FROM alumnos WHERE Matricula = %s", (nombre,))
+        fila = cursor.fetchone()
+        cursor.close()
+        conexion.close()
+    except Exception as e:
+        print(f"Error al obtener foto: {e}")
+        return "", 500
+
+    if fila and fila[0]:
+        return send_file(BytesIO(fila[0]), mimetype="image/jpeg")
+
     print(f"No se encontró foto para matrícula: {nombre}")
     return "", 404
-
-
-
 
 @app.route('/recuperar', methods=['POST'])
 def recuperar():

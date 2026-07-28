@@ -33,12 +33,12 @@ function procesarArchivos(archivos, tipo) {
     if (tipo === 'academico') {
         procesarVariosAcademicos(archivos);
     } else {
-        // Contactos sigue siendo un solo archivo por ahora
-        procesarContactos(archivos[0]);
+        procesarVariosContactos(archivos);
     }
 }
 
-/* ACADÉMICO (TACA) — soporta varios archivos, procesados en secuencia */
+/* ================== ACADÉMICO (TACA) ================== */
+
 async function procesarVariosAcademicos(archivos) {
     const msg = document.getElementById('exitoAcademico');
     const textoMsg = document.getElementById('textoExitoAcademico');
@@ -51,7 +51,7 @@ async function procesarVariosAcademicos(archivos) {
         textoMsg.textContent = `Importando ${archivo.name} (${i + 1}/${archivos.length})...`;
         msg.style.display = 'flex';
 
-        const resultado = await procesarAcademico(archivo, true); // true = modo silencioso (no muestra su propio mensaje individual)
+        const resultado = await procesarAcademico(archivo, true);
 
         if (resultado.exito) {
             exitosos++;
@@ -70,8 +70,6 @@ async function procesarVariosAcademicos(archivos) {
     setTimeout(() => { msg.style.display = 'none'; }, 7000);
 }
 
-/* Procesa un solo archivo TACA. Devuelve { exito, mensaje } para que
-   procesarVariosAcademicos pueda armar el resumen final. */
 async function procesarAcademico(archivo, silencioso = false) {
     const nombre = archivo.name.replace(/\.[^/.]+$/, "");
     const ahora = new Date();
@@ -122,24 +120,359 @@ function mostrarErrorAcademico(mensaje) {
     setTimeout(() => { msg.style.display = 'none'; }, 5000);
 }
 
-/* CONTACTOS — todavía simulado, lo conectamos cuando hagamos esa ruta */
-function procesarContactos(archivo) {
+/* ================== CONTACTOS ================== */
+
+async function procesarVariosContactos(archivos) {
+    const msg = document.getElementById('exitoContactos');
+    const textoMsg = document.getElementById('textoExitoContactos');
+
+    let exitosos = 0;
+    let fallidos = [];
+
+    for (let i = 0; i < archivos.length; i++) {
+        const archivo = archivos[i];
+        textoMsg.textContent = `Importando ${archivo.name} (${i + 1}/${archivos.length})...`;
+        msg.style.display = 'flex';
+
+        const resultado = await procesarContactos(archivo, true);
+
+        if (resultado.exito) {
+            exitosos++;
+        } else {
+            fallidos.push({ nombre: archivo.name, mensaje: resultado.mensaje });
+        }
+    }
+
+    if (fallidos.length === 0) {
+        textoMsg.textContent = `${exitosos} archivo(s) importado(s) correctamente.`;
+    } else {
+        const detalleFallos = fallidos.map(f => `${f.nombre}: ${f.mensaje}`).join(' | ');
+        textoMsg.textContent = `${exitosos} importado(s), ${fallidos.length} con error → ${detalleFallos}`;
+    }
+    msg.style.display = 'flex';
+    setTimeout(() => { msg.style.display = 'none'; }, 7000);
+}
+
+async function procesarContactos(archivo, silencioso = false) {
     const nombre = archivo.name.replace(/\.[^/.]+$/, "");
     const ahora = new Date();
     const fecha = ahora.toLocaleDateString('es-MX');
     const hora = ahora.toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' });
-    const registros = Math.floor(Math.random() * 500) + 1000;
     const urlArchivo = URL.createObjectURL(archivo);
 
+    const formData = new FormData();
+    formData.append("archivo", archivo);
+
+    try {
+        const respuesta = await fetch(`${API_BASE}/configuracion/importar-contactos`, {
+            method: "POST",
+            body: formData,
+        });
+        const data = await respuesta.json();
+
+        if (!respuesta.ok || !data.success) {
+            const mensajeError = data.mensaje || "Error al importar el archivo";
+            if (!silencioso) mostrarErrorContactos(mensajeError);
+            return { exito: false, mensaje: mensajeError };
+        }
+
+        if (!silencioso) {
+            const msg = document.getElementById('exitoContactos');
+            const textoMsg = document.getElementById('textoExitoContactos');
+            textoMsg.textContent = `Archivo ${nombre} cargado, ${data.registros} contactos vinculados.`;
+            msg.style.display = 'flex';
+            setTimeout(() => { msg.style.display = 'none'; }, 5000);
+        }
+
+        agregarHistorial(nombre, fecha, hora, `${data.registros} regs`, 'contactos', urlArchivo, archivo.name, data.id_importacion);
+        return { exito: true, mensaje: "" };
+
+    } catch (error) {
+        console.error("Error al conectar con el servidor:", error);
+        const mensajeError = "No se pudo conectar con el servidor";
+        if (!silencioso) mostrarErrorContactos(mensajeError);
+        return { exito: false, mensaje: mensajeError };
+    }
+}
+
+function mostrarErrorContactos(mensaje) {
     const msg = document.getElementById('exitoContactos');
     const textoMsg = document.getElementById('textoExitoContactos');
-    textoMsg.textContent = `Archivo ${nombre} cargado, ${registros} contactos vinculados.`;
+    textoMsg.textContent = mensaje;
     msg.style.display = 'flex';
-
-    agregarHistorial(nombre, fecha, hora, `${registros} regs`, 'contactos', urlArchivo, archivo.name);
-
     setTimeout(() => { msg.style.display = 'none'; }, 5000);
 }
+
+/* ================== FOTOS (carpeta arrastrada) ================== */
+
+const TAMANO_LOTE_FOTOS = 100;
+let lotesFallidos = []; // guarda { numero, archivos, mensaje } de los lotes que fallaron
+
+function bloquearZonaContactos(bloquear) {
+    const zona = document.getElementById('dropContactos');
+    const input = document.getElementById('inputContactos');
+    if (bloquear) {
+        zona.classList.add('deshabilitada');
+        input.disabled = true;
+    } else {
+        zona.classList.remove('deshabilitada');
+        input.disabled = false;
+    }
+}
+
+function actualizarBarraProgreso(porcentaje, texto) {
+    const container = document.getElementById('barraProgresoFotosContainer');
+    const relleno = document.getElementById('barraProgresoFotosRelleno');
+    const textoEl = document.getElementById('barraProgresoFotosTexto');
+
+    container.style.display = 'block';
+    relleno.style.width = `${porcentaje}%`;
+    textoEl.textContent = texto;
+}
+
+function ocultarBarraProgreso() {
+    document.getElementById('barraProgresoFotosContainer').style.display = 'none';
+}
+
+/* Sube UN lote de fotos. Regresa { exito, registros, mensaje } */
+async function subirLoteFotos(lote) {
+    const formData = new FormData();
+    lote.forEach((archivo) => {
+        formData.append("fotos", archivo, archivo.name);
+    });
+
+    try {
+        const respuesta = await fetch(`${API_BASE}/configuracion/importar-fotos`, {
+            method: "POST",
+            body: formData,
+        });
+        const data = await respuesta.json();
+
+        if (!respuesta.ok || !data.success) {
+            return { exito: false, registros: 0, mensaje: data.mensaje || "Error desconocido" };
+        }
+        return { exito: true, registros: data.registros, mensaje: "" };
+
+    } catch (error) {
+        return { exito: false, registros: 0, mensaje: "No se pudo conectar con el servidor" };
+    }
+}
+
+async function procesarCarpetaFotos(archivos) {
+    const msg = document.getElementById('exitoContactos');
+    const textoMsg = document.getElementById('textoExitoContactos');
+    const btnReintentar = document.getElementById('btnReintentarFotos');
+
+    if (!archivos || archivos.length === 0) {
+        textoMsg.textContent = "La carpeta no contiene archivos válidos.";
+        msg.style.display = 'flex';
+        setTimeout(() => { msg.style.display = 'none'; }, 5000);
+        return;
+    }
+
+    bloquearZonaContactos(true);
+    btnReintentar.style.display = 'none';
+    lotesFallidos = [];
+
+    try {
+        const totalLotes = Math.ceil(archivos.length / TAMANO_LOTE_FOTOS);
+        let totalRegistros = 0;
+
+        for (let i = 0; i < totalLotes; i++) {
+            const inicio = i * TAMANO_LOTE_FOTOS;
+            const lote = archivos.slice(inicio, inicio + TAMANO_LOTE_FOTOS);
+            const numeroLote = i + 1;
+
+            const porcentaje = Math.round((numeroLote / totalLotes) * 100);
+            actualizarBarraProgreso(porcentaje, `Subiendo lote ${numeroLote} de ${totalLotes} (${lote.length} fotos)...`);
+
+            const resultado = await subirLoteFotos(lote);
+
+            if (resultado.exito) {
+                totalRegistros += resultado.registros;
+            } else {
+                lotesFallidos.push({ numero: numeroLote, archivos: lote, mensaje: resultado.mensaje });
+            }
+        }
+
+        await finalizarImportacionFotos(totalRegistros);
+        mostrarReporteFinalFotos(totalRegistros);
+
+    } catch (error) {
+        console.error("Error inesperado al procesar fotos:", error);
+        textoMsg.textContent = "Ocurrió un error inesperado durante la importación.";
+        msg.style.display = 'flex';
+
+    } finally {
+        bloquearZonaContactos(false);
+        ocultarBarraProgreso();
+    }
+}
+
+async function finalizarImportacionFotos(totalRegistros) {
+    try {
+        const respuesta = await fetch(`${API_BASE}/configuracion/finalizar-importacion-fotos`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ registros: totalRegistros }),
+        });
+        const data = await respuesta.json();
+
+        agregarHistorial(
+            "Carpeta de fotos",
+            new Date().toLocaleDateString('es-MX'),
+            new Date().toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' }),
+            `${totalRegistros} regs`,
+            'contactos',
+            null,
+            null,
+            data.id_importacion
+        );
+    } catch (error) {
+        console.error("Error al finalizar importación de fotos:", error);
+    }
+}
+
+function mostrarReporteFinalFotos(totalRegistros) {
+    const msg = document.getElementById('exitoContactos');
+    const textoMsg = document.getElementById('textoExitoContactos');
+    const btnReintentar = document.getElementById('btnReintentarFotos');
+
+    if (lotesFallidos.length === 0) {
+        textoMsg.textContent = `${totalRegistros} foto(s) vinculada(s) correctamente. Sin errores.`;
+    } else {
+        const fotosFallidas = lotesFallidos.reduce((suma, l) => suma + l.archivos.length, 0);
+        textoMsg.textContent = `${totalRegistros} foto(s) vinculada(s). ${lotesFallidos.length} lote(s) fallaron (${fotosFallidas} fotos sin subir).`;
+        btnReintentar.style.display = 'flex';
+    }
+
+    msg.style.display = 'flex';
+    setTimeout(() => { msg.style.display = 'none'; }, 8000);
+}
+
+async function reintentarLotesFallidos() {
+    if (lotesFallidos.length === 0) return;
+
+    const btnReintentar = document.getElementById('btnReintentarFotos');
+    btnReintentar.style.display = 'none';
+    bloquearZonaContactos(true);
+
+    const lotesAReintentar = [...lotesFallidos];
+    lotesFallidos = [];
+    let totalRegistros = 0;
+
+    try {
+        for (let i = 0; i < lotesAReintentar.length; i++) {
+            const loteInfo = lotesAReintentar[i];
+            actualizarBarraProgreso(
+                Math.round(((i + 1) / lotesAReintentar.length) * 100),
+                `Reintentando lote ${loteInfo.numero} (${i + 1}/${lotesAReintentar.length})...`
+            );
+
+            const resultado = await subirLoteFotos(loteInfo.archivos);
+
+            if (resultado.exito) {
+                totalRegistros += resultado.registros;
+            } else {
+                lotesFallidos.push({ ...loteInfo, mensaje: resultado.mensaje });
+            }
+        }
+
+        if (totalRegistros > 0) {
+            await finalizarImportacionFotos(totalRegistros);
+        }
+
+        mostrarReporteFinalFotos(totalRegistros);
+
+    } catch (error) {
+        console.error("Error inesperado al reintentar fotos:", error);
+
+    } finally {
+        bloquearZonaContactos(false);
+        ocultarBarraProgreso();
+    }
+}
+
+document.getElementById('btnReintentarFotos').addEventListener('click', reintentarLotesFallidos);
+
+/* ================== DETECCIÓN ARCHIVO vs CARPETA (drag & drop en Contactos) ================== */
+
+async function manejarDropContactos(event) {
+    event.preventDefault();
+    event.currentTarget.classList.remove('dragover');
+
+    const items = event.dataTransfer.items;
+    const archivosExcel = [];
+    const archivosFotos = [];
+    let carpetaEncontrada = null;
+
+    for (let i = 0; i < items.length; i++) {
+        const entry = items[i].webkitGetAsEntry();
+        if (!entry) continue;
+
+        if (entry.isDirectory) {
+            carpetaEncontrada = entry;
+
+        } else if (entry.isFile) {
+            const archivo = items[i].getAsFile();
+            const extension = archivo.name.split('.').pop().toLowerCase();
+
+            if (extension === 'xls' || extension === 'xlsx') {
+                archivosExcel.push(archivo);
+            } else if (extension === 'jpg' || extension === 'jpeg') {
+                archivosFotos.push(archivo);
+            }
+            // cualquier otra extensión se ignora silenciosamente
+        }
+    }
+
+    if (carpetaEncontrada) {
+        const archivosDeFotos = await leerCarpetaRecursiva(carpetaEncontrada);
+        procesarCarpetaFotos(archivosDeFotos);
+    }
+
+    if (archivosExcel.length > 0) {
+        procesarVariosContactos(archivosExcel);
+    }
+
+    if (archivosFotos.length > 0) {
+        procesarCarpetaFotos(archivosFotos);
+    }
+}
+
+function leerCarpetaRecursiva(directoryEntry) {
+    return new Promise((resolve, reject) => {
+        const lector = directoryEntry.createReader();
+        const archivosEncontrados = [];
+
+        function leerSiguienteBloque() {
+            lector.readEntries(async (entradas) => {
+
+                if (entradas.length === 0) {
+                    resolve(archivosEncontrados);
+                    return;
+                }
+
+                for (const entrada of entradas) {
+                    if (entrada.isFile) {
+                        const archivoReal = await new Promise((res) => entrada.file(res));
+                        archivosEncontrados.push(archivoReal);
+
+                    } else if (entrada.isDirectory) {
+                        const archivosDeSubcarpeta = await leerCarpetaRecursiva(entrada);
+                        archivosEncontrados.push(...archivosDeSubcarpeta);
+                    }
+                }
+
+                leerSiguienteBloque();
+            }, reject);
+        }
+
+        leerSiguienteBloque();
+    });
+}
+
+/* ================== HISTORIAL ================== */
 
 function agregarHistorial(nombre, fecha, hora, registros, tipo, urlArchivo, nombreArchivo, idImportacion) {
     const tbody = document.getElementById('cuerpoHistorial');
@@ -196,8 +529,6 @@ function actualizarVacio() {
     document.getElementById('historialVacio').style.display = document.getElementById('cuerpoHistorial').rows.length === 0 ? 'block' : 'none';
 }
 
-/* CARGAR HISTORIAL REAL DESDE EL BACKEND */
-
 function cargarHistorial() {
     fetch(`${API_BASE}/configuracion/historial`)
         .then(res => res.json())
@@ -206,7 +537,6 @@ function cargarHistorial() {
             const tbody = document.getElementById('cuerpoHistorial');
             tbody.innerHTML = '';
             data.data.forEach(item => {
-                console.log(item.fecha);
                 const fechaObj = new Date(item.fecha);
                 const fecha = fechaObj.toLocaleDateString('es-MX');
                 const hora = fechaObj.toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' });
@@ -219,7 +549,8 @@ function cargarHistorial() {
 }
 document.addEventListener('DOMContentLoaded', cargarHistorial);
 
-/* LÓGICA INTERACTIVA DEL DROPDOWN DE PERFIL (CONECTADA AL CSS COMPLETAMENTE) */
+/* ================== PERFIL / SESIÓN ================== */
+
 const avatarUsuario = document.getElementById('avatarUsuario');
 const dropdownPerfil = document.getElementById('dropdownPerfil');
 
@@ -236,7 +567,6 @@ if (avatarUsuario && dropdownPerfil) {
     });
 }
 
-/* CERRAR SESIÓN: borra los datos guardados del login y redirige */
 const btnCerrarSesion = document.getElementById('btnCerrarSesion');
 if (btnCerrarSesion) {
     btnCerrarSesion.addEventListener('click', (e) => {
@@ -247,5 +577,5 @@ if (btnCerrarSesion) {
     });
 }
 document.getElementById('btnIrCrearCuenta').addEventListener('click', function () {
-    window.location.href = 'crear_cuenta.html'; 
+    window.location.href = 'crear_cuenta.html';
 });

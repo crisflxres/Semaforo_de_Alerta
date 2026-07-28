@@ -5,6 +5,58 @@ from auth_utils import requiere_rol
 horarios_bp = Blueprint('horarios_bp', __name__)
 
 
+def verificar_conflictos(cursor, id_grupo, id_usuario, id_aula, dia_semana,
+                          hora_inicio, hora_fin, id_horario_excluir=None):
+    """
+    Revisa si ya existe una clase registrada que se traslape en tiempo
+    (mismo día, y el rango de horas se cruza) y que además comparta
+    Aula, Docente o Grupo con la clase que se quiere guardar.
+
+    id_horario_excluir se usa al editar, para no chocar contra sí misma.
+
+    Regresa None si no hay conflicto, o un string con el mensaje de error
+    describiendo el conflicto encontrado.
+    """
+    query = """
+        SELECT h.Id_Horario, h.Id_Aula, h.Id_Usuario, h.Id_Grupo,
+               a.Nombre AS Aula,
+               CONCAT(u.Nombre, ' ', u.Apellidos) AS Docente,
+               g.Nombre AS Grupo
+        FROM horarios h
+        LEFT JOIN aulas a    ON h.Id_Aula    = a.Id_Aula
+        LEFT JOIN usuarios u ON h.Id_Usuario = u.Id_Usuario
+        LEFT JOIN grupos g   ON h.Id_Grupo   = g.Id_Grupo
+        WHERE h.Dia_Semana = %s
+          AND h.Hora_Inicio < %s
+          AND h.Hora_Fin > %s
+          AND (h.Id_Aula = %s OR h.Id_Usuario = %s OR h.Id_Grupo = %s)
+    """
+    valores = [dia_semana, hora_fin, hora_inicio, id_aula, id_usuario, id_grupo]
+
+    if id_horario_excluir is not None:
+        query += " AND h.Id_Horario != %s"
+        valores.append(id_horario_excluir)
+
+    cursor.execute(query, tuple(valores))
+    choques = cursor.fetchall()
+
+    if not choques:
+        return None
+
+    motivos = []
+    for c in choques:
+        if c['Id_Aula'] == id_aula:
+            motivos.append(f"el aula '{c['Aula']}' ya está ocupada por otra clase")
+        if str(c['Id_Usuario']) == str(id_usuario):
+            motivos.append(f"el docente '{c['Docente']}' ya tiene otra clase")
+        if str(c['Id_Grupo']) == str(id_grupo):
+            motivos.append(f"el grupo '{c['Grupo']}' ya tiene otra clase")
+
+    # Quitamos duplicados manteniendo el orden
+    motivos = list(dict.fromkeys(motivos))
+    return "Conflicto de horario: " + "; ".join(motivos) + " en ese día y hora."
+
+
 @horarios_bp.route('/api/horarios', methods=['GET'])
 @requiere_rol(1, 2, 3)
 def get_horarios():
@@ -60,7 +112,16 @@ def crear_horario():
             return jsonify({"success": False, "message": "Faltan campos obligatorios."}), 400
 
         conexion = obtener_conexion()
-        cursor = conexion.cursor()
+        cursor = conexion.cursor(dictionary=True)
+
+        conflicto = verificar_conflictos(
+            cursor, id_grupo, id_usuario, id_aula, dia_semana, hora_inicio, hora_fin
+        )
+        if conflicto:
+            cursor.close()
+            conexion.close()
+            return jsonify({"success": False, "message": conflicto}), 409
+
         cursor.execute("""
             INSERT INTO horarios
                 (Id_Usuario, Id_Grupo, Id_Materia, Dia_Semana, Hora_Inicio, Hora_Fin, Id_Aula)
@@ -85,18 +146,35 @@ def crear_horario():
 def editar_horario(id_horario):
     datos = request.get_json()
     try:
+        id_usuario  = datos.get('Id_Usuario')
+        id_grupo    = datos.get('Id_Grupo')
+        id_materia  = datos.get('Id_Materia')
+        dia_semana  = datos.get('Dia_Semana')
+        hora_inicio = datos.get('Hora_Inicio')
+        hora_fin    = datos.get('Hora_Fin')
+        id_aula     = datos.get('Id_Aula')
+
+        if not all([id_usuario, id_grupo, id_materia, dia_semana, hora_inicio, hora_fin, id_aula]):
+            return jsonify({"success": False, "message": "Faltan campos obligatorios."}), 400
+
         conexion = obtener_conexion()
-        cursor = conexion.cursor()
+        cursor = conexion.cursor(dictionary=True)
+
+        conflicto = verificar_conflictos(
+            cursor, id_grupo, id_usuario, id_aula, dia_semana, hora_inicio, hora_fin,
+            id_horario_excluir=id_horario
+        )
+        if conflicto:
+            cursor.close()
+            conexion.close()
+            return jsonify({"success": False, "message": conflicto}), 409
+
         cursor.execute("""
             UPDATE horarios
             SET Id_Usuario=%s, Id_Grupo=%s, Id_Materia=%s, Dia_Semana=%s,
                 Hora_Inicio=%s, Hora_Fin=%s, Id_Aula=%s
             WHERE Id_Horario=%s
-        """, (
-            datos.get('Id_Usuario'), datos.get('Id_Grupo'), datos.get('Id_Materia'),
-            datos.get('Dia_Semana'), datos.get('Hora_Inicio'), datos.get('Hora_Fin'),
-            datos.get('Id_Aula'), id_horario
-        ))
+        """, (id_usuario, id_grupo, id_materia, dia_semana, hora_inicio, hora_fin, id_aula, id_horario))
         conexion.commit()
         cursor.close()
         conexion.close()
