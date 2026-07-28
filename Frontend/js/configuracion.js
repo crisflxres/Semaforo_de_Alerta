@@ -11,7 +11,7 @@ document.getElementById("btnHamburguesa").addEventListener("click", () => docume
 document.getElementById("btnCerrarSidebar").addEventListener("click", () => document.getElementById("sidebarOverlay").classList.remove("open"));
 
 // Cambia esto si tu Flask corre en otra URL/puerto
-const API_BASE = "http://localhost:5000";
+const API_BASE = "https://semaforo-de-alerta.onrender.com";
 
 function manejarArchivo(input, tipo) {
     if (input.files && input.files.length > 0) {
