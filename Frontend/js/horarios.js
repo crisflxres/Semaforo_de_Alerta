@@ -15,10 +15,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // --- 2. DATOS BASE DE LA CUADRÍCULA ---
     const horas = [
-        "07:00 - 8:00", "8:00 - 9:00", "9:00 - 10:00", "10:00 - 11:00",
-        "11:00 - 12:00", "12:50 - 13:40", "13:40 - 14:30", "14:30 - 15:20",
-        "15:20 - 16:10", "16:10 - 17:00", "17:15 - 18:05", "18:05 - 18:55",
-        "18:55 - 19:45", "19:45 - 20:35"
+        "07:00 - 07:50", "07:50 - 08:40","08:40 - 09:30", 
+        "09:30 - 10:20", "10:20 - 11:10", "11:10 - 12:00",
+        "12:00 - 12:50", "12:50 - 13:40", "13:40 - 14:30", 
+        "14:30 - 15:20", "15:20 - 16:10", "16:10 - 17:00", 
+        "17:15 - 18:05", "18:05 - 18:55", "18:55 - 19:45", 
+        "19:45 - 20:35"
     ];
     const dias = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes"];
 
@@ -223,6 +225,32 @@ document.addEventListener("DOMContentLoaded", () => {
             .map(k => ({ keyReal: k, info: clases[k] }));
     }
 
+    // --- 8.1 VALIDACIÓN DE CONFLICTOS (frontend) ---
+    // Revisa si ya existe una clase en el mismo día/hora que comparta
+    // Aula, Docente o Grupo con lo que se quiere guardar.
+    // idHorarioExcluir se usa al editar, para no chocar contra sí misma.
+    function buscarConflictoLocal(keyBase, idAula, idDocente, idGrupo, idHorarioExcluir) {
+        const candidatas = clasesDeEsteHorario(keyBase);
+
+        for (const { info } of candidatas) {
+            if (idHorarioExcluir && String(info.ids.Id_Horario) === String(idHorarioExcluir)) {
+                continue; // es la misma clase que estamos editando, no cuenta como conflicto
+            }
+
+            if (String(info.ids.Id_Aula) === String(idAula)) {
+                return `El aula "${info.aula}" ya está ocupada en ese horario por "${info.materia}" (${info.grupo}).`;
+            }
+            if (String(info.ids.Id_Usuario) === String(idDocente)) {
+                return `El docente "${info.docente}" ya tiene otra clase en ese horario: "${info.materia}" (${info.grupo}).`;
+            }
+            if (String(info.ids.Id_Grupo) === String(idGrupo)) {
+                return `El grupo "${info.grupo}" ya tiene otra clase en ese horario: "${info.materia}".`;
+            }
+        }
+
+        return null; // sin conflicto
+    }
+
     function renderListaExistentes(keyBase) {
         const items = clasesDeEsteHorario(keyBase);
 
@@ -328,6 +356,14 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
+        // Validación local: ¿esta aula, docente o grupo ya están ocupados
+        // en este mismo día y hora? Avisamos antes de siquiera mandar la petición.
+        const conflictoLocal = buscarConflictoLocal(keyActual, idAula, idDocente, idGrupo, idHorarioEditando);
+        if (conflictoLocal) {
+            alert(conflictoLocal);
+            return;
+        }
+
         const [hora, dia] = keyActual.split("|");
         const { inicio, fin } = rangoAHoraSQL(hora);
 
@@ -353,6 +389,9 @@ document.addEventListener("DOMContentLoaded", () => {
             const json = await res.json();
 
             if (!json.success) {
+                // El backend también valida conflictos (por si dos personas
+                // guardan casi al mismo tiempo), así que este mensaje puede
+                // salir aunque la validación local no haya detectado nada.
                 alert(`Error al guardar: ${json.message}`);
                 return;
             }
