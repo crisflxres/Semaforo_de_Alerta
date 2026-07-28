@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const elBadgeReprobadas  = document.getElementById('txt-reprobadas');
     const foto              = document.getElementById('foto-alumno');
 
-    fetch('http://localhost:5000/api/alumnos')
+    fetch('https://semaforo-de-alerta.onrender.com/api/alumnos')
         .then(res => res.json())
         .then(data => {
             const alumno = data.lista.find(a => a.matricula === matricula);
@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Foto: ahora sí existe alumno
             if (foto) {
-                foto.src =`http://127.0.0.1:5000/fotos/${alumno.matricula}`;
+                foto.src =`https://semaforo-de-alerta.onrender.com/fotos/${alumno.matricula}`;
                 foto.onerror = function() {
                     foto.style.display = 'none';
                 };
@@ -62,7 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- 3. CALIFICACIONES DESDE FLASK ---
     const tbody = document.querySelector('.data-table tbody');
 
-    fetch(`http://localhost:5000/calificaciones/${matricula}`)
+    fetch(`https://semaforo-de-alerta.onrender.com/calificaciones/${matricula}`)
         .then(res => res.json())
         .then(respuesta => {
             if (!respuesta.success) return;
