@@ -36,6 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Foto: ahora sí existe alumno
             if (foto) {
                 foto.src =`https://semaforo-de-alerta.onrender.com/fotos/${alumno.matricula}`;
+                const urlFoto = `https://semaforo-de-alerta.onrender.com/api/alumno/${alumno.matricula}/foto`;
                 foto.onerror = function() {
                     foto.style.display = 'none';
                 };
