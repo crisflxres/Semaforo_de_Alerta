@@ -1,49 +1,58 @@
-import smtplib
+import os
 import re
 import base64
 import uuid
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
-from email.mime.image import MIMEImage
+import requests
 
-SMTP_SERVER   = "smtp.gmail.com"
-SMTP_PORT     = 465
-SMTP_EMAIL    = "vicmanu315623@gmail.com"
-SMTP_PASSWORD = "rqzsmepyuctjjrey"
+SENDINBLUE_API_KEY = os.environ.get("SENDINBLUE_API_KEY")
+BREVO_SENDER_EMAIL = "semaalert@gmail.com"
+BREVO_SENDER_NAME = "Sistema de Alertas CECyTEH"
 
 def enviar_correo(destinatario, asunto, cuerpo_procesado, imagenes):
     """
-    Envía un correo a un destinatario.
-    Recibe el cuerpo YA procesado (sin base64) y las imágenes ya extraídas,
-    y las adjunta como embebidas (Content-ID) para que se vean en Gmail/Outlook.
-    Devuelve True si se envió, False si falló.
+    Envía un correo usando la API HTTP de Brevo (ya no usa SMTP,
+    porque Render bloquea las conexiones SMTP salientes).
     """
     try:
-        msg = MIMEMultipart("related")
-        msg["Subject"] = asunto
-        msg["From"]    = SMTP_EMAIL
-        msg["To"]      = destinatario
+        payload = {
+            "sender": {
+                "name": BREVO_SENDER_NAME,
+                "email": BREVO_SENDER_EMAIL
+            },
+            "to": [{"email": destinatario}],
+            "subject": asunto,
+            "htmlContent": cuerpo_procesado
+        }
 
-        msg_alt = MIMEMultipart("alternative")
-        msg_alt.attach(MIMEText(cuerpo_procesado, "html"))
-        msg.attach(msg_alt)
+        if imagenes:
+            attachments = []
+            for cid, tipo, datos in imagenes:
+                attachments.append({
+                    "content": base64.b64encode(datos).decode("utf-8"),
+                    "name": f"{cid}.{tipo}"
+                })
+            payload["attachment"] = attachments
 
-        for cid, tipo, datos in imagenes:
-            img = MIMEImage(datos, _subtype=tipo)
-            img.add_header("Content-ID", f"<{cid}>")
-            img.add_header("Content-Disposition", "inline", filename=f"{cid}.{tipo}")
-            msg.attach(img)
+        response = requests.post(
+            "https://api.brevo.com/v3/smtp/email",
+            headers={
+                "accept": "application/json",
+                "api-key": SENDINBLUE_API_KEY ,
+                "content-type": "application/json"
+            },
+            json=payload,
+            timeout=15
+        )
 
-        with smtplib.SMTP_SSL(SMTP_SERVER, SMTP_PORT) as servidor:
-            servidor.login(SMTP_EMAIL, SMTP_PASSWORD)
-            servidor.sendmail(SMTP_EMAIL, destinatario, msg.as_string())
-
-        return True
+        if response.status_code == 201:
+            return True
+        else:
+            print(f"Error Brevo al enviar a {destinatario}: {response.status_code} - {response.text}")
+            return False
 
     except Exception as e:
         print(f"Error al enviar correo a {destinatario}: {e}")
         return False
-
 
 def extraer_imagenes_base64(cuerpo_html):
     """
