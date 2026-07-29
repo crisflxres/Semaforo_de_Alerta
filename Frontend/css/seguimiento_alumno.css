@@ -178,4 +178,19 @@ body { background-color: var(--bg-main); color: var(--text-dark); padding-bottom
         align-items: flex-start;
         text-align: left;
     }
+    .input-tutor {
+    padding: 4px 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+}
+.btn-editar-tutor, .btn-guardar-tutor {
+    margin-top: 10px;
+    padding: 6px 14px;
+    border: none;
+    border-radius: 6px;
+    background: #7a1f2b;
+    color: white;
+    cursor: pointer;
+}
 }
