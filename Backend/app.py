@@ -3,6 +3,7 @@ import os
 from io import BytesIO
 
 # 1. FUNCIÓN DE CONEXIÓN A TU MYSQL WORKBENCH (CONFIGURADA PARA XAMPP) EN conexion_db.py
+#from Semaforo_de_Alerta.Backend import conexion_db
 from conexion_db import obtener_conexion
 
 from flask_cors import CORS
@@ -319,6 +320,8 @@ def test_db():
             "error": str(e)
         }), 500
 
+#ruta para fotos
+#logica..
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
