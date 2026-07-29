@@ -29,6 +29,13 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // 2.5. Mostrar inicial del usuario en el avatar
+    const avatarLetra = document.getElementById('avatarUsuario');
+    const nombreUsuario = localStorage.getItem('nombreUsuario');
+    if (avatarLetra && nombreUsuario) {
+        avatarLetra.textContent = nombreUsuario.trim().charAt(0).toUpperCase();
+    }
+
     // 3. Lógica de Filtros
     const botonesFiltro = document.querySelectorAll('.btn-filtro');
     botonesFiltro.forEach(boton => {
