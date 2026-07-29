@@ -320,9 +320,6 @@ def test_db():
             "error": str(e)
         }), 500
 
-#ruta para fotos
-#logica..
-
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0",port=port)
