@@ -60,7 +60,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 const estadoClase = alumno.estado_alerta.toLowerCase().replace(' ', '-');
                 tr.innerHTML = `
                     <td class="avatar-cell">
-                        <img src= "https://semaforo-de-alerta.onrender.com/fotos/${alumno.matricula}"
                         style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;"
                         onerror=" this.outerHTML = '<i class= \\'fa-solid fa-circle-user\\'></i>'">
                     <td>${alumno.matricula}</td><td>${alumno.nombre}</td><td>${alumno.apellidos}</td>
