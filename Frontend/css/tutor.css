@@ -1,0 +1,46 @@
+/* --- EDICIÓN DE DATOS DEL TUTOR --- */
+.input-tutor {
+    padding: 5px 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+    max-width: 220px;
+}
+
+.btn-editar-tutor, .btn-guardar-tutor {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 12px;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    background: var(--brand-maroon-dark);
+    color: white;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    width: fit-content;
+}
+
+.btn-editar-tutor:hover, .btn-guardar-tutor:hover {
+    background: var(--brand-maroon);
+}
+
+.btn-editar-tutor i, .btn-guardar-tutor i {
+    font-size: 12px;
+}
+
+/* Celulares */
+@media (max-width: 600px) {
+    .input-tutor {
+        max-width: 100%;
+        width: 100%;
+    }
+
+    .btn-editar-tutor, .btn-guardar-tutor {
+        width: 100%;
+        justify-content: center;
+    }
+}

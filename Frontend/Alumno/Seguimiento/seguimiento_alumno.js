@@ -28,6 +28,13 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // 2.5. Mostrar inicial del usuario en el avatar
+    const avatarLetra = document.getElementById('avatarUsuario');
+    const nombreUsuario = localStorage.getItem('nombreUsuario');
+    if (avatarLetra && nombreUsuario) {
+        avatarLetra.textContent = nombreUsuario.trim().charAt(0).toUpperCase();
+    }
+
     // 3. Motor de Renderizado
     const cuerpoTabla = document.getElementById('cuerpo-tabla-seguimiento');
 

@@ -14,25 +14,12 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 // --- 2. DATOS ---
-// 👉 Mientras pruebas en local, deja esta línea así.
+// Mientras pruebas en local, deja esta línea así.
 // Cuando quieras volver a producción, cambia solo esta constante:
 // const BASE_URL = "https://semaforo-de-alerta.onrender.com";
-const BASE_URL = "https://semaforo-de-alerta.onrender.com";
+const BASE_URL = "https://semaforo-de-alerta.onrender.com/api/materias";
 
-
-
-// --- 2. DATOS ---
-// 👉 Esta es la URL de producción (Render). Si necesitas volver a
-// probar en local, comenta esta línea y descomenta la de abajo:
-
-// const BASE_URL = "http://127.0.0.1:5000";
-
-
-
-
-
-// 👉 Rol del usuario guardado al hacer login. El backend lo exige
-// en el header X-Id-Rol para dejar pasar cualquier petición a /api/*.
+// Rol del usuario guardado al hacer login. El backend lo exige
 function obtenerHeadersAuth(conContentType = false) {
     const headers = {
         "X-Id-Rol": localStorage.getItem("rolUsuario") || ""

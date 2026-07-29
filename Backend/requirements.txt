@@ -35,5 +35,5 @@ xlrd==2.0.2
 zipp==3.23.1
 gunicorn==23.0.0
 python-dotenv==1.0.1
-requests==2.34.0
+requests==2.32.5
 sib_api_v3_sdk==7.6.0

@@ -10,7 +10,6 @@ async function cargarDocentes() {
             id: d.Id_Usuario,
             nombre: `${d.Nombre} ${d.Apellidos}`,
             email: d.Email || 'Sin correo',
-            tel: d.Telefono || 'Sin teléfono',
             rol: parseInt(d.Id_Rol) === 2 ? 'Docente' : 'Tutor'
         }));
         renderizar();
@@ -28,7 +27,7 @@ function renderizar() {
     filtrados.forEach((doc) => {
         lista.innerHTML += `
         <div class="docente-card">
-            <div><h3>${doc.nombre}</h3><p>${doc.email}</p><p>${doc.tel}</p><p>${doc.rol}</p></div>
+            <div><h3>${doc.nombre}</h3><p>${doc.email}</p><p>${doc.rol}</p></div>
             <div>
                 <button  class="btn-editar" onclick="editar(${doc.id})">✏️</button>
                 <button class="btn-eliminar" onclick="eliminar(${doc.id})">🗑️</button>
@@ -41,7 +40,6 @@ function renderizar() {
 document.getElementById('btnNuevoDocente').addEventListener('click', () => {
     document.getElementById('inputNombre').value = '';
     document.getElementById('inputEmail').value = '';
-    document.getElementById('inputTelefono').value = '';
     document.getElementById('inputRol').value = '2';
     document.getElementById('indiceEdicion').value = '-1';
     document.getElementById('panelRegistro').classList.remove('hidden');
@@ -59,7 +57,6 @@ document.getElementById('btnGuardar').addEventListener('click', async () => {
         nombre:    partes[0],
         apellidos: partes.slice(1).join(' ') || 'No especificado',
         email:     document.getElementById('inputEmail').value.trim(),
-        telefono:  document.getElementById('inputTelefono').value.trim(),
         id_rol:    document.getElementById('inputRol').value
     };
 
@@ -86,7 +83,6 @@ function editar(id) {
     const doc = docentes.find(d => d.id === id);
     document.getElementById('inputNombre').value = doc.nombre;
     document.getElementById('inputEmail').value = doc.email;
-    document.getElementById('inputTelefono').value = doc.tel;
     document.getElementById('inputRol').value = doc.rol === 'Docente' ? '2' : '3';
     document.getElementById('panelRegistro').classList.remove('hidden');
     document.getElementById('indiceEdicion').value = id;
