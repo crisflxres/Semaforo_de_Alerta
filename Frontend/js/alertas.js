@@ -442,9 +442,26 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     });
 });
-//Revisa pendientes apenas  carga la pagina
-fetch('https://semaforo-de-alerta.onrender.com/alertas/procesar-pendientes').catch(() => {});
-//Y sigue revisando cada 60 segundos mientras la pagina este abierta
+// Revisa pendientes apenas carga la página
+fetch('https://semaforo-de-alerta.onrender.com/alertas/procesar-pendientes')
+    .then(res => res.json())
+    .then(data => {
+        if (data.ok && data.procesados > 0) {
+            alert(`Alertas programadas enviadas.\nCorreos enviados: ${data.enviados}\nFallidos: ${data.fallidos}`);
+        }
+        cargarHistorial();
+    })
+    .catch(() => {});
+
+// Y sigue revisando cada 60 segundos mientras la página esté abierta
 setInterval(() => {
-    fetch('https://semaforo-de-alerta.onrender.com/alertas/procesar-pendientes').catch(() => {});
+    fetch('https://semaforo-de-alerta.onrender.com/alertas/procesar-pendientes')
+        .then(res => res.json())
+        .then(data => {
+            if (data.ok && data.procesados > 0) {
+                alert(`Alertas programadas enviadas.\nCorreos enviados: ${data.enviados}\nFallidos: ${data.fallidos}`);
+            }
+            cargarHistorial();
+        })
+        .catch(() => {});
 }, 60000);
