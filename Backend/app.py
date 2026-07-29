@@ -320,33 +320,7 @@ def test_db():
             "error": str(e)
         }), 500
 
-@app.route('/api/alumno/<matricula>/foto', methods=['GET'])
-def obtener_foto(matricula):
-    try:
-        # 1. Conexión y consulta a tu base de datos en Aiven para obtener el BLOB
-        # (Asegúrate de usar la forma en la que ya te conectas a tu base de datos en tu app.py)
-        cursor = conexion_db.cursor()
-        query = "SELECT foto FROM alumnos WHERE matricula = %s"
-        cursor.execute(query, (matricula,))
-        resultado = cursor.fetchone()
-        cursor.close()
-
-        # 2. Validar si existe el registro y si tiene contenido en el BLOB
-        if not resultado or not resultado[0]:
-            return "Imagen no encontrada", 404
-
-        imagen_blob = resultado[0] # Este es tu campo BLOB directo
-
-        # 3. Usamos io.BytesIO para convertir los datos binarios en un archivo virtual que Flask puede enviar
-        return send_file(
-            BytesIO(imagen_blob),
-            mimetype='image/jpeg' 
-        )
-
-    except Exception as e:
-        print(f"Error al obtener la foto: {e}")
-        return "Error interno del servidor", 500
-
+#ruta para fotos
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
