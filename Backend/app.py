@@ -21,6 +21,8 @@ from Modulo_alertas.routes_alertas import alerta_bp
 from Modulo_horarios.routes_horarios import horarios_bp   # <-- RESTAURADO
 from Modulo_aulas.routes_aulas import aulas_bp             # <-- RESTAURADO
 from Modulo_carreras.routes_carreras import carreras_bp
+from Modulo_tutores.routes_tutor import tutor_bp
+
 
 app = Flask(__name__)
 # Permitimos CORS para que tus archivos HTML y JS del frontend puedan comunicarse con Python
@@ -36,7 +38,7 @@ app.register_blueprint(alerta_bp)
 app.register_blueprint(horarios_bp)   # <-- RESTAURADO
 app.register_blueprint(aulas_bp)      # <-- RESTAURADO
 app.register_blueprint(carreras_bp)
-
+app.register_blueprint(tutor_bp)
 
 # 2. RUTA DE PRUEBA: Para verificar en el navegador que el servidor esté encendido
 @app.route('/', methods=['GET'])
@@ -325,4 +327,4 @@ def test_db():
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0",port=port)
+    app.run(host="0.0.0.0",port=port, debug=True)
