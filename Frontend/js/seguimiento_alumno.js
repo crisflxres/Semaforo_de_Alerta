@@ -86,4 +86,5 @@ document.addEventListener('DOMContentLoaded', () => {
                 elBadgeReprobadas.textContent = `Materias reprobadas: ${respuesta.reprobadas}`;
         })
         .catch(err => console.error("Error al cargar calificaciones:", err));
+        
 });
