@@ -50,32 +50,35 @@ display: block;
 
 /* DROPDOWN DE PERFIL INTERACTIVO */
 .perfil-usuario {
-width: 37px;
-display: flex;
-justify-content: flex-end;
-position: relative;
-z-index: 2;
+    position: relative;
+    width: 37px;
+    height: 37px;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    z-index: 2;
 }
 
 .perfil-usuario .avatar {
-background-color: #bc955c;
-color: #4a4a4a;                   
-width: 38px;
-height: 38px;
-border-radius: 50%;
-display: flex;
-align-items: center;
-justify-content: center;
-font-weight: bold;
-font-size: 18px;
-cursor: pointer;
-user-select: none;
-transition: transform 0.2s ease;
+    background-color: #bc955c;
+    color: var(--texto-oscuro);
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    cursor: pointer;
+    user-select: none;
+    transition: transform 0.2s ease;
+    line-height: 1;
+    text-align: center
 }
 
 /* Efecto de pulsación al hacer clic */
 .perfil-usuario .avatar:active {
-transform: scale(0.95);
+    transform: scale(0.95);
 }
 
 .dropdown-perfil {

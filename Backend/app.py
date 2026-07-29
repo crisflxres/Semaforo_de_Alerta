@@ -93,7 +93,8 @@ def login():
                 "message": "Bienvenido al sistema.",
                 "nombre": usuario['Nombre'],
                 "rol": usuario['Id_Rol'],
-                "matricula": matricula
+                "matricula": matricula,
+                "correo": usuario['Email']
             })
 
         cursor.close()

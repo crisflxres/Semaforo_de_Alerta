@@ -43,6 +43,37 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
+    
+
+    // 4. MOSTRAR CARGO SEGÚN EL ROL
+    const CARGOS_POR_ROL = {
+        1: "Administrador",
+        2: "Docente",
+        3: "Tutor Académico",
+        4: "Alumno"
+    };
+
+    const elCargo = document.getElementById("txt-cargo");
+    const rolActual = parseInt(localStorage.getItem("rolUsuario"));
+
+    if (elCargo) {
+        elCargo.textContent = CARGOS_POR_ROL[rolActual] || "---";
+    }
+
+    const elNombre = document.getElementById("txt-nombre-usuario");
+    const nombreGuardado = localStorage.getItem("nombreUsuario");
+    if (elNombre) {
+        elNombre.textContent = nombreGuardado ? nombreGuardado.toUpperCase() : "USUARIO";
+    }
+
+    const elCorreo = document.getElementById("txt-correo-usuario");
+    const correoGuardado = localStorage.getItem("correoUsuario");
+    if (elCorreo) {
+        elCorreo.textContent = correoGuardado || "correo no disponible";
+        elCorreo.href = correoGuardado ? `mailto:${correoGuardado}` : "#";
+    }
+
+// 5. CERRAR SESIÓN
     const btnCerrarSesion = document.getElementById("btnCerrarSesion");
     if (btnCerrarSesion) {
         btnCerrarSesion.addEventListener("click", (e) => {

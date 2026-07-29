@@ -35,6 +35,12 @@ document.addEventListener('DOMContentLoaded', () => {
             menuPerfil.style.display = 'none';
         });
     }
+    // 2.5. Mostrar inicial del usuario en el avatar
+    const avatarLetra = document.getElementById('avatarUsuario');
+    const nombreUsuario = localStorage.getItem('nombreUsuario');
+    if (avatarLetra && nombreUsuario) {
+        avatarLetra.textContent = nombreUsuario.trim().charAt(0).toUpperCase();
+    }
 
     // 3. Función para llenar datos dinámicamente 
     window.cargarDatosAlumno = function(datos) {
