@@ -10,7 +10,7 @@ async function abrirModalHistorialObsvervaciones() {
     modal.style.display = 'flex';
 
     try {
-        const res = await fetch(`https://semaforo-de-alerta.onrender.com/api/observaciones/${matricula}`);
+        const res = await fetch(`https://semaforo-de-alerta.onrender.com/observaciones/${matricula}`);
         const data = await res.json();
 
         if (!data.success || data.observaciones.length === 0) {
