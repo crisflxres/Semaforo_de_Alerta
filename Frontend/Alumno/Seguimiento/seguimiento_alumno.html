@@ -65,7 +65,7 @@
                     </div>
 
                 <div class="pie-tabla-calificaciones">
-                    <div class="espacio-vacio"></div>
+                    <button id="btn-observaciones" class="badge-ver-observacion"> Ver Observaciones</button>
                     <div class="celda-rosada"></div>
                     <div class="celda-rosada"></div>
                     <div class="celda-rosada"></div>
@@ -74,6 +74,16 @@
             </div>
         </section>
     </main>
+
+    <div id="modalObservaciones" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.45); z-index:9999; align-items:center; justify-content:center;">
+        <div style="background:#fff; border-radius:14px; padding:30px; width:600px; max-width:92vw; max-height:80vh; overflow-y:auto; box-shadow:0 10px 40px rgba(0,0,0,0.2);">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                <h3 style="font-size:18px; color:#4A0A18; font-weight:700;">Historial de observaciones</h3>
+                <button id="btnCerrarModalObs" style="background:none; border:none; font-size:22px; cursor:pointer; color:#666;">&times;</button>
+            </div>
+            <div id="listaObservacionesAlumno"></div>
+        </div>
+    </div>
 
     <script src="seguimiento_alumno.js"></script>
 </body>

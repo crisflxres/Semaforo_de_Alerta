@@ -116,4 +116,46 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
         console.warn("No hay matrícula en localStorage.");
     }
+
+    // 5. Historial de observaciones (solo lectura para el alumno)
+    const btnObservaciones = document.getElementById('btn-observaciones');
+    const modalObs = document.getElementById('modalObservaciones');
+    const listaObsAlumno = document.getElementById('listaObservacionesAlumno');
+    const btnCerrarModalObs = document.getElementById('btnCerrarModalObs');
+
+    if (btnCerrarModalObs && modalObs) {
+        btnCerrarModalObs.addEventListener('click', () => {
+            modalObs.style.display = 'none';
+        });
+    }
+
+    if (btnObservaciones && modalObs && listaObsAlumno) {
+        btnObservaciones.addEventListener('click', () => {
+            const matriculaObs = localStorage.getItem('matriculaSeleccionada');
+            if (!matriculaObs) return;
+
+            listaObsAlumno.innerHTML = '<p style="color:#888;">Cargando...</p>';
+            modalObs.style.display = 'flex';
+
+            fetch(`https://semaforo-de-alerta.onrender.com/observaciones/${matricula}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (!data.success || data.observaciones.length === 0) {
+                        listaObsAlumno.innerHTML = '<p style="color:#888;">No hay observaciones registradas todavía.</p>';
+                        return;
+                    }
+                    listaObsAlumno.innerHTML = data.observaciones.map(obs => `
+                        <div style="border-bottom:1px solid #eee; padding:10px 0;">
+                            <div style="font-size:11px; color:#999;">${obs.fecha}</div>
+                            <div style="font-weight:700; color:#6A1B29; font-size:13px;">${obs.autor}</div>
+                            <p style="font-size:13px; margin-top:4px;">${obs.comentario}</p>
+                        </div>
+                    `).join('');
+                })
+                .catch(err => {
+                    listaObsAlumno.innerHTML = '<p style="color:#dc3545;">Error al cargar el historial.</p>';
+                    console.error("Error al cargar observaciones:", err);
+                });
+        });
+    }
 });
