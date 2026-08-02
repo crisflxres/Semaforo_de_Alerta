@@ -1,62 +1,49 @@
-"""
-Funciones para el envío del correo de recuperación de contraseña.
-
-MODO: envío real vía SMTP (Gmail), leyendo credenciales desde variables
-de entorno (archivo .env) en vez de tenerlas escritas en el código.
-"""
+"""Funciones para el envío del correo de recuperación de contraseña.
+    MODO: envío vía API HTTP de Brevo."""
 
 import os
-import smtplib
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
+import sib_api_v3_sdk
+from sib_api_v3_sdk.rest import ApiException
 from dotenv import load_dotenv
 
-load_dotenv()  # lee el archivo .env y carga las variables
+load_dotenv()
 
-# URL base del frontend donde vive nueva_contrasena.html
-FRONTEND_URL_BASE = "https://semaforo-de-alerta.onrender.com"
+FRONTEND_URL_BASE = "https://sema-cecyteh.netlify.app/html/nueva_contrasena.html" #ruta de netlify y carpeta
 
-# --- Credenciales de correo (ahora vienen del .env, no están aquí escritas) ---
-REMITENTE = os.getenv("CORREO_REMITENTE")
-PASSWORD_APP = os.getenv("CORREO_PASSWORD_APP")
+SENDINBLUE_API_KEY = os.environ.get("SENDINBLUE_API_KEY")
+BROVO_SENDER_EMAIL = "semaalert@gmail.com"
+BROVO_SENDER_NAME = "Sistema de Alertas CECyTEH"
 
 
 def enviar_correo_recuperacion(destinatario, token):
-    """
-    Envía el correo real con el link de recuperación.
-
-    destinatario: correo del usuario (str)
-    token: token generado para el reseteo (str)
-    """
-    if not REMITENTE or not PASSWORD_APP:
-        print("[ERROR] Faltan credenciales de correo. Revisa tu archivo .env")
+    if not SENDINBLUE_API_KEY or not BROVO_SENDER_EMAIL:
+        print("[ERROR] Faltan credenciales de Brevo. Revisa tus variables de entorno.")
         return False
 
     link = f"{FRONTEND_URL_BASE}?token={token}"
 
-    cuerpo = f"""Hola,
+    cuerpo_html = f"""
+    <p>Hola,</p>
+    <p>Recibimos una solicitud para restablecer tu contraseña del Semáforo de Alerta Académica.</p>
+    <p><a href="{link}">Da clic aquí para continuar</a> (válido por 30 minutos).</p>
+    <p>Si tú no solicitaste esto, ignora este correo.</p>
+    """
 
-Recibimos una solicitud para restablecer tu contraseña del
-Semáforo de Alerta Académica.
+    configuration = sib_api_v3_sdk.Configuration()
+    configuration.api_key['api-key'] = SENDINBLUE_API_KEY
+    api_instance = sib_api_v3_sdk.TransactionalEmailsApi(sib_api_v3_sdk.ApiClient(configuration))
 
-Da clic en el siguiente enlace para continuar (válido por 30 minutos):
-{link}
-
-Si tú no solicitaste esto, ignora este correo.
-"""
-
-    mensaje = MIMEMultipart()
-    mensaje["Subject"] = "Recuperación de contraseña - Semáforo de Alerta Académica"
-    mensaje["From"] = REMITENTE
-    mensaje["To"] = destinatario
-    mensaje.attach(MIMEText(cuerpo, "plain"))
+    email = sib_api_v3_sdk.SendSmtpEmail(
+        to=[{"email": destinatario}],
+        sender={"email": BROVO_SENDER_EMAIL, "name": BROVO_SENDER_NAME},
+        subject="Recuperación de contraseña - Semáforo de Alerta Académica",
+        html_content=cuerpo_html
+    )
 
     try:
-        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as servidor:
-            servidor.login(REMITENTE, PASSWORD_APP)
-            servidor.sendmail(REMITENTE, destinatario, mensaje.as_string())
+        api_instance.send_transac_email(email)
         print(f"[OK] Correo de recuperación enviado a {destinatario}")
         return True
-    except Exception as e:
+    except ApiException as e:
         print(f"[ERROR] No se pudo enviar el correo a {destinatario}: {e}")
         return False

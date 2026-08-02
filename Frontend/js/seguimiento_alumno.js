@@ -96,6 +96,28 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
+
+    // --- 3. DROPDOWN DE PERFIL ---
+        const avatar = document.getElementById('avatarUsuario');
+        const dropdown = document.getElementById('dropdownPerfil');
+
+        avatar?.addEventListener('click', (e) => {
+            e.stopPropagation();
+            dropdown?.classList.toggle('show');
+        });
+
+        document.addEventListener('click', () => {
+            dropdown?.classList.remove('show');
+        });
+
+    // --- 4. CERRAR SESIÓN ---
+        document.getElementById('btnCerrarSesion')?.addEventListener('click', (e) => {
+            e.preventDefault();
+            localStorage.removeItem('rolUsuario');
+            localStorage.removeItem('nombreUsuario');
+            window.location.href = 'index.html';
+        });
+
     // --- 3. CALIFICACIONES DESDE FLASK ---
     const tbody = document.querySelector('.data-table tbody');
 

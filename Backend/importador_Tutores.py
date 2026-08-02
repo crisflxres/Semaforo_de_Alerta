@@ -1,7 +1,6 @@
-import pandas as pd
-
 def importar_tutores(hoja):
-    tutores: list = []
+    import pandas as pd
+    tutores: list =[]
     
     for i, fila in hoja.iterrows():
         # Capturamos el valor original y su versión en texto

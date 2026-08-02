@@ -3,6 +3,7 @@ import os
 from io import BytesIO
 
 # 1. FUNCIÓN DE CONEXIÓN A TU MYSQL WORKBENCH (CONFIGURADA PARA XAMPP) EN conexion_db.py
+#from Semaforo_de_Alerta.Backend import conexion_db
 from conexion_db import obtener_conexion
 
 from flask_cors import CORS
@@ -21,6 +22,8 @@ from Modulo_horarios.routes_horarios import horarios_bp   # <-- RESTAURADO
 from Modulo_aulas.routes_aulas import aulas_bp             # <-- RESTAURADO
 from Modulo_carreras.routes_carreras import carreras_bp
 from Modulo_observaciones.routes_observacion import observacion_bp
+from Modulo_tutores.routes_tutor import tutor_bp
+
 
 app = Flask(__name__)
 # Permitimos CORS para que tus archivos HTML y JS del frontend puedan comunicarse con Python
@@ -37,6 +40,7 @@ app.register_blueprint(horarios_bp)   # <-- RESTAURADO
 app.register_blueprint(aulas_bp)      # <-- RESTAURADO
 app.register_blueprint(carreras_bp)
 app.register_blueprint(observacion_bp)
+app.register_blueprint(tutor_bp)
 
 # 2. RUTA DE PRUEBA: Para verificar en el navegador que el servidor esté encendido
 @app.route('/', methods=['GET'])
@@ -92,7 +96,8 @@ def login():
                 "id_usuario": usuario['Id_Usuario'],
                 "nombre": usuario['Nombre'],
                 "rol": usuario['Id_Rol'],
-                "matricula": matricula
+                "matricula": matricula,
+                "correo": usuario['Email']
             })
 
         cursor.close()

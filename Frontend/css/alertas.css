@@ -89,6 +89,8 @@ body {
     cursor: pointer;
     user-select: none;
     transition: transform 0.2s ease;
+    line-height: 1;
+    text-align: center
 }
 
 .perfil-usuario .avatar:active {

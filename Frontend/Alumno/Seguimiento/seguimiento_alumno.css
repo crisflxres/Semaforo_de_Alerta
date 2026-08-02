@@ -38,9 +38,20 @@ body { background-color: var(--color-fondo-global); color: var(--color-texto); }
 .contenedor-avatar { position: relative; cursor: pointer; z-index: 1000; }
 
 .perfil-avatar-global {
-    width: 44px; height: 44px; background-color: var(--color-dorado);
-    border-radius: 50%; color: #000000; font-size: 18px; font-weight: bold;
-    display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    width: 38px;
+    height: 38px;
+    background-color: #bc955c; 
+    border-radius: 50%;
+    color: #333333;
+    font-size: 16px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    user-select: none;
+    line-height: 1;
+    text-align: center;
 }
 
 /* Menú desplegable de Cerrar Sesión */
