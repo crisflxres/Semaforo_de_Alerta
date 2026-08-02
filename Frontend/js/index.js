@@ -31,6 +31,7 @@ document.getElementById('formLogin').addEventListener('submit', async (e) => {
             localStorage.setItem('rolUsuario', resultado.rol);
             localStorage.setItem('nombreUsuario', resultado.nombre);
             localStorage.setItem('matriculaSeleccionada', resultado.matricula);
+            localStorage.setItem('idUsuario', resultado.id_usuario);
 
             const rol = resultado.rol;
 
