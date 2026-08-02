@@ -134,6 +134,7 @@ body { background-color: var(--color-fondo-global); color: var(--color-texto); }
     font-size: 13px;
     font-weight: 600;
     height: 45px;
+    cursor: pointer; 
 }
 .panel-observaciones {
     display: none;
