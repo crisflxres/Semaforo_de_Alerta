@@ -18,9 +18,10 @@ from Modulo_configuracion.routes_configuracion import configuracion_bp
 from Modulo_calificaciones.routes_calificaciones import calificaciones_bp
 from Modulo_grupos.routes_grupos import grupos_bp
 from Modulo_alertas.routes_alertas import alerta_bp
-from Modulo_horarios.routes_horarios import horarios_bp   # <-- RESTAURADO
-from Modulo_aulas.routes_aulas import aulas_bp             # <-- RESTAURADO
+from Modulo_horarios.routes_horarios import horarios_bp  
+from Modulo_aulas.routes_aulas import aulas_bp            
 from Modulo_carreras.routes_carreras import carreras_bp
+from Modulo_observaciones.routes_observacion import observacion_bp
 from Modulo_tutores.routes_tutor import tutor_bp
 
 
@@ -35,9 +36,10 @@ app.register_blueprint(configuracion_bp)
 app.register_blueprint(calificaciones_bp)
 app.register_blueprint(grupos_bp)
 app.register_blueprint(alerta_bp)
-app.register_blueprint(horarios_bp)   # <-- RESTAURADO
-app.register_blueprint(aulas_bp)      # <-- RESTAURADO
+app.register_blueprint(horarios_bp)  
+app.register_blueprint(aulas_bp)      
 app.register_blueprint(carreras_bp)
+app.register_blueprint(observacion_bp)
 app.register_blueprint(tutor_bp)
 
 # 2. RUTA DE PRUEBA: Para verificar en el navegador que el servidor esté encendido
@@ -91,9 +93,11 @@ def login():
             return jsonify({
                 "success": True,
                 "message": "Bienvenido al sistema.",
+                "id_usuario": usuario['Id_Usuario'],
                 "nombre": usuario['Nombre'],
                 "rol": usuario['Id_Rol'],
-                "matricula": matricula
+                "matricula": matricula,
+                "correo": usuario['Email']
             })
 
         cursor.close()
@@ -298,8 +302,7 @@ def recuperar():
         return jsonify({
             "success": False,
             "message": f"Error: {err}"
-        }), 500   # <-- FALTABA este 500, sin él el return quedaba roto
-    
+        }), 500  
 @app.route('/test-db')
 def test_db():
     try:
@@ -322,9 +325,7 @@ def test_db():
             "error": str(e)
         }), 500
 
-#ruta para fotos
-#logica..
-
 if __name__ == '__main__':
+    print(app.url_map)
     port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0",port=port, debug=True)
+    app.run(host="0.0.0.0", port=port)

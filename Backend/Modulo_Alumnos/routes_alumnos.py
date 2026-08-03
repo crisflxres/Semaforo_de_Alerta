@@ -130,7 +130,7 @@ def get_dashboard_stats():
         return jsonify({"success": False, "message": str(err)}), 500
 
 
-@alumnos_bp.route('/api/tutor/<matricula>', methods=['GET'])
+#@alumnos_bp.route('/api/tutor/<matricula>', methods=['GET'])
 def get_tutor(matricula):
     conexion = None
     try:
@@ -159,7 +159,7 @@ def get_tutor(matricula):
             conexion.close()
 
 
-@alumnos_bp.route('/api/tutor/<matricula>', methods=['PUT'])
+#@alumnos_bp.route('/api/tutor/<matricula>', methods=['PUT'])
 def actualizar_tutor(matricula):
     conexion = None
     try:

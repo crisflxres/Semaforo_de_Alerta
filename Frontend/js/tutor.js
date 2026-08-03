@@ -20,14 +20,18 @@ document.addEventListener('DOMContentLoaded', () => {
             .then(res => res.json())
             .then(data => {
                 if (data.success && data.existe) {
+                    datosTutorActual = {
+                        nombre: data.tutor.Nombre,
+                        telefono: data.tutor.Telefono,
+                        email: data.tutor.Email
+                    };
+
                     elNombreTutor.textContent = data.tutor.Nombre;
                     elTelefonoTutor.textContent = data.tutor.Telefono;
                     elCorreoTutor.textContent = data.tutor.Email;
-
-                    inputNombreTutor.value = data.tutor.Nombre;
-                    inputTelefonoTutor.value = data.tutor.Telefono;
-                    inputCorreoTutor.value = data.tutor.Email;
                 } else {
+                    datosTutorActual = { nombre: '', telefono: '', email: '' };
+
                     elNombreTutor.textContent = 'Sin registrar';
                     elTelefonoTutor.textContent = 'Sin registrar';
                     elCorreoTutor.textContent = 'Sin registrar';
@@ -36,6 +40,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     inputTelefonoTutor.value = '';
                     inputCorreoTutor.value = '';
                 }
+
+                inputNombreTutor.value = datosTutorActual.nombre;
+                inputTelefonoTutor.value = datosTutorActual.telefono;
+                inputCorreoTutor.value = datosTutorActual.email;
             })
             .catch(err => console.error('Error al cargar tutor:', err));
     }
@@ -50,7 +58,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     cargarTutor();
 
-    btnEditarTutor?.addEventListener('click', () => {
+    function entrarModoEdicion() {
         document.querySelectorAll('.dato-tutor').forEach(el => el.style.display = 'none');
         document.querySelectorAll('.input-tutor').forEach(el => el.style.display = 'inline-block');
         btnEditarTutor.style.display = 'none';

@@ -11,4 +11,12 @@ document.addEventListener('DOMContentLoaded', () => {
             li?.remove();
         });
     }
+
+    // Mostrar la inicial del usuario en el avatar
+    const nombreUsuario = localStorage.getItem('nombreUsuario');
+    const avatar = document.getElementById('avatarUsuario');
+
+    if (nombreUsuario && avatar) {
+        avatar.textContent = nombreUsuario.trim().charAt(0).toUpperCase();
+    }
 });

@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="alumno_inicio.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="../../css/tutor.css">
+    <script src="../../js/tutor.js"></script>
     <title>Inicio Alumno</title>
 </head>
 
@@ -30,8 +32,8 @@
         </div>
         
         <div class="perfil-avatar-global contenedor-avatar" id="btnAvatar">
-            A
-            <div class="menu-perfil-desplegable" id="menuPerfil">
+            <span id="avatarUsuario">A</span>
+        <div class="menu-perfil-desplegable" id="menuPerfil">
                 <a href="../../html/index.html">
                     <i class="fas fa-sign-out-alt"></i> Cerrar sesión
                 </a>
@@ -122,11 +124,30 @@
                 <div class="card-tutor">
                     <div class="dato">
                         <i class="fa-regular fa-address-card"></i>
-                        <span id="nombre-tutor"></span>
+                        <span id="txt-nombre-tutor" class="dato-tutor">Cargando...</span>
+                        <input type="text" id="input-nombre-tutor" class="input-tutor" style="display:none;" placeholder="Nombre del tutor">
+                    </div>
+                    <div class="dato">
+                        <i class="fa-solid fa-phone"></i>
+                        <span id="txt-telefono-tutor" class="dato-tutor">Cargando...</span>
+                        <input type="text" id="input-telefono-tutor" class="input-tutor" style="display:none;" placeholder="Teléfono">
                     </div>
                     <div class="dato">
                         <i class="fa-regular fa-envelope"></i>
-                        <span id="email-tutor"></span>
+                        <span id="txt-correo-tutor" class="dato-tutor">Cargando...</span>
+                        <input type="email" id="input-correo-tutor" class="input-tutor" style="display:none;" placeholder="Correo electrónico">
+                    </div>
+
+                    <div class="acciones-tutor">
+                        <button id="btn-editar-tutor" class="btn-editar-tutor">
+                            <i class="fa-solid fa-pen"></i> Editar
+                        </button>
+                        <button id="btn-guardar-tutor" class="btn-guardar-tutor" style="display:none;">
+                            <i class="fa-solid fa-check"></i> Guardar
+                        </button>
+                        <button id="btn-cancelar-tutor" class="btn-cancelar-tutor" style="display:none;">
+                            <i class="fa-solid fa-xmark"></i> Cancelar
+                        </button>
                     </div>
                 </div>
             </div>
