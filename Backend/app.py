@@ -19,8 +19,8 @@ from Modulo_configuracion.routes_configuracion import configuracion_bp
 from Modulo_calificaciones.routes_calificaciones import calificaciones_bp
 from Modulo_grupos.routes_grupos import grupos_bp
 from Modulo_alertas.routes_alertas import alerta_bp
-from Modulo_horarios.routes_horarios import horarios_bp   # <-- RESTAURADO
-from Modulo_aulas.routes_aulas import aulas_bp             # <-- RESTAURADO
+from Modulo_horarios.routes_horarios import horarios_bp  
+from Modulo_aulas.routes_aulas import aulas_bp            
 from Modulo_carreras.routes_carreras import carreras_bp
 from Modulo_observaciones.routes_observacion import observacion_bp
 from Modulo_tutores.routes_tutor import tutor_bp
@@ -37,8 +37,8 @@ app.register_blueprint(configuracion_bp)
 app.register_blueprint(calificaciones_bp)
 app.register_blueprint(grupos_bp)
 app.register_blueprint(alerta_bp)
-app.register_blueprint(horarios_bp)   # <-- RESTAURADO
-app.register_blueprint(aulas_bp)      # <-- RESTAURADO
+app.register_blueprint(horarios_bp)  
+app.register_blueprint(aulas_bp)      
 app.register_blueprint(carreras_bp)
 app.register_blueprint(observacion_bp)
 app.register_blueprint(tutor_bp)
@@ -303,8 +303,7 @@ def recuperar():
         return jsonify({
             "success": False,
             "message": f"Error: {err}"
-        }), 500   # <-- FALTABA este 500, sin él el return quedaba roto
-    
+        }), 500  
 @app.route('/test-db')
 def test_db():
     try:
