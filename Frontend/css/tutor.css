@@ -15,7 +15,7 @@
     padding: 8px 16px;
     border: none;
     border-radius: 6px;
-    background: var(--brand-maroon-dark);
+    background: var(--brand-maroon-dark, #4A0A18);
     color: white;
     font-size: 13px;
     font-weight: 600;
@@ -25,11 +25,46 @@
 }
 
 .btn-editar-tutor:hover, .btn-guardar-tutor:hover {
-    background: var(--brand-maroon);
+    background: var(--brand-maroon, #6a1b29);
 }
 
 .btn-editar-tutor i, .btn-guardar-tutor i {
     font-size: 12px;
+}
+
+.acciones-tutor {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.btn-cancelar-tutor {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 12px;
+    padding: 8px 16px;
+    border: 1px solid var(--brand-maroon-dark, #4A0A18);
+    border-radius: 6px;
+    background: transparent;
+    color: var(--brand-maroon-dark, #4A0A18);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease;
+    width: fit-content;
+}
+
+.btn-cancelar-tutor:hover {
+    background: var(--brand-maroon-dark, #4A0A18);
+    color: rgb(255, 255, 255);
+}
+
+@media (max-width: 600px) {
+    .btn-cancelar-tutor {
+        width: 100%;
+        justify-content: center;
+    }
 }
 
 /* Celulares */
@@ -44,3 +79,4 @@
         justify-content: center;
     }
 }
+

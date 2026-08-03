@@ -81,7 +81,7 @@ document.addEventListener('DOMContentLoaded', () => {
             window.location.href = 'index.html';
         });
 
-    // --- 3. CALIFICACIONES DESDE FLASK ---
+    // --- 5. CALIFICACIONES DESDE FLASK ---
     const tbody = document.querySelector('.data-table tbody');
 
     fetch(`https://semaforo-de-alerta.onrender.com/calificaciones/${matricula}`)
