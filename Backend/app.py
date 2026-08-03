@@ -344,6 +344,8 @@ def api_alertas_alumno(matricula):
         alertas_json = [
             {
                 "id": row["Id_Alerta"],
+                "matricula": row["Matricula"],
+                "alumno": f'{row["Nombre"]} {row["Apellidos"]}',
                 "titulo": row["Nivel_Alerta"],
                 "color_hex": row["Color_Hex"],
                 "descripcion_nivel": row["Descripcion_Nivel"],

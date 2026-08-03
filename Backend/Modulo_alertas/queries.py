@@ -58,10 +58,14 @@ def consultar_resumen_destinatarios():
     GROUP BY na.Id_Nivel, na.Nombre
     ORDER BY na.Id_Nivel;
     """
+
 def consultar_alertas_por_alumno():
     return """
     SELECT
         al.Id_Alerta,
+        a.Matricula,
+        a.Nombre,
+        a.Apellidos,
         na.Nombre AS Nivel_Alerta,
         na.Color_Hex,
         na.Descripcion AS Descripcion_Nivel,
