@@ -27,7 +27,7 @@ def consultar_alumnos_por_alerta():
     INNER JOIN carreras c ON g.Id_Carrera = c.Id_Carrera
     INNER JOIN niveles_alerta na ON al.Id_Nivel = na.Id_Nivel
     LEFT JOIN padre_alumno pa ON pa.Matricula = a.Matricula
-    LEFT JOIN usuarios u_tutor ON pa.Id_Usuario = u_tutor.Id_Usuario AND u_tutor.Id_Rol = 4
+    LEFT JOIN usuarios u_tutor ON pa.Id_Usuario = u_tutor.Id_Usuario AND u_tutor.Id_Rol = 3
     LEFT JOIN tutor_grupo tg ON tg.Id_Grupo = g.Id_Grupo
     LEFT JOIN usuarios u_doc ON tg.Id_Usuario = u_doc.Id_Usuario AND u_doc.Id_Rol = 2
     WHERE na.Nombre = %s
@@ -53,9 +53,9 @@ def consultar_resumen_destinatarios():
     FROM niveles_alerta na
     LEFT JOIN alertas al ON al.Id_Nivel = na.Id_Nivel
     LEFT JOIN alumnos a ON al.Matricula = a.Matricula
-    LEFT JOIN usuarios u_alumno ON u_alumno.Id_Usuario = a.Id_Usuario AND u_alumno.Id_Rol = 5
+    LEFT JOIN usuarios u_alumno ON u_alumno.Id_Usuario = a.Id_Usuario AND u_alumno.Id_Rol = 4
     LEFT JOIN padre_alumno pa ON pa.Matricula = a.Matricula
-    LEFT JOIN usuarios u_tutor ON u_tutor.Id_Usuario = pa.Id_Usuario AND u_tutor.Id_Rol = 4
+    LEFT JOIN usuarios u_tutor ON u_tutor.Id_Usuario = pa.Id_Usuario AND u_tutor.Id_Rol = 3
     LEFT JOIN tutor_grupo tg ON tg.Id_Grupo = a.Id_Grupo
     LEFT JOIN usuarios u_doc ON u_doc.Id_Usuario = tg.Id_Usuario AND u_doc.Id_Rol = 2
     GROUP BY na.Id_Nivel, na.Nombre
