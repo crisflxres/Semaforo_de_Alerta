@@ -274,30 +274,66 @@ def procesar_pendientes():
 
         ahora = datetime.now(ZONA_MX).replace(tzinfo=None)
 
+        print("==procesar pendientes==")
+        print("Hora actual", ahora)
+
         cursor.execute("""
             SELECT * FROM notificaciones
-            WHERE Estado = 'Programado' AND Fecha_Enviado <= %s
+            WHERE Estado = 'Programado' 
+              AND Fecha_Enviado <= %s
         """, (ahora,))
         pendientes = cursor.fetchall()
+
+        print(f"Pendientes encontrados: {len(pendientes)}")
 
         enviados = 0
         fallidos = 0
 
         for noti in pendientes:
-            ok_envio = enviar_correo(noti["Destinatario"], noti["Asunto"], noti["Cuerpo"], [])
+            print("-----")
+            print(f"ID= {noti['Id_Notificacion']}")
+            print(f"Correo: {noti['Destinatario']}")
+            print(f"Fecha progrmada: {noti['Fecha_Enviado']}")
+            print("Intentando enviar correo..")
+
+            ok_envio = enviar_correo(
+                noti["Destinatario"], 
+                noti["Asunto"], 
+                noti["Cuerpo"], 
+                []
+            )
+            print("Resultado", "OK" if ok_envio else "Error")
             nuevo_estado = "Enviado" if ok_envio else "Error"
 
             cursor.execute(
-                "UPDATE notificaciones SET Estado = %s WHERE Id_Notificacion = %s",
+                """
+                UPDATE notificaciones 
+                SET Estado = %s 
+                WHERE Id_Notificacion = %s
+                """,
                 (nuevo_estado, noti["Id_Notificacion"])
             )
+
             enviados += 1 if ok_envio else 0
             fallidos += 0 if ok_envio else 1
 
         conexion.commit()
+
+        print(f"Enviados: {enviados}")
+        print(f"Fallidos: {fallidos}")
+        print("========================================\n")
+
         cursor.close()
         conexion.close()
 
-        return jsonify({"ok": True, "procesados": len(pendientes), "enviados": enviados, "fallidos": fallidos})
+        return jsonify({
+            "ok": True, 
+            "procesados": len(pendientes), 
+            "enviados": enviados, 
+            "fallidos": fallidos})
     except Exception as e:
-        return jsonify({"ok": False, "mensaje": str(e)}), 500
+        print("Error en procesar pendientes:",e)
+        return jsonify({
+            "ok": False, 
+            "mensaje": str(e)
+        }), 500
