@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from .services import obtener_alumnos_por_alerta, obtener_grupos, obtener_resumen_destinatarios
+from .services import obtener_alumnos_por_alerta, obtener_grupos, obtener_resumen_destinatarios, obtener_alertas_alumno
 from .correo_service import enviar_correo, reemplazar_variables, extraer_imagenes_base64
 from conexion_db import obtener_conexion
 from datetime import datetime
@@ -247,6 +247,22 @@ def historial_notificaciones():
                 f["Fecha_Enviado"] = f["Fecha_Enviado"].strftime("%d/%m/%Y %I:%M %p")
 
         return jsonify({"ok": True, "total": len(filas), "datos": filas})
+    except Exception as e:
+        return jsonify({"ok": False, "mensaje": str(e)}), 500
+
+@alerta_bp.route("/mias", methods=["GET"])
+def alertas_del_alumno():
+    matricula = request.headers.get("X-Matricula")
+    if not matricula:
+        return jsonify({"ok": False, "mensaje": "Falta la matrícula del alumno"}), 400
+
+    nivel = request.args.get("estado")
+    fecha_inicio = request.args.get("fechaInicio")
+    fecha_fin = request.args.get("fechaFin")
+
+    try:
+        alertas = obtener_alertas_alumno(matricula, nivel, fecha_inicio, fecha_fin)
+        return jsonify({"ok": True, "total": len(alertas), "datos": alertas})
     except Exception as e:
         return jsonify({"ok": False, "mensaje": str(e)}), 500
 

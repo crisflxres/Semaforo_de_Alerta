@@ -33,12 +33,15 @@ def consultar_alumnos_por_alerta():
     WHERE na.Nombre = %s
     ORDER BY g.Nombre, a.Apellidos, a.Nombre;
     """
+
+
 def consultar_grupos():
     return """
     SELECT Id_Grupo, Nombre
     FROM grupos
     ORDER BY Nombre;
     """
+
 
 def consultar_resumen_destinatarios():
     return """

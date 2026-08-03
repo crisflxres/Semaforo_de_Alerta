@@ -15,8 +15,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnGuardarTutor  = document.getElementById('btn-guardar-tutor');
     const btnCancelarTutor = document.getElementById('btn-cancelar-tutor');
 
-    let datosTutorActual = { nombre: '', telefono: '', email: '' };
-
     function cargarTutor() {
         fetch(`https://semaforo-de-alerta.onrender.com/api/tutor/${matricula}`)
             .then(res => res.json())
@@ -37,6 +35,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     elNombreTutor.textContent = 'Sin registrar';
                     elTelefonoTutor.textContent = 'Sin registrar';
                     elCorreoTutor.textContent = 'Sin registrar';
+
+                    inputNombreTutor.value = '';
+                    inputTelefonoTutor.value = '';
+                    inputCorreoTutor.value = '';
                 }
 
                 inputNombreTutor.value = datosTutorActual.nombre;
@@ -44,16 +46,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 inputCorreoTutor.value = datosTutorActual.email;
             })
             .catch(err => console.error('Error al cargar tutor:', err));
-    }
-
-    cargarTutor();
-
-    function entrarModoEdicion() {
-        document.querySelectorAll('.dato-tutor').forEach(el => el.style.display = 'none');
-        document.querySelectorAll('.input-tutor').forEach(el => el.style.display = 'inline-block');
-        btnEditarTutor.style.display = 'none';
-        btnGuardarTutor.style.display = 'inline-block';
-        btnCancelarTutor.style.display = 'inline-block';
     }
 
     function salirModoEdicion() {
@@ -64,13 +56,19 @@ document.addEventListener('DOMContentLoaded', () => {
         btnEditarTutor.style.display = 'inline-block';
     }
 
-    btnEditarTutor?.addEventListener('click', entrarModoEdicion);
+    cargarTutor();
+
+    function entrarModoEdicion() {
+        document.querySelectorAll('.dato-tutor').forEach(el => el.style.display = 'none');
+        document.querySelectorAll('.input-tutor').forEach(el => el.style.display = 'inline-block');
+        btnEditarTutor.style.display = 'none';
+        btnGuardarTutor.style.display = 'inline-block';
+        btnCancelarTutor.style.display = 'inline-block';
+    });
 
     btnCancelarTutor?.addEventListener('click', () => {
-        inputNombreTutor.value = datosTutorActual.nombre;
-        inputTelefonoTutor.value = datosTutorActual.telefono;
-        inputCorreoTutor.value = datosTutorActual.email;
-        salirModoEdicion();
+        cargarTutor();       // restaura los valores originales en los inputs
+        salirModoEdicion();  // regresa a modo lectura
     });
 
     btnGuardarTutor?.addEventListener('click', () => {
