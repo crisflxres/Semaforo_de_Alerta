@@ -326,6 +326,42 @@ def test_db():
             "error": str(e)
         }), 500
 
+@app.route('/api/alertas/<matricula>')
+def api_alertas_alumno(matricula):
+    try:
+        conexion = obtener_conexion()
+        cursor = conexion.cursor(dictionary=True)
+
+        query = consultar_alertas_por_alumno().format(
+            filtro_nivel="",
+            filtro_fecha=""
+        )
+        cursor.execute(query, (matricula,))
+        resultados = cursor.fetchall()
+        cursor.close()
+        conexion.close()
+
+        alertas_json = [
+            {
+                "id": row["Id_Alerta"],
+                "titulo": row["Nivel_Alerta"],
+                "color_hex": row["Color_Hex"],
+                "descripcion_nivel": row["Descripcion_Nivel"],
+                "fecha": row["Fecha_Calculo"].strftime("%d/%m/%Y"),
+                "hora": row["Fecha_Calculo"].strftime("%H:%M"),
+                "pac": row["PAC"],
+                "materias_reprobadas": row["Materias_Reprobadas"],
+                "carrera": row["Carrera"],
+                "grupo": row["Grupo"],
+            }
+            for row in resultados
+        ]
+
+        return jsonify(alertas_json)
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 if __name__ == '__main__':
     print(app.url_map)
     port = int(os.environ.get("PORT", 5000))
