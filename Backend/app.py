@@ -4,6 +4,7 @@ from io import BytesIO
 
 # 1. FUNCIÓN DE CONEXIÓN A TU MYSQL WORKBENCH (CONFIGURADA PARA XAMPP) EN conexion_db.py
 #from Semaforo_de_Alerta.Backend import conexion_db
+from Modulo_alertas.queries import consultar_alumnos_por_alerta, consultar_alertas_por_alumno
 from conexion_db import obtener_conexion
 
 from flask_cors import CORS
@@ -324,6 +325,44 @@ def test_db():
         return jsonify({
             "error": str(e)
         }), 500
+
+@app.route('/api/alertas/<matricula>')
+def api_alertas_alumno(matricula):
+    try:
+        conexion = obtener_conexion()
+        cursor = conexion.cursor(dictionary=True)
+
+        query = consultar_alertas_por_alumno().format(
+            filtro_nivel="",
+            filtro_fecha=""
+        )
+        cursor.execute(query, (matricula,))
+        resultados = cursor.fetchall()
+        cursor.close()
+        conexion.close()
+
+        alertas_json = [
+            {
+                "id": row["Id_Alerta"],
+                "matricula": row["Matricula"],
+                "alumno": f'{row["Nombre"]} {row["Apellidos"]}',
+                "titulo": row["Nivel_Alerta"],
+                "color_hex": row["Color_Hex"],
+                "descripcion_nivel": row["Descripcion_Nivel"],
+                "fecha": row["Fecha_Calculo"].strftime("%d/%m/%Y"),
+                "hora": row["Fecha_Calculo"].strftime("%H:%M"),
+                "pac": row["PAC"],
+                "materias_reprobadas": row["Materias_Reprobadas"],
+                "carrera": row["Carrera"],
+                "grupo": row["Grupo"],
+            }
+            for row in resultados
+        ]
+
+        return jsonify(alertas_json)
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
     print(app.url_map)

@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from .services import obtener_alumnos_por_alerta, obtener_grupos, obtener_resumen_destinatarios
+from .services import obtener_alumnos_por_alerta, obtener_grupos, obtener_resumen_destinatarios, obtener_alertas_alumno
 from .correo_service import enviar_correo, reemplazar_variables, extraer_imagenes_base64
 from conexion_db import obtener_conexion
 from datetime import datetime
@@ -250,6 +250,22 @@ def historial_notificaciones():
     except Exception as e:
         return jsonify({"ok": False, "mensaje": str(e)}), 500
 
+@alerta_bp.route("/mias", methods=["GET"])
+def alertas_del_alumno():
+    matricula = request.headers.get("X-Matricula")
+    if not matricula:
+        return jsonify({"ok": False, "mensaje": "Falta la matrícula del alumno"}), 400
+
+    nivel = request.args.get("estado")
+    fecha_inicio = request.args.get("fechaInicio")
+    fecha_fin = request.args.get("fechaFin")
+
+    try:
+        alertas = obtener_alertas_alumno(matricula, nivel, fecha_inicio, fecha_fin)
+        return jsonify({"ok": True, "total": len(alertas), "datos": alertas})
+    except Exception as e:
+        return jsonify({"ok": False, "mensaje": str(e)}), 500
+
 @alerta_bp.route("/procesar-pendientes", methods=["GET"])
 def procesar_pendientes():
     try:
@@ -258,30 +274,66 @@ def procesar_pendientes():
 
         ahora = datetime.now(ZONA_MX).replace(tzinfo=None)
 
+        print("==procesar pendientes==")
+        print("Hora actual", ahora)
+
         cursor.execute("""
             SELECT * FROM notificaciones
-            WHERE Estado = 'Programado' AND Fecha_Enviado <= %s
+            WHERE Estado = 'Programado' 
+              AND Fecha_Enviado <= %s
         """, (ahora,))
         pendientes = cursor.fetchall()
+
+        print(f"Pendientes encontrados: {len(pendientes)}")
 
         enviados = 0
         fallidos = 0
 
         for noti in pendientes:
-            ok_envio = enviar_correo(noti["Destinatario"], noti["Asunto"], noti["Cuerpo"], [])
+            print("-----")
+            print(f"ID= {noti['Id_Notificacion']}")
+            print(f"Correo: {noti['Destinatario']}")
+            print(f"Fecha progrmada: {noti['Fecha_Enviado']}")
+            print("Intentando enviar correo..")
+
+            ok_envio = enviar_correo(
+                noti["Destinatario"], 
+                noti["Asunto"], 
+                noti["Cuerpo"], 
+                []
+            )
+            print("Resultado", "OK" if ok_envio else "Error")
             nuevo_estado = "Enviado" if ok_envio else "Error"
 
             cursor.execute(
-                "UPDATE notificaciones SET Estado = %s WHERE Id_Notificacion = %s",
+                """
+                UPDATE notificaciones 
+                SET Estado = %s 
+                WHERE Id_Notificacion = %s
+                """,
                 (nuevo_estado, noti["Id_Notificacion"])
             )
+
             enviados += 1 if ok_envio else 0
             fallidos += 0 if ok_envio else 1
 
         conexion.commit()
+
+        print(f"Enviados: {enviados}")
+        print(f"Fallidos: {fallidos}")
+        print("========================================\n")
+
         cursor.close()
         conexion.close()
 
-        return jsonify({"ok": True, "procesados": len(pendientes), "enviados": enviados, "fallidos": fallidos})
+        return jsonify({
+            "ok": True, 
+            "procesados": len(pendientes), 
+            "enviados": enviados, 
+            "fallidos": fallidos})
     except Exception as e:
-        return jsonify({"ok": False, "mensaje": str(e)}), 500
+        print("Error en procesar pendientes:",e)
+        return jsonify({
+            "ok": False, 
+            "mensaje": str(e)
+        }), 500

@@ -32,39 +32,30 @@
     font-size: 12px;
 }
 
-.acciones-tutor {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-}
-
 .btn-cancelar-tutor {
     display: inline-flex;
     align-items: center;
     gap: 6px;
     margin-top: 12px;
+    margin-left: 8px;
     padding: 8px 16px;
-    border: 1px solid var(--brand-maroon-dark, #4A0A18);
+    border: 1px solid #ccc;
     border-radius: 6px;
-    background: transparent;
-    color: var(--brand-maroon-dark, #4A0A18);
+    background: white;
+    color: #555;
     font-size: 13px;
     font-weight: 600;
     cursor: pointer;
-    transition: background 0.2s ease, color 0.2s ease;
+    transition: background 0.2s ease;
     width: fit-content;
 }
 
 .btn-cancelar-tutor:hover {
-    background: var(--brand-maroon-dark, #4A0A18);
-    color: rgb(255, 255, 255);
+    background: #f0f0f0;
 }
 
-@media (max-width: 600px) {
-    .btn-cancelar-tutor {
-        width: 100%;
-        justify-content: center;
-    }
+.btn-cancelar-tutor i {
+    font-size: 12px;
 }
 
 /* Celulares */
@@ -78,5 +69,11 @@
         width: 100%;
         justify-content: center;
     }
-}
 
+    .btn-cancelar-tutor {
+        width: 100%;
+        justify-content: center;
+        margin-left: 0;
+        margin-top: 8px;
+    }
+}
