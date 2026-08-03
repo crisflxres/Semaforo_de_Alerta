@@ -58,3 +58,25 @@ def consultar_resumen_destinatarios():
     GROUP BY na.Id_Nivel, na.Nombre
     ORDER BY na.Id_Nivel;
     """
+def consultar_alertas_por_alumno():
+    return """
+    SELECT
+        al.Id_Alerta,
+        na.Nombre AS Nivel_Alerta,
+        na.Color_Hex,
+        na.Descripcion AS Descripcion_Nivel,
+        al.PAC,
+        al.Materias_Reprobadas,
+        al.Fecha_Calculo,
+        c.Nombre AS Carrera,
+        g.Nombre AS Grupo
+    FROM alertas al
+    INNER JOIN alumnos a ON al.Matricula = a.Matricula
+    INNER JOIN grupos g ON a.Id_Grupo = g.Id_Grupo
+    INNER JOIN carreras c ON g.Id_Carrera = c.Id_Carrera
+    INNER JOIN niveles_alerta na ON al.Id_Nivel = na.Id_Nivel
+    WHERE a.Matricula = %s
+    {filtro_nivel}
+    {filtro_fecha}
+    ORDER BY al.Fecha_Calculo DESC;
+    """

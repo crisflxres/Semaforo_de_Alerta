@@ -4,7 +4,7 @@ from io import BytesIO
 
 # 1. FUNCIÓN DE CONEXIÓN A TU MYSQL WORKBENCH (CONFIGURADA PARA XAMPP) EN conexion_db.py
 #from Semaforo_de_Alerta.Backend import conexion_db
-from Semaforo_de_Alerta.Backend.Modulo_alertas.queries import consultar_alertas_por_alumno
+from Modulo_alertas.queries import consultar_alumnos_por_alerta, consultar_alertas_por_alumno
 from conexion_db import obtener_conexion
 
 from flask_cors import CORS
