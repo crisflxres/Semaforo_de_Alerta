@@ -1,3 +1,40 @@
+async function abrirModalHistorialObsvervaciones() {
+    const modal = document.getElementById('modalHistorialObservaciones');
+    const lista = document.getElementById('listaHistorialCompletoObservaciones');
+    if (!modal || !lista) return;
+
+    const matricula = localStorage.getItem('matriculaSeleccionada');
+    if (!matricula) return;
+
+    lista.innerHTML = '<p style="color:#888;">Cargando...</p>';
+    modal.style.display = 'flex';
+
+    try {
+        const res = await fetch(`https://semaforo-de-alerta.onrender.com/observaciones/${matricula}`);
+        const data = await res.json();
+
+        if (!data.success || data.observaciones.length === 0) {
+            lista.innerHTML = '<p style="color:#888;">No hay observaciones registradas todavía.</p>';
+            return;
+        }
+
+        lista.innerHTML = data.observaciones.map(obs => `
+            <div style="border-bottom:1px solid #eee; padding:10px 0;">
+                <div style="font-size:11px; color:#999;">${obs.fecha}</div>
+                <div style="font-weight:700; color:#4a1222; font-size:13px;">${obs.autor}</div>
+                <p style="font-size:13px; margin-top:4px;">${obs.comentario}</p>
+            </div>
+        `).join('');
+    } catch (e) {
+        lista.innerHTML = '<p style="color:#dc3545;">Error al cargar el historial.</p>';
+        console.error(e);
+    }
+}
+
+function cerrarModalHistorialObservaciones() {
+    document.getElementById('modalHistorialObservaciones').style.display = 'none';
+}
+
 document.addEventListener('DOMContentLoaded', () => {
 
     // --- 1. MENÚ LATERAL (igual que Aulas) ---
@@ -108,5 +145,51 @@ document.addEventListener('DOMContentLoaded', () => {
                 elBadgeReprobadas.textContent = `Materias reprobadas: ${respuesta.reprobadas}`;
         })
         .catch(err => console.error("Error al cargar calificaciones:", err));
-        
+
+        // --- 4. OBSERVACIONES ---
+    const API = 'https://semaforo-de-alerta.onrender.com';
+    const idUsuario = localStorage.getItem('idUsuario');
+    const panelObs = document.getElementById('panel-observaciones');
+    const btnObs = document.getElementById('btn-observaciones');
+    const btnGuardarObs = document.getElementById('btn-guardar-observacion');
+    const txtNuevaObs = document.getElementById('txt-nueva-observacion');
+
+    if (btnObs && panelObs) {
+        btnObs.addEventListener('click', () => {
+            panelObs.classList.toggle('abierto');
+        });
+    }
+
+    if (btnGuardarObs) {
+        btnGuardarObs.addEventListener('click', () => {
+            const comentario = txtNuevaObs.value.trim();
+            if (!comentario) {
+                alert('Escribe una observación antes de guardar.');
+                return;
+            }
+            if (!idUsuario) {
+                alert('No se pudo identificar el usuario. Vuelve a iniciar sesión.');
+                return;
+            }
+
+            fetch(`${API}/observaciones`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    matricula: matricula,
+                    id_usuario: idUsuario,
+                    comentario: comentario
+                })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        txtNuevaObs.value = '';
+                    } else {
+                        alert('Error al guardar: ' + data.message);
+                    }
+                })
+                .catch(err => console.error("Error al guardar observación:", err));
+        });
+    }
 });

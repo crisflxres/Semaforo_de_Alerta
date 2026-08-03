@@ -46,12 +46,12 @@
                 <i class="fas fa-chevron-left"></i>
             </a>
         </div>
-
+        <div class="fila-perfil-observaciones">
         <div class="profile-card">
             <div class="header-maroon">
                 <h2>SEGUIMIENTO ACADÉMICO DEL ALUMNO</h2>
             </div>
-            
+
             <div class="profile-content">
                 <div class="avatar-container">
                     <div class="avatar-circle">
@@ -76,6 +76,7 @@
                     <div class="badges-row">
                         <span id="txt-reprobadas" class="badge-reprobadas">Materias reprobadas: -</span>
                         <span id="txt-estado" class="badge-estado-regular">Estado: -</span>
+                        <button id="btn-observaciones" class="badge-agregar-observacion"> Agregar observacion +</button>
                     </div>
                 </div>
 
@@ -110,6 +111,15 @@
                     </div>
                 </div>
             </div>
+        </div>
+
+        <div id="panel-observaciones" class="panel-observaciones">
+            <h4>Nueva observación</h4>
+            <textarea id="txt-nueva-observacion" placeholder="Escribe la observación..."></textarea>
+            <button id="btn-guardar-observacion" class="btn-guardar-observacion">Guardar</button>
+
+            <a href="#" class="link-ver-historial-observaciones" onclick="abrirModalHistorialObsvervaciones(); return false;">Ver historial completo de observaciones</a>
+        </div>
         </div>
 
         <div class="table-container">
@@ -179,6 +189,15 @@
                 </li>
             </ul>
         </div>
+    </div>
+    <div id="modalHistorialObservaciones" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.45); z-index:9999; align-items:center; justify-content:center;">
+    <div style="background:#fff; border-radius:14px; padding:30px; width:600px; max-width:92vw; max-height:80vh; overflow-y:auto; box-shadow:0 10px 40px rgba(0,0,0,0.2);">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+            <h3 style="font-size:18px; color:#6c1d35; font-weight:700;">Historial completo de observaciones</h3>
+            <button onclick="cerrarModalHistorialObservaciones()" style="background:none; border:none; font-size:22px; cursor:pointer; color:#666;">&times;</button>
+        </div>
+        <div id="listaHistorialCompletoObservaciones"></div>
+    </div>
     </div>
     <script src="../js/interceptor.js"></script>
     <script src="../js/seguimiento_alumno.js"></script>
