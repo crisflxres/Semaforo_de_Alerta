@@ -9,6 +9,7 @@
     --color-texto-secundario: #666666;
     --color-gris-borde: #DCDCDC;
     --color-fondo-global: #F5F7FA;
+    --blanco: #ffffff;
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
@@ -118,7 +119,60 @@ body { background-color: var(--color-fondo-global); color: var(--color-texto); }
 .fila-materia-renglon { border-bottom: 1px solid var(--color-gris-borde); padding: 15px 0; }
 .pie-tabla-calificaciones { margin-top: 20px; padding-top: 10px; }
 
-.celda-rosada { background-color: var(--color-guinda-suave); border: 1px solid var(--color-gris-borde); height: 45px; border-radius: 8px; display: flex; align-items: center; justify-content: center; text-align: center;}
+.celda-rosada { 
+    background-color: var(--color-guinda-suave); 
+    border: 1px solid var(--color-gris-borde); 
+    height: 45px; border-radius: 8px; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    text-align: center;}
+
+.badge-ver-observacion { 
+    padding: 6px 20px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    height: 45px;
+    cursor: pointer; 
+}
+.panel-observaciones {
+    display: none;
+    flex-direction: column;
+    width: 320px;
+    flex-shrink: 0;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    padding: 18px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+.panel-observaciones.abierto { display: flex; }
+
+.panel-observaciones h4 {
+    color: #850121;
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+.panel-observaciones textarea {
+    width: 100%;
+    min-height: 80px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 8px;
+    font-family: inherit;
+    resize: vertical;
+    margin-bottom: 10px;
+}
+.badge-ver-observacion { background-color: var(--color-guinda-oscuro); color: var(--blanco);}
+.badge-agregar-observacion {text-align: center; font-size: 13px;  padding: 8px 14px; }
+
+.menu-flotante-overlay {
+    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+    background-color: rgba(0,0,0,0.6); z-index: 1000;
+    opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
+}
+.menu-flotante-overlay.open { opacity: 1; pointer-events: auto; }
 
 .celda-pac { background-color: var(--color-guinda); color: white; height: 45px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; font-weight: bold; }
 
