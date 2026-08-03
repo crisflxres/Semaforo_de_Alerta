@@ -11,8 +11,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const inputTelefonoTutor = document.getElementById('input-telefono-tutor');
     const inputCorreoTutor   = document.getElementById('input-correo-tutor');
 
-    const btnEditarTutor  = document.getElementById('btn-editar-tutor');
-    const btnGuardarTutor = document.getElementById('btn-guardar-tutor');
+    const btnEditarTutor   = document.getElementById('btn-editar-tutor');
+    const btnGuardarTutor  = document.getElementById('btn-guardar-tutor');
+    const btnCancelarTutor = document.getElementById('btn-cancelar-tutor');
 
     function cargarTutor() {
         fetch(`https://semaforo-de-alerta.onrender.com/api/tutor/${matricula}`)
@@ -30,9 +31,21 @@ document.addEventListener('DOMContentLoaded', () => {
                     elNombreTutor.textContent = 'Sin registrar';
                     elTelefonoTutor.textContent = 'Sin registrar';
                     elCorreoTutor.textContent = 'Sin registrar';
+
+                    inputNombreTutor.value = '';
+                    inputTelefonoTutor.value = '';
+                    inputCorreoTutor.value = '';
                 }
             })
             .catch(err => console.error('Error al cargar tutor:', err));
+    }
+
+    function salirModoEdicion() {
+        document.querySelectorAll('.dato-tutor').forEach(el => el.style.display = 'inline');
+        document.querySelectorAll('.input-tutor').forEach(el => el.style.display = 'none');
+        btnGuardarTutor.style.display = 'none';
+        btnCancelarTutor.style.display = 'none';
+        btnEditarTutor.style.display = 'inline-block';
     }
 
     cargarTutor();
@@ -42,6 +55,12 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelectorAll('.input-tutor').forEach(el => el.style.display = 'inline-block');
         btnEditarTutor.style.display = 'none';
         btnGuardarTutor.style.display = 'inline-block';
+        btnCancelarTutor.style.display = 'inline-block';
+    });
+
+    btnCancelarTutor?.addEventListener('click', () => {
+        cargarTutor();       // restaura los valores originales en los inputs
+        salirModoEdicion();  // regresa a modo lectura
     });
 
     btnGuardarTutor?.addEventListener('click', () => {
@@ -63,10 +82,7 @@ document.addEventListener('DOMContentLoaded', () => {
         .then(data => {
             if (data.success) {
                 cargarTutor();
-                document.querySelectorAll('.dato-tutor').forEach(el => el.style.display = 'inline');
-                document.querySelectorAll('.input-tutor').forEach(el => el.style.display = 'none');
-                btnGuardarTutor.style.display = 'none';
-                btnEditarTutor.style.display = 'inline-block';
+                salirModoEdicion();
             } else {
                 alert('Error al guardar: ' + data.message);
             }
