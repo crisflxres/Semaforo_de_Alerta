@@ -34,9 +34,9 @@ document.getElementById('formLogin').addEventListener('submit', async (e) => {
             localStorage.setItem('idUsuario', resultado.id_usuario);
             localStorage.setItem('correoUsuario', resultado.correo);
 
-            const rol = resultado.rol;
+            const rol = Number(resultado.rol);
 
-            if (rol === 5) {
+            if (rol === 4) {
                 window.location.href = '../Alumno/Inicio/alumno_inicio.html';
             } else {
                 window.location.href = 'inicio.html';

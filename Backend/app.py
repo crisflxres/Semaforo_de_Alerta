@@ -80,7 +80,7 @@ def login():
             usuario['Password'].strip().encode('utf-8')
         ):
             matricula = None
-            if usuario['Id_Rol'] == 5:
+            if usuario['Id_Rol'] == 4:
                 cursor2 = conexion.cursor(dictionary=True)
                 cursor2.execute("SELECT Matricula FROM alumnos WHERE id_usuario = %s", (usuario['Id_Usuario'],))
                 alumno = cursor2.fetchone()
@@ -147,7 +147,7 @@ def registro():
             (Id_Rol, Nombre, Apellidos, Email, Password, Activo)
             VALUES (%s, %s, %s, %s, %s, %s)
         """
-        cursor.execute(query, (5, nombre, apellidos, email, password_encriptada, 1))
+        cursor.execute(query, (4, nombre, apellidos, email, password_encriptada, 1))
 
         conexion.commit()
         cursor.close()
