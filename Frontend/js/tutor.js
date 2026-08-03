@@ -11,37 +11,64 @@ document.addEventListener('DOMContentLoaded', () => {
     const inputTelefonoTutor = document.getElementById('input-telefono-tutor');
     const inputCorreoTutor   = document.getElementById('input-correo-tutor');
 
-    const btnEditarTutor  = document.getElementById('btn-editar-tutor');
-    const btnGuardarTutor = document.getElementById('btn-guardar-tutor');
+    const btnEditarTutor   = document.getElementById('btn-editar-tutor');
+    const btnGuardarTutor  = document.getElementById('btn-guardar-tutor');
+    const btnCancelarTutor = document.getElementById('btn-cancelar-tutor');
 
     function cargarTutor() {
         fetch(`https://semaforo-de-alerta.onrender.com/api/tutor/${matricula}`)
             .then(res => res.json())
             .then(data => {
                 if (data.success && data.existe) {
+                    datosTutorActual = {
+                        nombre: data.tutor.Nombre,
+                        telefono: data.tutor.Telefono,
+                        email: data.tutor.Email
+                    };
+
                     elNombreTutor.textContent = data.tutor.Nombre;
                     elTelefonoTutor.textContent = data.tutor.Telefono;
                     elCorreoTutor.textContent = data.tutor.Email;
-
-                    inputNombreTutor.value = data.tutor.Nombre;
-                    inputTelefonoTutor.value = data.tutor.Telefono;
-                    inputCorreoTutor.value = data.tutor.Email;
                 } else {
+                    datosTutorActual = { nombre: '', telefono: '', email: '' };
+
                     elNombreTutor.textContent = 'Sin registrar';
                     elTelefonoTutor.textContent = 'Sin registrar';
                     elCorreoTutor.textContent = 'Sin registrar';
+
+                    inputNombreTutor.value = '';
+                    inputTelefonoTutor.value = '';
+                    inputCorreoTutor.value = '';
                 }
+
+                inputNombreTutor.value = datosTutorActual.nombre;
+                inputTelefonoTutor.value = datosTutorActual.telefono;
+                inputCorreoTutor.value = datosTutorActual.email;
             })
             .catch(err => console.error('Error al cargar tutor:', err));
     }
 
+    function salirModoEdicion() {
+        document.querySelectorAll('.dato-tutor').forEach(el => el.style.display = 'inline');
+        document.querySelectorAll('.input-tutor').forEach(el => el.style.display = 'none');
+        btnGuardarTutor.style.display = 'none';
+        btnCancelarTutor.style.display = 'none';
+        btnEditarTutor.style.display = 'inline-block';
+    }
+
     cargarTutor();
 
-    btnEditarTutor?.addEventListener('click', () => {
+    function entrarModoEdicion() {
         document.querySelectorAll('.dato-tutor').forEach(el => el.style.display = 'none');
         document.querySelectorAll('.input-tutor').forEach(el => el.style.display = 'inline-block');
         btnEditarTutor.style.display = 'none';
         btnGuardarTutor.style.display = 'inline-block';
+        btnCancelarTutor.style.display = 'inline-block';
+    });
+
+    btnCancelarTutor?.addEventListener('click', () => {
+        cargarTutor();       // restaura los valores originales en los inputs
+        salirModoEdicion();  // regresa a modo lectura
     });
 
     btnGuardarTutor?.addEventListener('click', () => {
@@ -63,10 +90,7 @@ document.addEventListener('DOMContentLoaded', () => {
         .then(data => {
             if (data.success) {
                 cargarTutor();
-                document.querySelectorAll('.dato-tutor').forEach(el => el.style.display = 'inline');
-                document.querySelectorAll('.input-tutor').forEach(el => el.style.display = 'none');
-                btnGuardarTutor.style.display = 'none';
-                btnEditarTutor.style.display = 'inline-block';
+                salirModoEdicion();
             } else {
                 alert('Error al guardar: ' + data.message);
             }
