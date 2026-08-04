@@ -35,6 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
             menuPerfil.style.display = 'none';
         });
     }
+
     // 2.5. Mostrar inicial del usuario en el avatar
     const avatarLetra = document.getElementById('avatarUsuario');
     const nombreUsuario = localStorage.getItem('nombreUsuario');
@@ -65,54 +66,54 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('img-alumno').src = datos.fotoUrl;
         }
     };
-});
 
-// 4. Cargar datos del alumno desde Flask
-const matricula = localStorage.getItem('matriculaSeleccionada');
+    // 4. Cargar datos del alumno desde Flask 
+    const matricula = localStorage.getItem('matriculaSeleccionada') || localStorage.getItem('correoUsuario');
 
-if (matricula) {
-    // Datos del alumno
-    fetch('https://semaforo-de-alerta.onrender.com/api/alumnos')
-        .then(res => res.json())
-        .then(data => {
-            const alumno = data.lista.find(a => a.matricula === matricula);
-            if (!alumno) return;
+    if (matricula) {
+        // Datos del alumno
+        fetch('https://semaforo-de-alerta.onrender.com/api/alumnos')
+            .then(res => res.json())
+            .then(data => {
+                const alumno = data.lista.find(a => a.matricula === matricula);
+                if (!alumno) return;
 
-            window.cargarDatosAlumno({
-                nombre: `${alumno.nombre} ${alumno.apellidos}`,
-                matricula: alumno.matricula,
-                email: alumno.email || 'Sin correo registrado',
-                carrera: alumno.carrera,
-                grupo: alumno.grupo,
-                turno: alumno.turno,
-                fotoUrl: `https://semaforo-de-alerta.onrender.com/fotos/${alumno.matricula}`
-            });
-        });
-
-    // Calificaciones para el resumen
-    fetch(`https://semaforo-de-alerta.onrender.com/calificaciones/${matricula}`)
-        .then(res => res.json())
-        .then(respuesta => {
-            if (!respuesta.success) return;
-
-            window.cargarDatosAlumno({
-                promedio: respuesta.pac,
-                reprobadas: respuesta.reprobadas
+                window.cargarDatosAlumno({
+                    nombre: `${alumno.nombre} ${alumno.apellidos}`,
+                    matricula: alumno.matricula,
+                    email: alumno.email || 'Sin correo registrado',
+                    carrera: alumno.carrera,
+                    grupo: alumno.grupo,
+                    turno: alumno.turno,
+                    fotoUrl: `https://semaforo-de-alerta.onrender.com/fotos/${alumno.matricula}`
+                });
             });
 
-            // Estado visual
-            const estado = document.getElementById('estado-academico');
-            if (estado) {
-                const reprobadas = respuesta.reprobadas;
-                if (reprobadas === 0) {
-                    estado.style.backgroundColor = '#3ab54a';
-                } else if (reprobadas <= 2) {
-                    estado.style.backgroundColor = '#f1c40f';
-                } else {
-                    estado.style.backgroundColor = '#e74c3c';
+        // Calificaciones para el resumen
+        fetch(`https://semaforo-de-alerta.onrender.com/calificaciones/${matricula}`)
+            .then(res => res.json())
+            .then(respuesta => {
+                if (!respuesta.success) return;
+
+                window.cargarDatosAlumno({
+                    promedio: respuesta.pac,
+                    reprobadas: respuesta.reprobadas
+                });
+
+                // Estado visual
+                const estado = document.getElementById('estado-academico');
+                if (estado) {
+                    const reprobadas = respuesta.reprobadas;
+                    if (reprobadas === 0) {
+                        estado.style.backgroundColor = '#3ab54a';
+                    } else if (reprobadas <= 2) {
+                        estado.style.backgroundColor = '#f1c40f';
+                    } else {
+                        estado.style.backgroundColor = '#e74c3c';
+                    }
                 }
-            }
-        });
-} else {
-    console.warn("No hay matrícula en localStorage.");
-}
+            });
+    } else {
+        console.warn("No hay matrícula en localStorage.");
+    }
+}); 
