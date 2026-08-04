@@ -56,6 +56,6 @@ def obtener_alertas_alumno(matricula, nivel=None, fecha_inicio=None, fecha_fin=N
 
     for a in alertas:
         if a.get("Fecha_Calculo"):
-            a["Fecha_Calculo"] = a["Fecha_Calculo"].strftime("%d/%m/%Y")
+            a["Fecha_Calculo"] = a["Fecha_Calculo"].strftime("%d/%m/%Y %H:%M")
 
     return alertas
