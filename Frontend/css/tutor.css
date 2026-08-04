@@ -4,9 +4,11 @@
     border: 1px solid #ccc;
     border-radius: 4px;
     font-size: 14px;
-    max-width: 220px;
+    width: 100%;       
+    max-width: none;   
 }
 
+/* Contenedor o estilo para alinear los botones  */
 .btn-guardar-tutor,
 .btn-cancelar-tutor {
     display: inline-flex;
@@ -14,13 +16,13 @@
     justify-content: center;
     gap: 6px;
     margin-top: 12px;
-    padding: 8px 16px;
+    padding: 8px 10px;
     border-radius: 6px;
     font-size: 13px;
     font-weight: 600;
     cursor: pointer;
     transition: background 0.2s ease;
-    width: auto; 
+    width: calc(50% - 4px); 
 }
 
 /* Estilos de Guardar */
@@ -38,7 +40,7 @@
     border: 1px solid #ccc;
     background: white;
     color: #555;
-    margin-left: 8px;
+    margin-left: 6px; /* Espacio limpio entre ambos botones */
 }
 .btn-cancelar-tutor:hover {
     background: #f0f0f0;
@@ -73,7 +75,6 @@
 /* Celulares */
 @media (max-width: 600px) {
     .input-tutor {
-        max-width: 100%;
         width: 100%;
     }
 
