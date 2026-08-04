@@ -74,7 +74,8 @@ def consultar_alertas_por_alumno():
         na.Descripcion AS Descripcion_Nivel,
         al.PAC,
         al.Materias_Reprobadas,
-        al.Fecha_Calculo,
+        DATE_FORMAT(al.Fecha_Calculo, '%d/%m/%Y') AS fecha,
+        DATE_FORMAT(al.Fecha_Calculo, '%H:%i') AS hora,
         c.Nombre AS Carrera,
         g.Nombre AS Grupo
     FROM alertas al
