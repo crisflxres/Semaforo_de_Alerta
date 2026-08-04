@@ -4,16 +4,17 @@
     border: 1px solid #ccc;
     border-radius: 4px;
     font-size: 14px;
-    width: 100%;       
-    max-width: none;   
+    width: 240px;      /* Ancho fijo para Nombre, Teléfono y Correo */
+    max-width: 100%;
 }
 
-/* Contenedor o estilo para alinear los botones  */
+/* Botones alineados horizontalmente, simétricos y sin desalineaciones */
 .btn-guardar-tutor,
 .btn-cancelar-tutor {
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    vertical-align: middle; 
     gap: 6px;
     margin-top: 12px;
     padding: 8px 10px;
@@ -22,7 +23,9 @@
     font-weight: 600;
     cursor: pointer;
     transition: background 0.2s ease;
-    width: calc(50% - 4px); 
+    width: calc(50% - 3px); 
+    max-width: 118px;
+    box-sizing: border-box; /* Mantiene las proporciones exactas con los bordes y paddings */
 }
 
 /* Estilos de Guardar */
@@ -76,15 +79,18 @@
 @media (max-width: 600px) {
     .input-tutor {
         width: 100%;
+        max-width: 100%;
     }
 
     .btn-editar-tutor, .btn-guardar-tutor {
         width: 100%;
+        max-width: 100%;
         justify-content: center;
     }
 
     .btn-cancelar-tutor {
         width: 100%;
+        max-width: 100%;
         justify-content: center;
         margin-left: 0;
         margin-top: 8px;
