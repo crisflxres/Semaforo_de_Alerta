@@ -190,6 +190,23 @@ document.addEventListener('DOMContentLoaded', () => {
         filtrarTabla();
     });
 
+    function eliminarAlumnos6toSemestre() {
+    if (!confirm("¿Estás seguro de eliminar a todos los alumnos de 6to Semestre permanentemente? Esta acción no se puede deshacer.")) return;
+    fetch('https://semaforo-de-alerta.onrender.com/api/eliminar-alumnos-6to-semestre', { method: 'DELETE' })
+        .then(res => res.json())
+        .then(data => {
+            alert(data.message || "Alumnos de 6to Semestre eliminados correctamente");
+            cargarDatosAlumnos();
+        })
+        .catch(err => {
+            console.error("Error al eliminar alumnos:", err);
+            alert("Ocurrió un error al eliminar los alumnos.");
+        });
+}
+
+const btnEliminar = document.getElementById('btn-eliminar-alumnos-6to.Semestre');
+if (btnEliminar) btnEliminar.addEventListener('click', eliminarAlumnos6toSemestre);
+
     // Inicializar
     cargarDatosAlumnos();
 });
