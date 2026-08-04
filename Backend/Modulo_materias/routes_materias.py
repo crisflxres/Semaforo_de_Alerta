@@ -8,7 +8,7 @@ materias_bp = Blueprint("materias", __name__)
 @requiere_rol(1, 2, 3)
 def get_materias():
     conexion = obtener_conexion()
-    query = "SELECT Id_Materia, Nombre, Semestre, Id_Carrera, Periodo, Tipo FROM materias"
+    query = "SELECT Id_Materia, Nombre, Semestre, Id_Carrera, Tipo FROM materias"
     
     cursor = conexion.cursor()
     cursor.execute(query)
