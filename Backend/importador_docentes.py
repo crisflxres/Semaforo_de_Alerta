@@ -1,23 +1,32 @@
-def importar_docentes(hoja):
-    import pandas as pd
+import pandas as pd
 
+def importar_docentes(hoja):    
     docentes: list = []
     
     for i, fila in hoja.iterrows():
-        nombre_docente = str(fila.iloc[1])
-        correo = str(fila.iloc[2])
-        rol = str(fila.iloc[3])
+        nombre_docente = str(fila.iloc[1]).strip()
+        correo = str(fila.iloc[2]).strip
+        rol_texto = str(fila.iloc[3]).strip().lower()
         
-        if rol == "subdirectora":
+        # Omitir subdirectora o filas vacías/encabezados
+        if rol_texto in ["subdirectora", "nan", "rol", ""]:
             continue
         
-        if rol == "docente" or rol == "coordinador":
-            rol = 2
+        # Mapeo de roles a sus IDs correspondientes en BD
+        if rol_texto in ["docente", "coordinador"]:
+            rol_id = 2
+        elif rol_texto in ["administrador", "admin"]:
+            rol_id = 1
+        elif rol_texto == "tutor":
+            rol_id = 3
+        else:
+            # Valor por defecto si viene un rol no mapeado
+            rol_id = 2
         
         docente: dict = {
             "nombre_docente": nombre_docente,
             "correo": correo,
-            "rol": rol
+            "rol": rol_id
         }
         docentes.append(docente)
     return docentes

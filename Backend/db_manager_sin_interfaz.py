@@ -39,7 +39,7 @@ def insertar_alumnos_usuarios(cursor, alumno):
     sql = "INSERT INTO usuarios (Id_Rol, Nombre, Apellidos, Email, Password) VALUES (%s, %s, %s, %s, %s)"
     apellidos = alumno["apellido.p"] + " " + alumno["apellido.m"]
     valores = (
-        5,
+        4,
         alumno["nombre(s)"],
         apellidos,
         alumno["matricula"],
