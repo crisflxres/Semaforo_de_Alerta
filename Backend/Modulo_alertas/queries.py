@@ -74,7 +74,8 @@ def consultar_alertas_por_alumno():
         na.Descripcion AS Descripcion_Nivel,
         al.PAC,
         al.Materias_Reprobadas,
-        al.Fecha_Calculo,
+        DATE_FORMAT(n.Fecha_Enviado, '%d/%m/%Y') AS fecha,
+        DATE_FORMAT(n.Fecha_Enviado, '%H:%i') AS hora,
         c.Nombre AS Carrera,
         g.Nombre AS Grupo
     FROM alertas al
@@ -82,8 +83,9 @@ def consultar_alertas_por_alumno():
     INNER JOIN grupos g ON a.Id_Grupo = g.Id_Grupo
     INNER JOIN carreras c ON g.Id_Carrera = c.Id_Carrera
     INNER JOIN niveles_alerta na ON al.Id_Nivel = na.Id_Nivel
+    LEFT JOIN notificaciones n ON n.Matricula = a.Matricula
     WHERE a.Matricula = %s
     {filtro_nivel}
     {filtro_fecha}
-    ORDER BY al.Fecha_Calculo DESC;
+    ORDER BY n.Fecha_Enviado DESC;
     """

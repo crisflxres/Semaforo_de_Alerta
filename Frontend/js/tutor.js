@@ -64,6 +64,10 @@ document.addEventListener('DOMContentLoaded', () => {
         btnEditarTutor.style.display = 'none';
         btnGuardarTutor.style.display = 'inline-block';
         btnCancelarTutor.style.display = 'inline-block';
+    }
+
+    btnEditarTutor?.addEventListener('click', () => {
+        entrarModoEdicion();
     });
 
     btnCancelarTutor?.addEventListener('click', () => {

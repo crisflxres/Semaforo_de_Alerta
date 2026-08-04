@@ -1,10 +1,22 @@
-/* --- EDICIÓN DE DATOS DEL TUTOR --- */
+/* Estilo base general*/
 .input-tutor {
-    padding: 5px 10px;
+    padding: 5px 8px;
     border: 1px solid #ccc;
     border-radius: 4px;
-    font-size: 14px;
-    max-width: 220px;
+    font-size: 13px;
+    box-sizing: border-box;
+}
+
+#input-nombre-tutor {
+    width: 266px !important;
+}
+
+#input-telefono-tutor {
+    width: 264px !important;
+}
+
+#input-correo-tutor {
+    width: 200px !important;
 }
 
 .btn-editar-tutor, .btn-guardar-tutor {
@@ -12,6 +24,7 @@
     align-items: center;
     gap: 6px;
     margin-top: 12px;
+    margin-left: 0;
     padding: 8px 16px;
     border: none;
     border-radius: 6px;
@@ -37,7 +50,7 @@
     align-items: center;
     gap: 6px;
     margin-top: 12px;
-    margin-left: 8px;
+    margin-left: 0;
     padding: 8px 16px;
     border: 1px solid #ccc;
     border-radius: 6px;
