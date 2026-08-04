@@ -24,6 +24,27 @@ def get_docentes():
         return jsonify({"success": False, "message": str(err)}), 500
 
 
+@rutas_docentes.route('/docentes/<int:id_usuario>/resumen', methods=['GET'])
+@requiere_rol(1, 2, 4)
+def get_resumen_docente(id_usuario):
+    try:
+        conexion = obtener_conexion()
+        cursor = conexion.cursor(dictionary=True)
+        cursor.execute("""
+            SELECT 
+                COUNT(DISTINCT Id_Materia) AS total_materias,
+                COUNT(DISTINCT Id_Grupo) AS total_grupos
+            FROM horarios
+            WHERE Id_Usuario = %s
+        """, (id_usuario,))
+        resumen = cursor.fetchone()
+        cursor.close()
+        conexion.close()
+        return jsonify({"success": True, "data": resumen})
+    except Exception as err:
+        return jsonify({"success": False, "message": str(err)}), 500
+
+
 @rutas_docentes.route('/docentes', methods=['POST'])
 @requiere_rol(1, 4)
 def crear_docente():
