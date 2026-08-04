@@ -51,43 +51,43 @@ document.addEventListener('DOMContentLoaded', () => {
         avatarLetra.textContent = nombreUsuario.trim().charAt(0).toUpperCase();
     }
 
+
     // 3. Lógica de Filtros
-// 3. Lógica de Filtros
-const botonesFiltro = document.querySelectorAll('.btn-filtro');
-let filtroEstadoActual = 'todas';
+    const botonesFiltro = document.querySelectorAll('.btn-filtro');
+    let filtroEstadoActual = 'todas';
 
-const MAPA_ESTADO = {
-    'regulares': 'Verde',
-    'en-riesgo': 'Amarillo',
-    'criticas': 'Rojo'
-};
+    const MAPA_ESTADO = {
+        'regulares': 'Verde',
+        'en-riesgo': 'Amarillo',
+        'criticas': 'Rojo'
+    };
 
-botonesFiltro.forEach(boton => {
-    boton.addEventListener('click', () => {
-        botonesFiltro.forEach(b => b.classList.remove('activo'));
-        boton.classList.add('activo');
-        filtroEstadoActual = boton.dataset.filtro;
-        aplicarFiltros();
+    botonesFiltro.forEach(boton => {
+        boton.addEventListener('click', () => {
+            botonesFiltro.forEach(b => b.classList.remove('activo'));
+            boton.classList.add('activo');
+            filtroEstadoActual = boton.dataset.filtro;
+            aplicarFiltros();
+        });
     });
-});
 
-function aplicarFiltros() {
-    let resultado = todasLasAlertas;
+    function aplicarFiltros() {
+        let resultado = todasLasAlertas;
 
-    if (filtroEstadoActual !== 'todas') {
-        const nivelEsperado = MAPA_ESTADO[filtroEstadoActual];
-        resultado = resultado.filter(a => a.titulo === nivelEsperado);
+        if (filtroEstadoActual !== 'todas') {
+            const nivelEsperado = MAPA_ESTADO[filtroEstadoActual];
+            resultado = resultado.filter(a => a.titulo === nivelEsperado);
+        }
+
+        const fechaSeleccionada = document.getElementById('inputFecha').value; // formato yyyy-mm-dd
+        if (fechaSeleccionada) {
+            const [anio, mes, dia] = fechaSeleccionada.split('-');
+            const fechaFormateada = `${dia}/${mes}/${anio}`;
+            resultado = resultado.filter(a => a.fecha === fechaFormateada);
+        }
+
+        renderizarAlertas(resultado);
     }
-
-    const fechaSeleccionada = document.getElementById('inputFecha').value; // formato yyyy-mm-dd
-    if (fechaSeleccionada) {
-        const [anio, mes, dia] = fechaSeleccionada.split('-');
-        const fechaFormateada = `${dia}/${mes}/${anio}`;
-        resultado = resultado.filter(a => a.fecha === fechaFormateada);
-    }
-
-    renderizarAlertas(resultado);
-}
 
     // 4. Lógica de Fecha 
     const inputFecha = document.getElementById('inputFecha');
@@ -103,9 +103,9 @@ function aplicarFiltros() {
     }
 
     // 5. Renderizado Dinámico de Alertas 
-const contenedorAlertas = document.getElementById('contenedor-alertas');
-let alertasCargadas = [];   // lo que está actualmente pintado en pantalla
-let todasLasAlertas = [];   // copia completa sin filtrar, para poder filtrar y re-filtrar
+    const contenedorAlertas = document.getElementById('contenedor-alertas');
+    let alertasCargadas = [];   // lo que está actualmente pintado en pantalla
+    let todasLasAlertas = [];   // copia completa sin filtrar, para poder filtrar y re-filtrar
 
     window.renderizarAlertas = function (listaAlertas) {
         alertasCargadas = listaAlertas; // Actualizamos la referencia para "Ver detalle"
