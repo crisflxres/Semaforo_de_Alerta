@@ -1,64 +1,30 @@
-/* --- EDICIÓN DE DATOS DEL TUTOR --- */
+/* Estilo base general*/
 .input-tutor {
-    padding: 5px 10px;
+    padding: 5px 8px;
     border: 1px solid #ccc;
     border-radius: 4px;
-    font-size: 14px;
-    width: 240px;      /* Ancho fijo para Nombre, Teléfono y Correo */
-    max-width: 100%;
-}
-
-/* Botones alineados horizontalmente, simétricos y sin desalineaciones */
-.btn-guardar-tutor,
-.btn-cancelar-tutor {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    vertical-align: middle; 
-    gap: 6px;
-    margin-top: 12px;
-    padding: 8px 10px;
-    border-radius: 6px;
     font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background 0.2s ease;
-    width: calc(50% - 3px); 
-    max-width: 118px;
-    box-sizing: border-box; /* Mantiene las proporciones exactas con los bordes y paddings */
+    box-sizing: border-box;
 }
 
-/* Estilos de Guardar */
-.btn-guardar-tutor {
-    border: none;
-    background: var(--brand-maroon-dark, #4A0A18);
-    color: white;
-}
-.btn-guardar-tutor:hover {
-    background: var(--brand-maroon, #6a1b29);
+#input-nombre-tutor {
+    width: 266px !important;
 }
 
-/* Estilos de Cancelar */
-.btn-cancelar-tutor {
-    border: 1px solid #ccc;
-    background: white;
-    color: #555;
-    margin-left: 6px; /* Espacio limpio entre ambos botones */
-}
-.btn-cancelar-tutor:hover {
-    background: #f0f0f0;
+#input-telefono-tutor {
+    width: 264px !important;
 }
 
-/* Iconos */
-.btn-editar-tutor i, .btn-guardar-tutor i, .btn-cancelar-tutor i {
-    font-size: 12px;
+#input-correo-tutor {
+    width: 200px !important;
 }
 
-.btn-editar-tutor {
+.btn-editar-tutor, .btn-guardar-tutor {
     display: inline-flex;
     align-items: center;
     gap: 6px;
     margin-top: 12px;
+    margin-left: 0;
     padding: 8px 16px;
     border: none;
     border-radius: 6px;
@@ -71,26 +37,54 @@
     width: fit-content;
 }
 
-.btn-editar-tutor:hover {
+.btn-editar-tutor:hover, .btn-guardar-tutor:hover {
     background: var(--brand-maroon, #6a1b29);
+}
+
+.btn-editar-tutor i, .btn-guardar-tutor i {
+    font-size: 12px;
+}
+
+.btn-cancelar-tutor {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 12px;
+    margin-left: 0;
+    padding: 8px 16px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    background: white;
+    color: #555;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    width: fit-content;
+}
+
+.btn-cancelar-tutor:hover {
+    background: #f0f0f0;
+}
+
+.btn-cancelar-tutor i {
+    font-size: 12px;
 }
 
 /* Celulares */
 @media (max-width: 600px) {
     .input-tutor {
-        width: 100%;
         max-width: 100%;
+        width: 100%;
     }
 
     .btn-editar-tutor, .btn-guardar-tutor {
         width: 100%;
-        max-width: 100%;
         justify-content: center;
     }
 
     .btn-cancelar-tutor {
         width: 100%;
-        max-width: 100%;
         justify-content: center;
         margin-left: 0;
         margin-top: 8px;
