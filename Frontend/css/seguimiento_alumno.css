@@ -210,6 +210,24 @@ body { background-color: var(--bg-main); color: var(--text-dark); padding-bottom
 .opcion-activa-figma a { color: #000 !important; font-weight: 600; padding: 10px 15px !important; }
 .opcion-activa-figma a i { color: #000; }
 
+.fila-perfil-observaciones {
+    display: flex;
+    align-items: stretch; 
+}
+
+.panel-observaciones {
+    margin-left: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+/* En tablets y celulares, quitamos el margen izq para que no se recorra */
+@media (max-width: 900px) {
+    .panel-observaciones {
+        margin-left: 0;
+    }
+}
+
 /* ==========================================================================
    RESPONSIVE DESIGN
    ========================================================================== */
@@ -231,11 +249,18 @@ body { background-color: var(--bg-main); color: var(--text-dark); padding-bottom
         padding-top: 20px;
         width: 100%;
         height: auto;
-        align-items: center;
-        text-align: center;
+        align-items: flex-start;
+        text-align: left;
     }
     .table-container { overflow-x: auto; }
     .data-table { min-width: 640px; }
+
+    .fila-perfil-observaciones {
+        display: block;
+    }
+    .fila-perfil-observaciones .profile-card {
+        width: 100%;
+    }
 }
 
 /* Celulares */
@@ -243,7 +268,7 @@ body { background-color: var(--bg-main); color: var(--text-dark); padding-bottom
     .profile-content {
         grid-template-columns: 1fr;
         justify-items: center;
-        gap: 14px;
+        gap: 8px;
         padding: 20px;
     }
 
@@ -273,8 +298,9 @@ body { background-color: var(--bg-main); color: var(--text-dark); padding-bottom
 .fila-perfil-observaciones {
     display: flex;
     align-items: flex-start;
-    gap: 16px;
+    gap: 0;
 }
+
 .fila-perfil-observaciones .profile-card {
     flex: 1;
     min-width: 0;
@@ -289,6 +315,7 @@ body { background-color: var(--bg-main); color: var(--text-dark); padding-bottom
     border: 1px solid #ddd;
     border-radius: 12px;
     padding: 18px;
+    margin-bottom: 20px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.05);
 }
 .panel-observaciones.abierto { display: flex; }

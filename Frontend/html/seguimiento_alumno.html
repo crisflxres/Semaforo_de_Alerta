@@ -62,15 +62,15 @@
 
                 <div class="student-details">
                     <h3 id="txt-nombre">CARGANDO ALUMNO...</h3>
-                    <p><strong>Matrícula:</strong> <span id="txt-matricula">00000000</span></p>
-                    <p><strong>Correo electrónico:</strong> <span id="txt-correo" class="link-text">juanlopez@gmail.com</span></p>
-                    <p><strong>Carrera:</strong> <span id="txt-carrera"></span></p>
+                    <p><strong>Matrícula:</strong> <span id="txt-matricula">Cargando..</span></p>
+                    <p><strong>Correo electrónico:</strong> <span id="txt-correo" class="link-text">Cargando..</span></p>
+                    <p><strong>Carrera:</strong> <span id="txt-carrera">Cargando..</span></p>
                     <p>
                         <strong>Grupo:</strong> 
-                        <span id="txt-grupo"></span> 
+                        <span id="txt-grupo">...</span> 
                         &nbsp;&nbsp;
                         <strong>Turno:</strong> 
-                        <span id="txt-turno"></span>
+                        <span id="txt-turno">...</span>
                     </p>
 
                     <div class="badges-row">
@@ -89,12 +89,12 @@
                     </p>
 
                     <p><strong>Teléfono:</strong> 
-                        <span id="txt-telefono-tutor" class="dato-tutor">---</span>
+                        <span id="txt-telefono-tutor" class="dato-tutor">...</span>
                         <input type="text" id="input-telefono-tutor" class="input-tutor" style="display:none;">
                     </p>
 
                     <p><strong>Correo electrónico:</strong> 
-                        <span id="txt-correo-tutor" class="link-text-tutor dato-tutor">---</span>
+                        <span id="txt-correo-tutor" class="link-text-tutor dato-tutor">...</span>
                         <input type="email" id="input-correo-tutor" class="input-tutor" style="display:none;">
                     </p>
 
@@ -134,36 +134,36 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <td>Inglés IV</td>
+                        <td>...</td>
                         <td></td><td></td><td></td><td></td>
                         <td class="sidebar-cell" rowspan="8"></td>
                     </tr>
                     <tr>
-                        <td>Relaciones Químicas: conservación de la materia en la formación de nuevas sustancias</td>
+                        <td>...</td>
                         <td></td><td></td><td></td><td></td>
                     </tr>
                     <tr>
-                        <td>Temas selectos de matemáticas 1</td>
+                        <td>...</td>
                         <td></td><td></td><td></td><td></td>
                     </tr>
                     <tr>
-                        <td>Ciencias sociales III</td>
+                        <td>...</td>
                         <td></td><td></td><td></td><td></td>
                     </tr>
                     <tr>
-                        <td>Conciencia histórica I. Perspectivas del México antiguo en los contextos globales</td>
+                        <td>...</td>
                         <td></td><td></td><td></td><td></td>
                     </tr>
                     <tr>
-                        <td>Submódulo 1 Controla entradas y salidas de almacén</td>
+                        <td>...</td>
                         <td></td><td></td><td></td><td></td>
                     </tr>
                     <tr>
-                        <td>Submódulo 2 Elabora inventarios de almacén</td>
+                        <td>...</td>
                         <td></td><td></td><td></td><td></td>
                     </tr>
                     <tr>
-                        <td>Submódulo 3 Maneja materiales, partes y productos terminados</td>
+                        <td>...</td>
                         <td></td><td></td><td></td><td></td>
                     </tr>
                 </tbody>
@@ -172,21 +172,19 @@
     </div>
 
     <!-- MENÚ FLOTANTE IGUAL QUE AULAS -->
-    <div class="menu-flotante-overlay" id="sidebarOverlay">
+   <div class="menu-flotante-overlay" id="sidebarOverlay">
         <div class="btn-cerrar-flotante" id="btnCerrarSidebar">
-            <i class="fas fa-times"></i>
+            <i class="fa-solid fa-xmark"></i>
         </div>
-        <div class="tarjeta-menu-flotante">
+        <nav class="tarjeta-menu-flotante" id="sidebarNav">
             <ul class="lista-menu-flotante">
-                <li><a href="inicio.html"><i class="fas fa-home"></i> <span>Inicio</span></a></li>
-                <li><a href="alumnos.html"><i class="fas fa-users"></i> <span>Alumnos</span></a></li>
-                <li><a href="alertas.html"><i class="fas fa-bell"></i> <span>Alertas</span></a></li>
-                <li><a href="horarios.html"><i class="fas fa-calendar-alt"></i> <span>Horarios de Docentes</span></a></li>
-                <li class="opcion-activa-figma">
-                    <a href="configuracion.html"><i class="fas fa-cog"></i> <span>Configuración</span></a>
-                </li>
+                <li><a href="inicio.html"><i class="fa-solid fa-house"></i> <span>Inicio</span></a></li>
+                <li class="opcion-activa-figma"><a href="alumnos.html"><i class="fa-solid fa-user-group"></i> <span>Alumnos</span></a></li>
+                <li><a href="alertas.html"><i class="fa-solid fa-bell"></i> <span>Alertas</span></a></li>
+                <li><a href="horarios.html"><i class="fa-solid fa-calendar-days"></i> <span>Horarios de Docentes</span></a></li>
+                <li><a href="configuracion.html"><i class="fa-solid fa-gear"></i> <span>Configuración</span></a></li>
             </ul>
-        </div>
+        </nav>
     </div>
     <div id="modalHistorialObservaciones" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.45); z-index:9999; align-items:center; justify-content:center;">
     <div style="background:#fff; border-radius:14px; padding:30px; width:600px; max-width:92vw; max-height:80vh; overflow-y:auto; box-shadow:0 10px 40px rgba(0,0,0,0.2);">
