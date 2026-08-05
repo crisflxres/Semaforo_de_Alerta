@@ -17,7 +17,7 @@ document.addEventListener("DOMContentLoaded", () => {
 // Mientras pruebas en local, deja esta línea así.
 // Cuando quieras volver a producción, cambia solo esta constante:
 // const BASE_URL = "https://semaforo-de-alerta.onrender.com";
-const BASE_URL = "https://semaforo-de-alerta.onrender.com/api/materias";
+const BASE_URL = "https://semaforo-de-alerta.onrender.com";
 
 // Rol del usuario guardado al hacer login. El backend lo exige
 function obtenerHeadersAuth(conContentType = false) {
