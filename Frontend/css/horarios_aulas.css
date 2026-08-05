@@ -302,8 +302,17 @@ body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #fcfcfc; }
 @media (max-width: 768px) {
     .logo { height: 32px; }
 
-    .tabs { flex-wrap: wrap; }
-    .tab-item { flex: 1 1 45%; font-size: 0.85rem; padding: 10px 6px; }
+    .tabs { flex-wrap: wrap; gap: 8px; }
+    .tab-item:first-child {
+        flex: 1 1 100%;
+        font-size: 0.95rem;
+        padding: 14px 10px;
+    }
+    .tab-item:not(:first-child) {
+        flex: 1 1 calc(50% - 4px);
+        font-size: 0.82rem;
+        padding: 12px 6px;
+    }
 
     .contenedor-grupos { padding: 15px; margin: 15px auto; }
     .header-grupos { flex-direction: column; align-items: stretch; gap: 10px; }

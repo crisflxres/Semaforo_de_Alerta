@@ -8,26 +8,27 @@ alumnos_bp = Blueprint('alumnos_bp', __name__)
 def get_alumnos():
     conexion = None
     try:
+        # --- Parametros de paginacion y filtros que vienen del frontend ---
+        pagina = request.args.get('page', 1, type=int)
+        por_pagina = request.args.get('per_page', 50, type=int)
+        busqueda = request.args.get('search', '', type=str).strip()
+        f_grupo = request.args.get('grupo', 'Todos', type=str)
+        f_carrera = request.args.get('carrera', 'Todos', type=str)
+        f_semestre = request.args.get('semestre', 'Todos', type=str)
+        f_turno = request.args.get('turno', 'Todos', type=str)
+        f_estado = request.args.get('estado', 'Todos', type=str)
+
+        pagina = max(pagina, 1)
+        por_pagina = min(max(por_pagina, 1), 200)  # tope de seguridad, nadie pide 5000 de golpe
+        offset = (pagina - 1) * por_pagina
+
         conexion = obtener_conexion()
         if not conexion:
             return jsonify({"success": False, "message": "No se pudo conectar a la base de datos"}), 500
-        
+
         cursor = conexion.cursor(dictionary=True)
 
-        query = """
-            SELECT
-                a.Matricula,
-                a.Nombre,
-                a.Apellidos,
-                a.Email,
-                a.PAC,
-                g.Nombre AS Grupo,
-                g.Turno,
-                g.Semestre,
-                c.Nombre AS Carrera,
-                COALESCE(rep.materias_reprobadas, 0) AS materias_reprobadas,
-                na.Nombre AS nivel_color,
-                na.Descripcion AS estado_alerta
+        base_from = """
             FROM alumnos a
             JOIN grupos g ON a.Id_Grupo = g.Id_Grupo
             JOIN carreras c ON g.Id_Carrera = c.Id_Carrera
@@ -41,27 +42,73 @@ def get_alumnos():
                 ON COALESCE(rep.materias_reprobadas, 0) >= na.Min_Reprobadas
                 AND (na.Max_Reprobados IS NULL OR COALESCE(rep.materias_reprobadas, 0) <= na.Max_Reprobados)
             WHERE a.Activo = 1
-            ORDER BY a.Apellidos, a.Nombre
         """
-        cursor.execute(query)
+
+        # --- Conteos globales para las tarjetas de metricas (SIEMPRE del total, sin filtros) ---
+        cursor.execute(f"""
+            SELECT
+                COUNT(*) AS total,
+                SUM(CASE WHEN COALESCE(na.Nombre, 'Verde') = 'Verde' THEN 1 ELSE 0 END) AS regulares,
+                SUM(CASE WHEN na.Nombre = 'Amarillo' THEN 1 ELSE 0 END) AS riesgo,
+                SUM(CASE WHEN na.Nombre = 'Rojo' THEN 1 ELSE 0 END) AS criticos
+            {base_from}
+        """)
+        conteos = cursor.fetchone()
+
+        # --- Filtros dinamicos para la lista (se aplican en SQL, no en el navegador) ---
+        condiciones = []
+        parametros = []
+
+        if busqueda:
+            condiciones.append("(a.Nombre LIKE %s OR a.Apellidos LIKE %s OR a.Matricula LIKE %s)")
+            comodin = f"%{busqueda}%"
+            parametros += [comodin, comodin, comodin]
+
+        if f_grupo != 'Todos':
+            condiciones.append("g.Nombre = %s")
+            parametros.append(f_grupo)
+
+        if f_carrera != 'Todos':
+            condiciones.append("c.Nombre = %s")
+            parametros.append(f_carrera)
+
+        if f_semestre != 'Todos':
+            condiciones.append("g.Semestre = %s")
+            parametros.append(f_semestre)
+
+        if f_turno != 'Todos':
+            condiciones.append("g.Turno = %s")
+            parametros.append(f_turno)
+
+        if f_estado != 'Todos':
+            mapa_estado_color = {'Regular': 'Verde', 'Riesgo': 'Amarillo', 'Critico': 'Rojo'}
+            condiciones.append("COALESCE(na.Nombre, 'Verde') = %s")
+            parametros.append(mapa_estado_color.get(f_estado, f_estado))
+
+        where_extra = (" AND " + " AND ".join(condiciones)) if condiciones else ""
+
+        # --- Cuantos alumnos cumplen estos filtros (para calcular el numero de paginas) ---
+        cursor.execute(f"SELECT COUNT(*) AS total_filtrado {base_from}{where_extra}", parametros)
+        total_filtrado = cursor.fetchone()['total_filtrado']
+
+        # --- La pagina de alumnos que realmente se manda al navegador ---
+        query_lista = f"""
+            SELECT
+                a.Matricula, a.Nombre, a.Apellidos, a.Email, a.PAC,
+                g.Nombre AS Grupo, g.Turno, g.Semestre, c.Nombre AS Carrera,
+                COALESCE(rep.materias_reprobadas, 0) AS materias_reprobadas,
+                COALESCE(na.Nombre, 'Verde') AS nivel_color
+            {base_from}{where_extra}
+            ORDER BY a.Apellidos, a.Nombre
+            LIMIT %s OFFSET %s
+        """
+        cursor.execute(query_lista, parametros + [por_pagina, offset])
         filas = cursor.fetchall()
 
         lista = []
-        contadores = {"regulares": 0, "riesgo": 0, "criticos": 0}
-
         for fila in filas:
             color = fila.get('nivel_color') or 'Verde'
-            
-            if color == 'Rojo':
-                estado = 'Critico'
-                contadores["criticos"] += 1
-            elif color == 'Amarillo':
-                estado = 'Riesgo'
-                contadores["riesgo"] += 1
-            else:
-                estado = 'Regular'
-                contadores["regulares"] += 1
-
+            estado = {'Rojo': 'Critico', 'Amarillo': 'Riesgo'}.get(color, 'Regular')
             lista.append({
                 "matricula": fila.get('Matricula'),
                 "nombre": fila.get('Nombre'),
@@ -76,13 +123,39 @@ def get_alumnos():
                 "materias_reprobadas": fila.get('materias_reprobadas', 0)
             })
 
+        # --- Valores para llenar los selects de filtro, SIN traer los 1000+ alumnos ---
+        cursor.execute("SELECT DISTINCT Nombre FROM grupos ORDER BY Nombre")
+        grupos_disponibles = [f['Nombre'] for f in cursor.fetchall()]
+
+        cursor.execute("SELECT DISTINCT Nombre FROM carreras ORDER BY Nombre")
+        carreras_disponibles = [f['Nombre'] for f in cursor.fetchall()]
+
+        cursor.execute("SELECT DISTINCT Semestre FROM grupos ORDER BY Semestre")
+        semestres_disponibles = [f['Semestre'] for f in cursor.fetchall()]
+
+        cursor.execute("SELECT DISTINCT Turno FROM grupos ORDER BY Turno")
+        turnos_disponibles = [f['Turno'] for f in cursor.fetchall()]
+
         cursor.close()
+
+        total_paginas = max(1, (total_filtrado + por_pagina - 1) // por_pagina)
+
         return jsonify({
-            "total": len(lista),
-            "regulares": contadores["regulares"],
-            "riesgo": contadores["riesgo"],
-            "criticos": contadores["criticos"],
-            "lista": lista
+            "total": conteos['total'] or 0,
+            "regulares": conteos['regulares'] or 0,
+            "riesgo": conteos['riesgo'] or 0,
+            "criticos": conteos['criticos'] or 0,
+            "pagina_actual": pagina,
+            "total_paginas": total_paginas,
+            "total_filtrado": total_filtrado,
+            "lista": lista,
+            "filtros_disponibles": {
+                "grupos": grupos_disponibles,
+                "carreras": carreras_disponibles,
+                "semestres": semestres_disponibles,
+                "turnos": turnos_disponibles,
+                "estados": ["Regular", "Riesgo", "Critico"]
+            }
         })
 
     except mysql.connector.Error as err:
@@ -198,6 +271,67 @@ def actualizar_tutor(matricula):
         return jsonify({"success": True, "message": "Datos del tutor guardados correctamente"})
 
     except mysql.connector.Error as err:
+        print(f"Error de SQL: {err}")
+        return jsonify({"success": False, "message": f"Error de base de datos: {str(err)}"}), 500
+    finally:
+        if conexion and conexion.is_connected():
+            conexion.close()
+
+@alumnos_bp.route('/api/eliminar-alumnos-6to-semestre', methods=['DELETE'])
+def delete_alumnos_6Semestre():
+    conexion = None
+    try:
+        conexion = obtener_conexion()
+        if not conexion:
+            return jsonify({"success": False, "message": "No se pudo conectar a la base de datos"}), 500
+
+        cursor = conexion.cursor(dictionary=True)
+
+        # 1. Obtener matrículas Y sus Id_Usuario antes de borrar nada
+        cursor.execute("""
+            SELECT a.Matricula, a.Id_Usuario
+            FROM alumnos a
+            JOIN grupos g ON a.Id_Grupo = g.Id_Grupo
+            WHERE g.Semestre = 'Sexto'
+        """)
+        filas = cursor.fetchall()
+        matriculas = [fila['Matricula'] for fila in filas]
+        ids_usuario = [fila['Id_Usuario'] for fila in filas]
+        cursor.close()
+
+        if not matriculas:
+            return jsonify({"success": True, "message": "No hay alumnos de 6to semestre para eliminar.", "eliminados": 0})
+
+        cursor2 = conexion.cursor()
+        placeholders_mat = ','.join(['%s'] * len(matriculas))
+        placeholders_usr = ','.join(['%s'] * len(ids_usuario))
+
+        # 2. Limpiar todas las tablas relacionadas por Matricula
+        cursor2.execute(f"DELETE FROM alertas WHERE Matricula IN ({placeholders_mat})", matriculas)
+        cursor2.execute(f"DELETE FROM calificaciones WHERE Matricula IN ({placeholders_mat})", matriculas)
+        cursor2.execute(f"DELETE FROM notificaciones WHERE Matricula IN ({placeholders_mat})", matriculas)
+        cursor2.execute(f"DELETE FROM observaciones WHERE Matricula IN ({placeholders_mat})", matriculas)
+        cursor2.execute(f"DELETE FROM padre_alumno WHERE Matricula IN ({placeholders_mat})", matriculas)
+
+        # 3. Borrar de alumnos
+        cursor2.execute(f"DELETE FROM alumnos WHERE Matricula IN ({placeholders_mat})", matriculas)
+        eliminados = cursor2.rowcount
+
+        # 4. Borrar sus cuentas de usuario (login) al final
+        cursor2.execute(f"DELETE FROM usuarios WHERE Id_Usuario IN ({placeholders_usr})", ids_usuario)
+
+        conexion.commit()
+        cursor2.close()
+
+        return jsonify({
+            "success": True,
+            "message": f"Se eliminaron {eliminados} alumno(s) de 6to semestre correctamente, incluyendo sus cuentas de usuario.",
+            "eliminados": eliminados
+        })
+
+    except mysql.connector.Error as err:
+        if conexion:
+            conexion.rollback()
         print(f"Error de SQL: {err}")
         return jsonify({"success": False, "message": f"Error de base de datos: {str(err)}"}), 500
     finally:

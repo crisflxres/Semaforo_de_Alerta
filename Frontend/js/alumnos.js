@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // --- 1. LÓGICA DEL MENÚ FLOTANTE (HAMBURGUESA) ---
+    // --- 1. LOGICA DEL MENU FLOTANTE (HAMBURGUESA) ---
     const btnHamburguesa = document.getElementById('btnHamburguesa');
     const overlay = document.getElementById('sidebarOverlay');
     const btnCerrar = document.getElementById('btnCerrarSidebar');
@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (btnCerrar) btnCerrar.addEventListener('click', () => overlay.classList.remove('open'));
     if (overlay) overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.classList.remove('open'); });
 
-    // --- 1.1 LÓGICA DEL DROPDOWN DE PERFIL ---
+    // --- 1.1 LOGICA DEL DROPDOWN DE PERFIL ---
     const avatarUsuario = document.getElementById('avatarUsuario');
     const dropdownPerfil = document.getElementById('dropdownPerfil');
     const btnCerrarSesion = document.getElementById('btnCerrarSesion');
@@ -33,36 +33,121 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- 2. CARGA DE DATOS DESDE BD ---
+    // --- 2. ESTADO DE PAGINACION Y FILTROS ---
+    const API_BASE = 'https://semaforo-de-alerta.onrender.com';
+    const POR_PAGINA = 25;
+
+    let paginaActual = 1;
+    let selectsYaPoblados = false;
+
+    const inputBuscar = document.querySelector('.search-input');
+    const btnLimpiar = document.querySelector('.btn-limpiar');
+    const selectGrupo = document.getElementById('filtro-grupo');
+    const selectCarrera = document.getElementById('filtro-carrera');
+    const selectSemestre = document.getElementById('filtro-semestre');
+    const selectTurno = document.getElementById('filtro-turno');
+    const selectEstado = document.getElementById('filtro-estado');
+
+    function leerFiltrosActuales() {
+        return {
+            search: inputBuscar ? inputBuscar.value.trim() : '',
+            grupo: selectGrupo ? selectGrupo.value : 'Todos',
+            carrera: selectCarrera ? selectCarrera.value : 'Todos',
+            semestre: selectSemestre ? selectSemestre.value : 'Todos',
+            turno: selectTurno ? selectTurno.value : 'Todos',
+            estado: selectEstado ? selectEstado.value : 'Todos'
+        };
+    }
+
+    function guardarFiltros(filtros) {
+        sessionStorage.setItem('filtrosAlumnos', JSON.stringify(filtros));
+    }
+
+    function restaurarFiltrosGuardados() {
+        const guardado = sessionStorage.getItem('filtrosAlumnos');
+        if (!guardado) return;
+        try {
+            const filtros = JSON.parse(guardado);
+            if (inputBuscar) inputBuscar.value = filtros.search || '';
+            if (selectGrupo) selectGrupo.value = filtros.grupo || 'Todos';
+            if (selectCarrera) selectCarrera.value = filtros.carrera || 'Todos';
+            if (selectSemestre) selectSemestre.value = filtros.semestre || 'Todos';
+            if (selectTurno) selectTurno.value = filtros.turno || 'Todos';
+            if (selectEstado) selectEstado.value = filtros.estado || 'Todos';
+        } catch (e) {
+            console.warn('No se pudieron restaurar los filtros guardados:', e);
+        }
+    }
+
+    function llenarSelect(select, valores, valorPrevio) {
+        if (!select) return;
+        select.innerHTML = '<option value="Todos">Todos</option>';
+        valores.forEach(valor => {
+            const option = document.createElement('option');
+            option.value = valor;
+            option.textContent = valor;
+            select.appendChild(option);
+        });
+        if (valorPrevio && valores.includes(valorPrevio)) {
+            select.value = valorPrevio;
+        }
+    }
+
+    function poblarSelects(filtrosDisponibles, filtrosPrevios) {
+        llenarSelect(selectGrupo, filtrosDisponibles.grupos, filtrosPrevios.grupo);
+        llenarSelect(selectCarrera, filtrosDisponibles.carreras, filtrosPrevios.carrera);
+        llenarSelect(selectSemestre, filtrosDisponibles.semestres, filtrosPrevios.semestre);
+        llenarSelect(selectTurno, filtrosDisponibles.turnos, filtrosPrevios.turno);
+        llenarSelect(selectEstado, filtrosDisponibles.estados, filtrosPrevios.estado);
+    }
+
+    // --- 3. CARGA DE DATOS DESDE BD (con paginacion y filtros aplicados en el servidor) ---
     async function cargarDatosAlumnos() {
         try {
-            const response = await fetch('https://semaforo-de-alerta.onrender.com/api/alumnos');
+            const filtros = leerFiltrosActuales();
+            guardarFiltros(filtros);
+
+            const params = new URLSearchParams({
+                page: paginaActual,
+                per_page: POR_PAGINA,
+                search: filtros.search,
+                grupo: filtros.grupo,
+                carrera: filtros.carrera,
+                semestre: filtros.semestre,
+                turno: filtros.turno,
+                estado: filtros.estado
+            });
+
+            const response = await fetch(`${API_BASE}/api/alumnos?${params.toString()}`);
             const data = await response.json();
 
-            // Actualizar números en tarjetas
+            // Tarjetas de metricas: siempre reflejan el total global, sin importar los filtros activos
             document.getElementById('count-total').textContent = data.total;
             document.getElementById('count-regulares').textContent = data.regulares;
             document.getElementById('count-riesgo').textContent = data.riesgo;
             document.getElementById('count-criticos').textContent = data.criticos;
 
-            // Actualizar barras de progreso
             const total = data.total || 1;
             document.getElementById('bar-total').style.width = "100%";
             document.getElementById('bar-regulares').style.width = ((data.regulares / total) * 100) + "%";
             document.getElementById('bar-riesgo').style.width = ((data.riesgo / total) * 100) + "%";
             document.getElementById('bar-criticos').style.width = ((data.criticos / total) * 100) + "%";
 
-            // Llenar tabla
+            // Tabla: solo la pagina actual, no los 1000+ de golpe
             const tbody = document.getElementById('tabla-alumnos-body');
             tbody.innerHTML = '';
             data.lista.forEach(alumno => {
                 const tr = document.createElement('tr');
                 const estadoClase = alumno.estado_alerta.toLowerCase().replace(' ', '-');
                 tr.innerHTML = `
-                    <td><i class="fa-solid fa-circle-user" style="font-size: 24px; color: #6c757d;"></i></td>
+                    <td class="avatar-cell">
+                        <img src="${API_BASE}/fotos/${alumno.matricula}"
+                            style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;"
+                            onerror="this.outerHTML = '<i class=\\'fa-solid fa-circle-user\\' style=\\'font-size: 24px; color: #6c757d;\\'></i>'">
+                    </td>
                     <td>${alumno.matricula}</td><td>${alumno.nombre}</td><td>${alumno.apellidos}</td>
                     <td>${alumno.grupo}</td><td>${alumno.turno}</td><td>${alumno.semestre}</td>
-                    <td>${alumno.carrera}</td><td>${alumno.pac}</td>
+                    <td title="${alumno.carrera}">${alumno.carrera}</td><td>${alumno.pac}</td>
                     <td><span class="status-badge ${estadoClase}">${alumno.estado_alerta}</span></td>
                     <td class="numeric-cell">${alumno.materias_reprobadas}</td>
                     <td><button class="btn-action" data-matricula="${alumno.matricula}"><i class="fa-solid fa-chevron-right"></i></button></td>
@@ -70,32 +155,51 @@ document.addEventListener('DOMContentLoaded', () => {
                 tbody.appendChild(tr);
             });
 
-            // Configurar clics después de renderizar
             configurarClicsSeguimiento();
 
-            // Poblar los selects de filtros con los valores reales de la BD
-            poblarFiltros(data.lista);
-
-            // Aplicar filtro desde URL si viene de inicio
-            const params = new URLSearchParams(window.location.search);
-            const estadoFiltro = params.get('estado');
-            if (estadoFiltro) {
-                const filtroEstado = document.getElementById('filtro-estado');
-                if (filtroEstado) {
-                    filtroEstado.value = estadoFiltro;
-                    filtrarTabla();
-                }
-            } else {
-                // Restaurar filtros guardados al volver de Seguimiento Académico
-                restaurarFiltros();
+            // Los selects de filtro solo se llenan UNA vez (sus opciones no cambian entre paginas)
+            if (!selectsYaPoblados && data.filtros_disponibles) {
+                poblarSelects(data.filtros_disponibles, filtros);
+                selectsYaPoblados = true;
             }
+
+            actualizarControlesPaginacion(data.pagina_actual, data.total_paginas, data.total_filtrado);
 
         } catch (error) {
             console.error("Error al cargar alumnos:", error);
         }
     }
 
-    // --- 3. NAVEGACIÓN ---
+    // --- 4. CONTROLES DE PAGINACION ---
+    const btnPagAnterior = document.getElementById('btn-pagina-anterior');
+    const btnPagSiguiente = document.getElementById('btn-pagina-siguiente');
+    const txtPaginaInfo = document.getElementById('txt-pagina-info');
+
+    function actualizarControlesPaginacion(pagina, totalPaginas, totalFiltrado) {
+        if (txtPaginaInfo) {
+            txtPaginaInfo.textContent = `Página ${pagina} de ${totalPaginas} (${totalFiltrado} alumnos)`;
+        }
+        if (btnPagAnterior) btnPagAnterior.disabled = pagina <= 1;
+        if (btnPagSiguiente) btnPagSiguiente.disabled = pagina >= totalPaginas;
+    }
+
+    if (btnPagAnterior) {
+        btnPagAnterior.addEventListener('click', () => {
+            if (paginaActual > 1) {
+                paginaActual--;
+                cargarDatosAlumnos();
+            }
+        });
+    }
+
+    if (btnPagSiguiente) {
+        btnPagSiguiente.addEventListener('click', () => {
+            paginaActual++;
+            cargarDatosAlumnos();
+        });
+    }
+
+    // --- 5. NAVEGACION ---
     function configurarClicsSeguimiento() {
         document.querySelectorAll('.btn-action').forEach(btn => {
             btn.addEventListener('click', (e) => {
@@ -106,90 +210,63 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- 4. FILTROS ---
-    const inputBuscar = document.querySelector('.search-input');
-    const btnLimpiar = document.querySelector('.btn-limpiar');
-    const selects = document.querySelectorAll('.filter-select');
+    // --- 6. EVENTOS DE FILTROS (cualquier cambio reinicia a la pagina 1) ---
+    let temporizadorBusqueda = null;
 
-    function llenarSelect(select, valores) {
-        select.innerHTML = '<option value="Todos">Todos</option>';
-        valores.forEach(valor => {
-            const option = document.createElement('option');
-            option.value = valor;
-            option.textContent = valor;
-            select.appendChild(option);
+    function onFiltroCambiado() {
+        paginaActual = 1;
+        cargarDatosAlumnos();
+    }
+
+    if (inputBuscar) {
+        inputBuscar.addEventListener('input', () => {
+            clearTimeout(temporizadorBusqueda);
+            temporizadorBusqueda = setTimeout(onFiltroCambiado, 350);
         });
     }
 
-    function poblarFiltros(lista) {
-        const grupos    = [...new Set(lista.map(a => a.grupo))].sort();
-        const carreras  = [...new Set(lista.map(a => a.carrera))].sort();
-        const semestres = [...new Set(lista.map(a => a.semestre))].sort();
-        const turnos    = [...new Set(lista.map(a => a.turno))].sort();
-        const estados   = [...new Set(lista.map(a => a.estado_alerta))].sort();
-
-        llenarSelect(document.getElementById('filtro-grupo'), grupos);
-        llenarSelect(document.getElementById('filtro-carrera'), carreras);
-        llenarSelect(document.getElementById('filtro-semestre'), semestres);
-        llenarSelect(document.getElementById('filtro-turno'), turnos);
-        llenarSelect(document.getElementById('filtro-estado'), estados);
-    }
-
-    function guardarFiltros() {
-        const filtros = {
-            texto: inputBuscar.value,
-            grupo: document.getElementById('filtro-grupo').value,
-            carrera: document.getElementById('filtro-carrera').value,
-            semestre: document.getElementById('filtro-semestre').value,
-            turno: document.getElementById('filtro-turno').value,
-            estado: document.getElementById('filtro-estado').value
-        };
-        sessionStorage.setItem('filtrosAlumnos', JSON.stringify(filtros));
-    }
-
-    function restaurarFiltros() {
-        const guardado = sessionStorage.getItem('filtrosAlumnos');
-        if (!guardado) return;
-        const filtros = JSON.parse(guardado);
-        inputBuscar.value = filtros.texto || '';
-        document.getElementById('filtro-grupo').value    = filtros.grupo || 'Todos';
-        document.getElementById('filtro-carrera').value  = filtros.carrera || 'Todos';
-        document.getElementById('filtro-semestre').value = filtros.semestre || 'Todos';
-        document.getElementById('filtro-turno').value    = filtros.turno || 'Todos';
-        document.getElementById('filtro-estado').value   = filtros.estado || 'Todos';
-        filtrarTabla();
-    }
-
-    function filtrarTabla() {
-        const texto = inputBuscar.value.toLowerCase();
-        const grupo = document.getElementById('filtro-grupo').value;
-        const carrera = document.getElementById('filtro-carrera').value;
-        const semestre = document.getElementById('filtro-semestre').value;
-        const turno = document.getElementById('filtro-turno').value;
-        const estado = document.getElementById('filtro-estado').value;
-
-        document.querySelectorAll('#tabla-alumnos-body tr').forEach(fila => {
-            const celdas = fila.children;
-            const coincideTexto    = fila.textContent.toLowerCase().includes(texto);
-            const coincideGrupo    = grupo === 'Todos'    || celdas[4].textContent.trim() === grupo;
-            const coincideTurno    = turno === 'Todos'    || celdas[5].textContent.trim() === turno;
-            const coincideSemestre = semestre === 'Todos' || celdas[6].textContent.trim() === semestre;
-            const coincideCarrera  = carrera === 'Todos'  || celdas[7].textContent.trim() === carrera;
-            const coincideEstado   = estado === 'Todos'   || celdas[9].textContent.trim() === estado;
-
-            fila.style.display = (coincideTexto && coincideGrupo && coincideTurno && coincideSemestre && coincideCarrera && coincideEstado) ? '' : 'none';
-        });
-        guardarFiltros();
-    }
-
-    if (inputBuscar) inputBuscar.addEventListener('input', filtrarTabla);
-    selects.forEach(select => select.addEventListener('change', filtrarTabla));
-    if (btnLimpiar) btnLimpiar.addEventListener('click', () => {
-        inputBuscar.value = '';
-        selects.forEach(select => select.value = 'Todos');
-        filtrarTabla();
+    [selectGrupo, selectCarrera, selectSemestre, selectTurno, selectEstado].forEach(select => {
+        if (select) select.addEventListener('change', onFiltroCambiado);
     });
 
-    // Inicializar
+    if (btnLimpiar) {
+        btnLimpiar.addEventListener('click', () => {
+            if (inputBuscar) inputBuscar.value = '';
+            [selectGrupo, selectCarrera, selectSemestre, selectTurno, selectEstado].forEach(select => {
+                if (select) select.value = 'Todos';
+            });
+            onFiltroCambiado();
+        });
+    }
+
+    // --- 7. ELIMINAR ALUMNOS DE 6TO SEMESTRE ---
+    function eliminarAlumnos6toSemestre() {
+        if (!confirm("¿Estás seguro de eliminar a todos los alumnos de 6to Semestre permanentemente? Esta acción no se puede deshacer.")) return;
+        fetch(`${API_BASE}/api/eliminar-alumnos-6to-semestre`, { method: 'DELETE' })
+            .then(res => res.json())
+            .then(data => {
+                alert(data.message || "Alumnos de 6to Semestre eliminados correctamente");
+                paginaActual = 1;
+                cargarDatosAlumnos();
+            })
+            .catch(err => {
+                console.error("Error al eliminar alumnos:", err);
+                alert("Ocurrió un error al eliminar los alumnos.");
+            });
+    }
+
+    const btnEliminar = document.getElementById('btn-eliminar-alumnos-6to.Semestre');
+    if (btnEliminar) btnEliminar.addEventListener('click', eliminarAlumnos6toSemestre);
+
+    // --- 8. INICIALIZAR ---
+    restaurarFiltrosGuardados();
+
+    // Si viene un filtro de estado desde la URL (por ejemplo desde inicio.html)
+    const paramsUrl = new URLSearchParams(window.location.search);
+    const estadoFiltro = paramsUrl.get('estado');
+    if (estadoFiltro && selectEstado) {
+        selectEstado.value = estadoFiltro;
+    }
+
     cargarDatosAlumnos();
 });
