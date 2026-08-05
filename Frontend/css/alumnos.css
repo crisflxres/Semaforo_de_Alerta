@@ -259,6 +259,7 @@ body {
 .numeric-cell { text-align: center; }
 .btn-action { background: none; border: none; color: var(--text-dark); font-size: 14px; cursor: pointer; padding: 4px 8px; }
 .btn-action:hover { color: var(--brand-maroon); }
+.btn-eliminar-alumnos-6toSemestre { background-color: var(--brand-maroon); color: var(--white);}
 
 /* --- MENÚ FLOTANTE NAVEGACIÓN LATERAL --- */
 .menu-flotante-overlay {
@@ -355,8 +356,17 @@ body {
     color: #000000;
 }
 
+.btn-eliminar-alumnos-6toSemestre {
+    padding: 6px 20px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    height: 40px;
+}
+
 /* ==========================================================================
-   RESPONSIVE DESIGN
+RESPONSIVE DESIGN
    ========================================================================== */
 /* TABLET */
 @media (max-width: 900px) {

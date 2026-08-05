@@ -203,3 +203,64 @@ def actualizar_tutor(matricula):
     finally:
         if conexion and conexion.is_connected():
             conexion.close()
+
+@alumnos_bp.route('/api/eliminar-alumnos-6to-semestre', methods=['DELETE'])
+def delete_alumnos_6Semestre():
+    conexion = None
+    try:
+        conexion = obtener_conexion()
+        if not conexion:
+            return jsonify({"success": False, "message": "No se pudo conectar a la base de datos"}), 500
+
+        cursor = conexion.cursor(dictionary=True)
+
+        # 1. Obtener matrículas Y sus Id_Usuario antes de borrar nada
+        cursor.execute("""
+            SELECT a.Matricula, a.Id_Usuario
+            FROM alumnos a
+            JOIN grupos g ON a.Id_Grupo = g.Id_Grupo
+            WHERE g.Semestre = 'Sexto'
+        """)
+        filas = cursor.fetchall()
+        matriculas = [fila['Matricula'] for fila in filas]
+        ids_usuario = [fila['Id_Usuario'] for fila in filas]
+        cursor.close()
+
+        if not matriculas:
+            return jsonify({"success": True, "message": "No hay alumnos de 6to semestre para eliminar.", "eliminados": 0})
+
+        cursor2 = conexion.cursor()
+        placeholders_mat = ','.join(['%s'] * len(matriculas))
+        placeholders_usr = ','.join(['%s'] * len(ids_usuario))
+
+        # 2. Limpiar todas las tablas relacionadas por Matricula
+        cursor2.execute(f"DELETE FROM alertas WHERE Matricula IN ({placeholders_mat})", matriculas)
+        cursor2.execute(f"DELETE FROM calificaciones WHERE Matricula IN ({placeholders_mat})", matriculas)
+        cursor2.execute(f"DELETE FROM notificaciones WHERE Matricula IN ({placeholders_mat})", matriculas)
+        cursor2.execute(f"DELETE FROM observaciones WHERE Matricula IN ({placeholders_mat})", matriculas)
+        cursor2.execute(f"DELETE FROM padre_alumno WHERE Matricula IN ({placeholders_mat})", matriculas)
+
+        # 3. Borrar de alumnos
+        cursor2.execute(f"DELETE FROM alumnos WHERE Matricula IN ({placeholders_mat})", matriculas)
+        eliminados = cursor2.rowcount
+
+        # 4. Borrar sus cuentas de usuario (login) al final
+        cursor2.execute(f"DELETE FROM usuarios WHERE Id_Usuario IN ({placeholders_usr})", ids_usuario)
+
+        conexion.commit()
+        cursor2.close()
+
+        return jsonify({
+            "success": True,
+            "message": f"Se eliminaron {eliminados} alumno(s) de 6to semestre correctamente, incluyendo sus cuentas de usuario.",
+            "eliminados": eliminados
+        })
+
+    except mysql.connector.Error as err:
+        if conexion:
+            conexion.rollback()
+        print(f"Error de SQL: {err}")
+        return jsonify({"success": False, "message": f"Error de base de datos: {str(err)}"}), 500
+    finally:
+        if conexion and conexion.is_connected():
+            conexion.close()
