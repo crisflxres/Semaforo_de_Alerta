@@ -563,6 +563,95 @@ ALTER TABLE `tutor_grupo`
 --
 ALTER TABLE `usuarios`
   MODIFY `Id_Usuario` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- Llaves foráneas para las tablas volcadas
+--
+
+--
+-- Llaves foráneas para la tabla `alertas`
+--
+ALTER TABLE `alertas`
+  ADD CONSTRAINT `FK_Alerta_Matricula` FOREIGN KEY (`Matricula`) REFERENCES `alumnos` (`Matricula`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `FK_Alerta_Nivel` FOREIGN KEY (`Id_Nivel`) REFERENCES `niveles_alerta` (`Id_Nivel`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+--
+-- Llaves foráneas para la tabla `alumnos`
+--
+ALTER TABLE `alumnos`
+  ADD CONSTRAINT `FK_Alumno_Grupo` FOREIGN KEY (`Id_Grupo`) REFERENCES `grupos` (`Id_Grupo`) ON DELETE RESTRICT ON UPDATE CASCADE,
+  ADD CONSTRAINT `FK_Alumno_Usuario` FOREIGN KEY (`Id_Usuario`) REFERENCES `usuarios` (`Id_Usuario`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+--
+-- Llaves foráneas para la tabla `calificaciones`
+--
+ALTER TABLE `calificaciones`
+  ADD CONSTRAINT `FK_Cal_Matricula` FOREIGN KEY (`Matricula`) REFERENCES `alumnos` (`Matricula`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `FK_Cal_Materia` FOREIGN KEY (`Id_Materia`) REFERENCES `materias` (`Id_Materia`) ON DELETE RESTRICT ON UPDATE CASCADE,
+  ADD CONSTRAINT `FK_Cal_Importacion` FOREIGN KEY (`Id_Importacion`) REFERENCES `importaciones` (`id_importacion`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+--
+-- Llaves foráneas para la tabla `grupos`
+--
+ALTER TABLE `grupos`
+  ADD CONSTRAINT `FK_Grupo_Carrera` FOREIGN KEY (`Id_Carrera`) REFERENCES `carreras` (`Id_Carrera`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+--
+-- Llaves foráneas para la tabla `horarios`
+--
+ALTER TABLE `horarios`
+  ADD CONSTRAINT `FK_Horario_Usuario` FOREIGN KEY (`Id_Usuario`) REFERENCES `usuarios` (`Id_Usuario`) ON DELETE RESTRICT ON UPDATE CASCADE,
+  ADD CONSTRAINT `FK_Horario_Grupo` FOREIGN KEY (`Id_Grupo`) REFERENCES `grupos` (`Id_Grupo`) ON DELETE RESTRICT ON UPDATE CASCADE,
+  ADD CONSTRAINT `FK_Horario_Materia` FOREIGN KEY (`Id_Materia`) REFERENCES `materias` (`Id_Materia`) ON DELETE RESTRICT ON UPDATE CASCADE,
+  ADD CONSTRAINT `FK_Horario_Aula` FOREIGN KEY (`Id_Aula`) REFERENCES `aulas` (`Id_Aula`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+--
+-- Llaves foráneas para la tabla `importaciones`
+--
+ALTER TABLE `importaciones`
+  ADD CONSTRAINT `FK_Importacion_Grupo` FOREIGN KEY (`id_grupo`) REFERENCES `grupos` (`Id_Grupo`) ON DELETE SET NULL ON UPDATE CASCADE,
+  ADD CONSTRAINT `FK_Importacion_Usuario` FOREIGN KEY (`importado_por`) REFERENCES `usuarios` (`Id_Usuario`) ON DELETE SET NULL ON UPDATE CASCADE;
+
+--
+-- Llaves foráneas para la tabla `materias`
+--
+ALTER TABLE `materias`
+  ADD CONSTRAINT `FK_Materia_Carrera` FOREIGN KEY (`Id_Carrera`) REFERENCES `carreras` (`Id_Carrera`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+--
+-- Llaves foráneas para la tabla `notificaciones`
+--
+ALTER TABLE `notificaciones`
+  ADD CONSTRAINT `FK_Notificacion_Alumno` FOREIGN KEY (`Matricula`) REFERENCES `alumnos` (`Matricula`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `FK_Notificacion_Alerta` FOREIGN KEY (`Id_Alerta`) REFERENCES `alertas` (`Id_Alerta`) ON DELETE SET NULL ON UPDATE CASCADE;
+
+--
+-- Llaves foráneas para la tabla `observaciones`
+--
+ALTER TABLE `observaciones`
+  ADD CONSTRAINT `FK_Observacion_Alumno` FOREIGN KEY (`Matricula`) REFERENCES `alumnos` (`Matricula`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `FK_Observacion_Usuario` FOREIGN KEY (`Id_Usuario`) REFERENCES `usuarios` (`Id_Usuario`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+--
+-- Llaves foráneas para la tabla `padre_alumno`
+--
+ALTER TABLE `padre_alumno`
+  ADD CONSTRAINT `FK_PadreAlumno_Usuario` FOREIGN KEY (`Id_Usuario`) REFERENCES `usuarios` (`Id_Usuario`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `FK_PadreAlumno_Alumno` FOREIGN KEY (`Matricula`) REFERENCES `alumnos` (`Matricula`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Llaves foráneas para la tabla `tutor_grupo`
+--
+ALTER TABLE `tutor_grupo`
+  ADD CONSTRAINT `FK_TutorGrupo_Usuario` FOREIGN KEY (`Id_Usuario`) REFERENCES `usuarios` (`Id_Usuario`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `FK_TutorGrupo_Grupo` FOREIGN KEY (`Id_Grupo`) REFERENCES `grupos` (`Id_Grupo`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Llaves foráneas para la tabla `usuarios`
+--
+ALTER TABLE `usuarios`
+  ADD CONSTRAINT `FK_Usuario_Rol` FOREIGN KEY (`Id_Rol`) REFERENCES `roles` (`Id_Rol`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
