@@ -22,8 +22,7 @@ def get_materias():
             "Nombre": fila[1],
             "Semestre":fila[2],
             "Id_Carrera": fila [3],
-            "Periodo": fila[4],
-            "Tipo": fila[5]
+            "Tipo": fila[4]
         })
     cursor.close()
     conexion.close()
@@ -37,7 +36,6 @@ def crear_materia():
     nombre = datos.get('Nombre', '').strip()
     semestre = datos.get('Semestre', '')
     clave_Carrera = datos.get('Clave_Carrera', '').strip()
-    periodo = datos.get('Periodo', '')
     tipo_materia = datos.get('Tipo')
     
     if not nombre:
@@ -45,12 +43,11 @@ def crear_materia():
     conexion = obtener_conexion()
     cursor = conexion.cursor()
     
-    sql = "INSERT IGNORE INTO materias (Nombre, Semestre, Id_Carrera, Periodo, Tipo) VALUES (%s, %s, %s, %s, %s)"
+    sql = "INSERT IGNORE INTO materias (Nombre, Semestre, Id_Carrera, Tipo) VALUES (%s, %s, %s, %s)"
     valores = (
         nombre, 
         semestre, 
-        clave_Carrera, 
-        periodo, 
+        clave_Carrera,  
         tipo_materia
     )
     cursor.execute(sql, valores)
@@ -70,15 +67,14 @@ def editar_materia():
     nombre       = datos.get('Nombre', '').strip()
     semestre     = datos.get('Semestre', '')
     clave_carrera = datos.get('Clave_Carrera', '')
-    periodo      = datos.get('Periodo', '')
     tipo_materia = datos.get('Tipo', '')
 
-    valores = (nombre, semestre, clave_carrera, periodo, tipo_materia, id_materia)
+    valores = (nombre, semestre, clave_carrera, tipo_materia, id_materia)
     
     conexion = obtener_conexion()
     cursor = conexion.cursor()
     
-    sql = "UPDATE materias SET Nombre = %s, Semestre = %s, Id_Carrera = %s, Periodo = %s, Tipo = %s WHERE Id_Materia = %s"
+    sql = "UPDATE materias SET Nombre = %s, Semestre = %s, Id_Carrera = %s, Tipo = %s WHERE Id_Materia = %s"
     
     cursor.execute(sql, valores)
     conexion.commit()
