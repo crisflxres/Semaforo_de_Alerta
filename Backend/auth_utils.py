@@ -10,6 +10,11 @@ def requiere_rol(*roles_permitidos):
     def decorador(f):
         @wraps(f)
         def wrapper(*args, **kwargs):
+            # Dejamos pasar las peticiones OPTIONS (preflight de CORS) sin checar rol,
+            # ya que el navegador las manda automáticamente y no llevan el header X-Id-Rol.
+            if request.method == 'OPTIONS':
+                return '', 200
+
             id_rol = request.headers.get('X-Id-Rol')
 
             if not id_rol:
