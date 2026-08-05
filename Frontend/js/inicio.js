@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (btnHamburguesa) {
         btnHamburguesa.addEventListener("click", () => overlay.classList.add("open"));
     }
-    
+
     if (btnCerrar) {
         btnCerrar.addEventListener("click", () => overlay.classList.remove("open"));
     }
@@ -52,10 +52,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // 2. Aquí llamaremos a la API para cargar los datos reales
-   // --- SECCIÓN DOCENTE SEGÚN ROL ---
+    // --- SECCIÓN DOCENTE SEGÚN ROL ---
     const rol = parseInt(localStorage.getItem('rolUsuario'));
     const seccionDocente = document.querySelector('.contenedor-informacion-docente');
-    
+
     if (rol !== 2 && seccionDocente) {
         seccionDocente.innerHTML = `
             <h2 class="subtitulo-docente">Información del Usuario</h2>
@@ -82,6 +82,45 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 </div>
             </div>`;
+    } else if (rol === 2 && seccionDocente) {
+        // --- Caso Docente: pedimos su resumen real al backend ---
+        const idUsuario = localStorage.getItem('idUsuario');
+
+        fetch(`https://semaforo-de-alerta.onrender.com/docentes/${idUsuario}/resumen`, {
+            headers: { 'X-Id-Rol': localStorage.getItem('rolUsuario') }
+        })
+            .then(res => res.json())
+            .then(data => {
+                const materias = data.success ? data.data.total_materias : '-';
+                const grupos = data.success ? data.data.total_grupos : '-';
+
+                seccionDocente.innerHTML = `
+                    <h2 class="subtitulo-docente">Información Docente</h2>
+                    <div class="grid-info-docente">
+                        <div class="bloque-docente-perfil">
+                            <div class="icono-docente-bg"><i class="fa-solid fa-address-card"></i></div>
+                            <div class="detalles-docente">
+                                <span class="sub-label">Docente</span>
+                                <span class="valor-docente">${localStorage.getItem('nombreUsuario') || 'N/A'}</span>
+                            </div>
+                        </div>
+                        <div class="bloque-docente-perfil">
+                            <div class="icono-docente-bg"><i class="fa-solid fa-book"></i></div>
+                            <div class="detalles-docente">
+                                <span class="sub-label">Materias Asignadas</span>
+                                <span class="valor-docente">${materias}</span>
+                            </div>
+                        </div>
+                        <div class="bloque-docente-perfil">
+                            <div class="icono-docente-bg"><i class="fa-solid fa-border-all"></i></div>
+                            <div class="detalles-docente">
+                                <span class="sub-label">Grupos Asignados</span>
+                                <span class="valor-docente">${grupos}</span>
+                            </div>
+                        </div>
+                    </div>`;
+            })
+            .catch(err => console.error('Error cargando resumen del docente:', err));
     }
 
     cargarDatosDashboard();
@@ -109,4 +148,3 @@ async function cargarDatosDashboard() {
         console.error("Error al cargar datos del dashboard:", error);
     }
 }
-

@@ -70,6 +70,22 @@
 .btn-cancelar-tutor i {
     font-size: 12px;
 }
+/* Tablet */
+@media (max-width: 900px) {
+    .input-tutor {
+        width: 100%;
+        max-width: 320px;
+    }
+    #input-nombre-tutor {
+    width: 266px !important;
+    }
+    #input-telefono-tutor {
+        width: 264px !important;
+    }
+    #input-correo-tutor {
+        width: 264px !important;
+    }
+}
 
 /* Celulares */
 @media (max-width: 600px) {
@@ -77,7 +93,17 @@
         max-width: 100%;
         width: 100%;
     }
+    #input-nombre-tutor {
+    width: 266px !important;
+    }
 
+    #input-telefono-tutor {
+        width: 264px !important;
+    }
+
+    #input-correo-tutor {
+        width: 264px !important;
+    }
     .btn-editar-tutor, .btn-guardar-tutor {
         width: 100%;
         justify-content: center;

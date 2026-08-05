@@ -299,21 +299,102 @@ body { font-family: Arial, sans-serif; background-color: #fcfcfc; }
     .main-layout { flex-direction: column; }
     .horarios-container, #panelRegistro { width: 100%; }
     .grid-tarjetas { grid-template-columns: repeat(2, 1fr); }
+
+    .layout-horarios {
+        flex-direction: column;
+    }
+    .contenedor-horarios,
+    #panelNuevaClase {
+        flex: none;
+        width: 100%;
+    }
 }
 
 @media (max-width: 768px) {
     .logo { height: 32px; }
 
-    .tabs { flex-wrap: wrap; }
-    .tab-item { flex: 1 1 45%; font-size: 0.85rem; padding: 10px 6px; }
+    .tabs { flex-wrap: wrap; gap: 8px; }
+    .tab-item:first-child {
+        flex: 1 1 100%;
+        font-size: 0.95rem;
+        padding: 14px 10px;
+    }
+    .tab-item:not(:first-child) {
+        flex: 1 1 calc(50% - 4px);
+        font-size: 0.82rem;
+        padding: 12px 6px;
+    }
 
     .contenedor-grupos { padding: 15px; margin: 15px auto; }
     .header-grupos { flex-direction: column; align-items: stretch; gap: 10px; }
     .input-buscar { width: 100%; }
+
+    /* --- FILTROS: quedan fijos, NO scrollean --- */
+    .filtros-container {
+        grid-template-columns: repeat(2, 1fr);
+        padding: 12px;
+    }
+    .filtros-container::after {
+        content: "← desliza la tabla para ver los demás días →";
+        grid-column: 1 / -1;
+        text-align: center;
+        font-size: 0.68rem;
+        color: #f0d0d8;
+        padding-top: 4px;
+    }
+
+    /* --- SOLO LA TABLA scrollea horizontalmente --- */
+    .grid-horarios {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        grid-template-columns: 70px repeat(5, 100px);
+        gap: 4px;
+        padding: 10px;
+    }
+
+    .header {
+        font-size: 0.75rem;
+        padding: 6px 2px;
+    }
+    .celda-hora {
+        font-size: 0.68rem;
+        padding: 2px;
+    }
+    .celda-btn,
+    .celda-clase {
+        height: 42px;
+        font-size: 0.68rem;
+    }
 }
 
 @media (max-width: 480px) {
-    .tab-item { flex: 1 1 100%; }
     .grid-tarjetas { grid-template-columns: 1fr; padding: 12px; }
     .tarjeta-menu-flotante { width: 240px; }
+
+    /* FILTROS: 2x2 */
+    .filtros-container {
+        grid-template-columns:repeat(2, 1fr);
+        gap: 10px;
+        padding: 12px;
+    }
+    .filtro-item { 
+        flex-direction: column; 
+        align-items: flex-start;
+        gap: 4px;
+        font-size: 0.82rem; 
+    }
+    .filtro-item select {
+        max-width: 100%;
+        font-size: 0.78rem;
+        padding: 6px; 
+    }
+    
+    /*PANEL NUEVA CLASE */
+    .panel-cuerpo {
+        padding: 16px;
+        gap: 10px;
+    }
+    .panel-acciones {
+        padding: 0 16px 16px 16px;
+    }
 }

@@ -6,9 +6,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const paginasOcultas = ['alertas.html', 'configuracion.html'];
 
         paginasOcultas.forEach(pagina => {
-            const link = document.querySelector(`a[href="${pagina}"]`);
+            // El selector con [href$="..."] busca que el enlace termine exactamente con el nombre del archivo
+            const link = document.querySelector(`a[href$="${pagina}"]`);
             const li = link?.closest('li');
-            li?.remove();
+            if (li) {
+                li.remove();
+            } else if (link) {
+                link.remove();
+            }
         });
     }
 

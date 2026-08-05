@@ -124,6 +124,8 @@ def importar_calificaciones(hoja, materias):
                 calificaciones.append(calificacion)
     return calificaciones
 
+import pandas as pd
+
 if __name__== "__main__":
     # Leer el archivo (ya usando la función que detecta el formato automáticamente)
     hoja = leer_taca(r"C:\Users\aleja\OneDrive\Documentos\Archivos_bd\TACA_03AJ6L.xls")
