@@ -1,8 +1,46 @@
 from flask import Blueprint, request, jsonify
 import mysql.connector
+import time
 from conexion_db import obtener_conexion
 
 alumnos_bp = Blueprint('alumnos_bp', __name__)
+
+# --- Cache en memoria de los selects de filtro ---
+# Estos valores (grupos, carreras, semestres, turnos) casi no cambian,
+# asi que no tiene sentido volver a consultarlos en cada peticion.
+# Cada worker de gunicorn tiene su propia copia (esta bien, es un dato pequeno).
+_CACHE_FILTROS = {"datos": None, "expira": 0}
+_CACHE_TTL_SEGUNDOS = 300  # 5 minutos
+
+
+def _obtener_filtros_disponibles(cursor):
+    ahora = time.time()
+    if _CACHE_FILTROS["datos"] is not None and _CACHE_FILTROS["expira"] > ahora:
+        return _CACHE_FILTROS["datos"]
+
+    cursor.execute("SELECT DISTINCT Nombre FROM grupos ORDER BY Nombre")
+    grupos_disponibles = [f['Nombre'] for f in cursor.fetchall()]
+
+    cursor.execute("SELECT DISTINCT Nombre FROM carreras ORDER BY Nombre")
+    carreras_disponibles = [f['Nombre'] for f in cursor.fetchall()]
+
+    cursor.execute("SELECT DISTINCT Semestre FROM grupos ORDER BY Semestre")
+    semestres_disponibles = [f['Semestre'] for f in cursor.fetchall()]
+
+    cursor.execute("SELECT DISTINCT Turno FROM grupos ORDER BY Turno")
+    turnos_disponibles = [f['Turno'] for f in cursor.fetchall()]
+
+    datos = {
+        "grupos": grupos_disponibles,
+        "carreras": carreras_disponibles,
+        "semestres": semestres_disponibles,
+        "turnos": turnos_disponibles,
+        "estados": ["Regular", "Riesgo", "Critico"]
+    }
+
+    _CACHE_FILTROS["datos"] = datos
+    _CACHE_FILTROS["expira"] = ahora + _CACHE_TTL_SEGUNDOS
+    return datos
 
 @alumnos_bp.route('/api/alumnos', methods=['GET'])
 def get_alumnos():
@@ -87,23 +125,32 @@ def get_alumnos():
 
         where_extra = (" AND " + " AND ".join(condiciones)) if condiciones else ""
 
-        # --- Cuantos alumnos cumplen estos filtros (para calcular el numero de paginas) ---
-        cursor.execute(f"SELECT COUNT(*) AS total_filtrado {base_from}{where_extra}", parametros)
-        total_filtrado = cursor.fetchone()['total_filtrado']
-
-        # --- La pagina de alumnos que realmente se manda al navegador ---
+        # --- La pagina de alumnos, con el total filtrado incluido en la misma query ---
+        # COUNT(*) OVER() calcula "cuantas filas cumplen el filtro completo" sin
+        # necesidad de una segunda consulta: viaja gratis junto con cada fila.
+        # (Disponible en MariaDB 10.2+, y tu servidor es 10.4).
         query_lista = f"""
             SELECT
                 a.Matricula, a.Nombre, a.Apellidos, a.Email, a.PAC,
                 g.Nombre AS Grupo, g.Turno, g.Semestre, c.Nombre AS Carrera,
                 COALESCE(rep.materias_reprobadas, 0) AS materias_reprobadas,
-                COALESCE(na.Nombre, 'Verde') AS nivel_color
+                COALESCE(na.Nombre, 'Verde') AS nivel_color,
+                COUNT(*) OVER() AS total_filtrado
             {base_from}{where_extra}
             ORDER BY a.Apellidos, a.Nombre
             LIMIT %s OFFSET %s
         """
         cursor.execute(query_lista, parametros + [por_pagina, offset])
         filas = cursor.fetchall()
+
+        # Si la pagina actual esta vacia (p.ej. filtro sin resultados, o se pidio
+        # una pagina fuera de rango), no hay fila de la que sacar total_filtrado.
+        # En ese caso necesitamos preguntarlo aparte para saber cuantas paginas hay.
+        if filas:
+            total_filtrado = filas[0]['total_filtrado']
+        else:
+            cursor.execute(f"SELECT COUNT(*) AS total_filtrado {base_from}{where_extra}", parametros)
+            total_filtrado = cursor.fetchone()['total_filtrado']
 
         lista = []
         for fila in filas:
@@ -123,18 +170,8 @@ def get_alumnos():
                 "materias_reprobadas": fila.get('materias_reprobadas', 0)
             })
 
-        # --- Valores para llenar los selects de filtro, SIN traer los 1000+ alumnos ---
-        cursor.execute("SELECT DISTINCT Nombre FROM grupos ORDER BY Nombre")
-        grupos_disponibles = [f['Nombre'] for f in cursor.fetchall()]
-
-        cursor.execute("SELECT DISTINCT Nombre FROM carreras ORDER BY Nombre")
-        carreras_disponibles = [f['Nombre'] for f in cursor.fetchall()]
-
-        cursor.execute("SELECT DISTINCT Semestre FROM grupos ORDER BY Semestre")
-        semestres_disponibles = [f['Semestre'] for f in cursor.fetchall()]
-
-        cursor.execute("SELECT DISTINCT Turno FROM grupos ORDER BY Turno")
-        turnos_disponibles = [f['Turno'] for f in cursor.fetchall()]
+        # --- Valores para llenar los selects de filtro (cacheados 5 min, casi no cambian) ---
+        filtros_disponibles = _obtener_filtros_disponibles(cursor)
 
         cursor.close()
 
@@ -149,13 +186,7 @@ def get_alumnos():
             "total_paginas": total_paginas,
             "total_filtrado": total_filtrado,
             "lista": lista,
-            "filtros_disponibles": {
-                "grupos": grupos_disponibles,
-                "carreras": carreras_disponibles,
-                "semestres": semestres_disponibles,
-                "turnos": turnos_disponibles,
-                "estados": ["Regular", "Riesgo", "Critico"]
-            }
+            "filtros_disponibles": filtros_disponibles
         })
 
     except mysql.connector.Error as err:
@@ -203,7 +234,7 @@ def get_dashboard_stats():
         return jsonify({"success": False, "message": str(err)}), 500
 
 
-#@alumnos_bp.route('/api/tutor/<matricula>', methods=['GET'])
+@alumnos_bp.route('/api/tutor/<matricula>', methods=['GET'])
 def get_tutor(matricula):
     conexion = None
     try:
@@ -232,7 +263,7 @@ def get_tutor(matricula):
             conexion.close()
 
 
-#@alumnos_bp.route('/api/tutor/<matricula>', methods=['PUT'])
+@alumnos_bp.route('/api/tutor/<matricula>', methods=['PUT'])
 def actualizar_tutor(matricula):
     conexion = None
     try:
