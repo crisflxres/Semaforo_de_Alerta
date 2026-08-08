@@ -10,7 +10,7 @@ from db_manager import importar_taca_completo, actualizar_correos_bulk, actualiz
 from importador_Contactos import importar_correos_electronicos
 from importador_fotos import importar_fotos
 from conexion_db import obtener_conexion
-from PIL import Image, ImageOps
+from PIL import Image, ImageOps 
 from io import BytesIO
 
 configuracion_bp = Blueprint(

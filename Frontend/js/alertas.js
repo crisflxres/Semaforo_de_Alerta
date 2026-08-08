@@ -1,3 +1,12 @@
+document.addEventListener('DOMContentLoaded', function () {
+    const rolUsuario = parseInt(localStorage.getItem('rolUsuario'));
+
+    // Si no es administrador
+    if (rolUsuario !== 1) {
+        alert('No tienes permisos para acceder a esta sección.');
+        window.location.href = 'inicio.html';
+    }
+});
 // ── PLANTILLA GENERAL (aplica para los 3 niveles) ───────────────────────────
 const PLANTILLA_GENERAL = {
     asunto: "Situación Académica de {alumno} - Estatus: {estatus}",
