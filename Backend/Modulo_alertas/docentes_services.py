@@ -151,10 +151,11 @@ def enviar_resumen_docentes(nivel, grupo_id=None):
         # Una fila de historial por cada alumno cubierto en el resumen,
         # para no requerir Matricula nullable en la tabla notificaciones.
         for alumno in alumnos_docente:
+            # 1 sola fila de historial por docente (antes era 1 por alumno).
             sql_notif = """INSERT INTO notificaciones
                 (Matricula, Destinatario, Asunto, Cuerpo, Estado, Id_Alerta, Fecha_Enviado)
                 VALUES (%s, %s, %s, %s, %s, %s, %s)"""
-            cursor.execute(sql_notif, (alumno["Matricula"], correo_docente, asunto, cuerpo_procesado, estado, None, fecha_local))
+            cursor.execute(sql_notif, (None, correo_docente, asunto, cuerpo_procesado, estado, None, fecha_local))
 
     conexion.commit()
     cursor.close()
