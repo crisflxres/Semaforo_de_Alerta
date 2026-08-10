@@ -185,7 +185,10 @@ async function actualizarTotal() {
 
             if (dataDocentes?.ok) {
                 const alumnosGrupoDoc = dataDocentes.datos.filter(a => String(a.Id_Grupo) === String(grupoId));
-                total += alumnosGrupoDoc.filter(a => a.Correo_Docente).length;
+                const correosDocentesUnicos = new Set(
+                    alumnosGrupoDoc.filter(a => a.Correo_Docente).map(a => a.Correo_Docente)
+                );
+                total += correosDocentesUnicos.size;
             }
         } catch (e) {
             console.error('Error calculando total por grupo:', e);
