@@ -428,7 +428,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         btn.disabled = true;
         btn.textContent = 'Enviando...';
 
-        let mensajesResultado = [];
+        let totalEnviados = 0;
+        let totalFallidos = 0;
+        let totalDocentes = 0;
+        let mensajesError = [];
+        let mensajesInfo = [];
         let huboError = false;
 
         try {
@@ -455,13 +459,14 @@ document.addEventListener('DOMContentLoaded', async () => {
 
                 if (data.ok) {
                     if (modalidad === 'programar') {
-                        mensajesResultado.push(`Alumnos/Tutores: programado para ${fechaEnvio} ${horaEnvio}.`);
+                        mensajesInfo.push(`Programado para ${fechaEnvio} ${horaEnvio}`);
                     } else {
-                        mensajesResultado.push(`Alumnos/Tutores: ${data.enviados} enviados, ${data.fallidos} fallidos.`);
+                        totalEnviados += data.enviados;
+                        totalFallidos += data.fallidos;
                     }
                 } else {
                     huboError = true;
-                    mensajesResultado.push(`Alumnos/Tutores: error - ${data.mensaje}`);
+                    mensajesError.push(`Alumnos/Tutores: ${data.mensaje}`);
                 }
             }
 
@@ -477,14 +482,19 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const dataDoc = await resDoc.json();
 
                 if (dataDoc.ok) {
-                    mensajesResultado.push(`Docentes: ${dataDoc.enviados} correo(s) resumen enviados a ${dataDoc.total_docentes} docente(s).`);
+                    totalDocentes = dataDoc.enviados;
+                    totalFallidos += dataDoc.fallidos;
                 } else {
                     huboError = true;
-                    mensajesResultado.push(`Docentes: ${dataDoc.mensaje}`);
+                    mensajesError.push(`Docentes: ${dataDoc.mensaje}`);
                 }
             }
 
-            alert(mensajesResultado.join('\n'));
+            let mensajeFinal = `Correos enviados: ${totalEnviados}\nFallidos: ${totalFallidos}\nDocentes: ${totalDocentes}`;
+            if (mensajesInfo.length > 0) mensajeFinal += `\n${mensajesInfo.join('\n')}`;
+            if (mensajesError.length > 0) mensajeFinal += `\n${mensajesError.join('\n')}`;
+
+            alert(mensajeFinal);
             await cargarHistorial();
 
         } catch (e) {

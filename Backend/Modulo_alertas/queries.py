@@ -34,6 +34,7 @@ def consultar_alumnos_por_alerta():
     ORDER BY g.Nombre, a.Apellidos, a.Nombre;
     """
 
+
 def consultar_alumnos_por_alerta_docente():
     """
     Igual que consultar_alumnos_por_alerta(), pero el docente sale de la
@@ -75,6 +76,7 @@ def consultar_alumnos_por_alerta_docente():
     ORDER BY g.Nombre, a.Apellidos, a.Nombre;
     """
 
+
 def consultar_grupos():
     return """
     SELECT Id_Grupo, Nombre
@@ -89,15 +91,15 @@ def consultar_resumen_destinatarios():
         na.Nombre AS Nivel_Alerta,
         COUNT(DISTINCT a.Matricula) AS Total_Alumnos,
         COUNT(DISTINCT pa.Id_Usuario) AS Total_Tutores,
-        COUNT(DISTINCT tg.Id_Usuario) AS Total_Docentes
+        COUNT(DISTINCT h.Id_Usuario) AS Total_Docentes
     FROM niveles_alerta na
     LEFT JOIN alertas al ON al.Id_Nivel = na.Id_Nivel
     LEFT JOIN alumnos a ON al.Matricula = a.Matricula
     LEFT JOIN usuarios u_alumno ON u_alumno.Id_Usuario = a.Id_Usuario AND u_alumno.Id_Rol = 4
     LEFT JOIN padre_alumno pa ON pa.Matricula = a.Matricula
     LEFT JOIN usuarios u_tutor ON u_tutor.Id_Usuario = pa.Id_Usuario AND u_tutor.Id_Rol = 3
-    LEFT JOIN tutor_grupo tg ON tg.Id_Grupo = a.Id_Grupo
-    LEFT JOIN usuarios u_doc ON u_doc.Id_Usuario = tg.Id_Usuario AND u_doc.Id_Rol = 2
+    LEFT JOIN horarios h ON h.Id_Grupo = a.Id_Grupo
+    LEFT JOIN usuarios u_doc ON u_doc.Id_Usuario = h.Id_Usuario AND u_doc.Id_Rol = 2
     GROUP BY na.Id_Nivel, na.Nombre
     ORDER BY na.Id_Nivel;
     """
