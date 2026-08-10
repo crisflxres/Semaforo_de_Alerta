@@ -19,7 +19,7 @@ from collections import defaultdict
 from datetime import datetime
 from zoneinfo import ZoneInfo
 
-from .services import obtener_alumnos_por_alerta
+from .services import obtener_alumnos_por_alerta_docente
 from .correo_service import enviar_correo, extraer_imagenes_base64
 from conexion_db import obtener_conexion
 
@@ -31,7 +31,7 @@ def obtener_alumnos_para_docentes(nivel, grupo_id=None):
     Trae los alumnos de un nivel de alerta.
     Si grupo_id viene, filtra solo ese grupo; si no, regresa todos.
     """
-    alumnos = obtener_alumnos_por_alerta(nivel)
+    alumnos = obtener_alumnos_por_alerta_docente(nivel)
     if grupo_id:
         alumnos = [a for a in alumnos if str(a.get("Id_Grupo")) == str(grupo_id)]
     return alumnos
