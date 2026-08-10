@@ -108,8 +108,8 @@ def enviar_resumen_docentes(nivel, grupo_id=None):
     Función principal del botón Docentes.
     grupo_id es opcional: si no se manda, cubre TODOS los grupos del docente.
     Envía 1 correo resumen por cada docente encontrado y registra
-    el envío en `notificaciones` (una fila por alumno incluido, para mantener
-    el historial trazable sin cambiar el esquema de la tabla).
+    1 SOLA fila en `notificaciones` por cada docente (Matricula queda NULL
+    porque esa fila representa un resumen de varios alumnos, no uno solo).
     """
     alumnos = obtener_alumnos_para_docentes(nivel, grupo_id)
 
@@ -148,14 +148,12 @@ def enviar_resumen_docentes(nivel, grupo_id=None):
             "ok": ok_envio
         })
 
-        # Una fila de historial por cada alumno cubierto en el resumen,
-        # para no requerir Matricula nullable en la tabla notificaciones.
-        for alumno in alumnos_docente:
-            # 1 sola fila de historial por docente (antes era 1 por alumno).
-            sql_notif = """INSERT INTO notificaciones
-                (Matricula, Destinatario, Asunto, Cuerpo, Estado, Id_Alerta, Fecha_Enviado)
-                VALUES (%s, %s, %s, %s, %s, %s, %s)"""
-            cursor.execute(sql_notif, (None, correo_docente, asunto, cuerpo_procesado, estado, None, fecha_local))
+        # 1 sola fila de historial por docente (antes era 1 por alumno, por
+        # eso salían 38 filas en el historial aunque el correo se mandaba 1 vez).
+        sql_notif = """INSERT INTO notificaciones
+            (Matricula, Destinatario, Asunto, Cuerpo, Estado, Id_Alerta, Fecha_Enviado)
+            VALUES (%s, %s, %s, %s, %s, %s, %s)"""
+        cursor.execute(sql_notif, (None, correo_docente, asunto, cuerpo_procesado, estado, None, fecha_local))
 
     conexion.commit()
     cursor.close()
