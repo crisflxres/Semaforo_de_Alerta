@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
-from .services import obtener_alumnos_por_alerta, obtener_grupos, obtener_resumen_destinatarios, obtener_alertas_alumno
+from .services import obtener_alumnos_por_alerta, obtener_alumnos_por_alerta_docente, obtener_grupos, obtener_resumen_destinatarios, obtener_alertas_alumno
 from .correo_service import enviar_correo, reemplazar_variables, extraer_imagenes_base64
+from .docentes_services import enviar_resumen_docentes
 from conexion_db import obtener_conexion
 from datetime import datetime
 from zoneinfo import ZoneInfo
@@ -17,6 +18,22 @@ def alumnos_por_alerta():
         return jsonify({"ok": False, "mensaje": "Debe indicar el nivel de alerta"}), 400
     try:
         alumnos = obtener_alumnos_por_alerta(nivel)
+        return jsonify({"ok": True, "total": len(alumnos), "datos": alumnos})
+    except Exception as e:
+        return jsonify({"ok": False, "mensaje": str(e)}), 500
+
+@alerta_bp.route("/alumnos-docente", methods=["GET"])
+def alumnos_por_alerta_docente():
+    """
+    Igual que /alumnos, pero usando la relación real docente-grupo
+    (tabla horarios). Sirve para que el frontend calcule el estimado
+    de envíos del checkbox 'Docentes' correctamente.
+    """
+    nivel = request.args.get("nivel")
+    if not nivel:
+        return jsonify({"ok": False, "mensaje": "Debe indicar el nivel de alerta"}), 400
+    try:
+        alumnos = obtener_alumnos_por_alerta_docente(nivel)
         return jsonify({"ok": True, "total": len(alumnos), "datos": alumnos})
     except Exception as e:
         return jsonify({"ok": False, "mensaje": str(e)}), 500
@@ -219,6 +236,30 @@ def enviar_alerta():
                 "fallidos": fallidos
             })
 
+    except Exception as e:
+        return jsonify({"ok": False, "mensaje": str(e)}), 500
+
+@alerta_bp.route("/enviar-docente", methods=["POST"])
+def enviar_alerta_docente():
+    """
+    Endpoint independiente del de alumnos/tutores.
+    grupo_id es opcional: si no se manda, cubre todos los grupos del docente.
+    Manda 1 solo correo resumen por docente, con todos los alumnos que le correspondan.
+    """
+    data = request.get_json(silent=True) or {}
+    nivel = data.get("nivel")
+    grupo_id = data.get("grupo_id")  # opcional
+
+    if not nivel:
+        return jsonify({"ok": False, "mensaje": "Falta el nivel de alerta"}), 400
+
+    try:
+        resultado = enviar_resumen_docentes(nivel, grupo_id)
+
+        if not resultado["ok"]:
+            return jsonify(resultado), 404
+
+        return jsonify(resultado)
     except Exception as e:
         return jsonify({"ok": False, "mensaje": str(e)}), 500
 
