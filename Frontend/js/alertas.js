@@ -373,7 +373,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     });
 
-    // Enviar
+// Enviar
     document.getElementById('btnEnviarAlerta')?.addEventListener('click', async () => {
         if (!nivelActual) {
             alert('Selecciona un tipo de alerta (Verde, Amarillo o Rojo).');
@@ -384,12 +384,18 @@ document.addEventListener('DOMContentLoaded', async () => {
             alert('Selecciona al menos un destinatario.');
             return;
         }
+
+        // Separamos docentes del resto: usan lógica y endpoint distintos.
+        const incluyeDocentes = destinatarios.includes('docentes');
+        const destinatariosNormales = destinatarios.filter(d => d !== 'docentes');
+
         const alcance = document.querySelector('input[name="alcance"]:checked').value;
         const grupoId = alcance === 'especifico' ? document.getElementById('selectGrupo').value : null;
         const asunto = document.getElementById('asuntoNotificacion').value.trim();
         const mensaje = document.getElementById('mensajeEditor').innerHTML.trim();
 
-        if (!asunto || !mensaje) {
+        // El asunto/mensaje del editor solo hace falta si vamos a mandar a alumnos y/o tutores.
+        if (destinatariosNormales.length > 0 && (!asunto || !mensaje)) {
             alert('Escribe un asunto y un mensaje antes de enviar.');
             return;
         }
@@ -398,7 +404,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         let fechaEnvio = null;
         let horaEnvio = null;
 
-        if (modalidad === 'programar') {
+        if (modalidad === 'programar' && destinatariosNormales.length > 0) {
             fechaEnvio = document.getElementById('inputFecha').value;
             horaEnvio = document.getElementById('inputHora').value;
 
@@ -408,40 +414,69 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         }
 
-        const payload = { 
-            nivel: nivelActual, 
-            destinatarios, 
-            alcance, 
-            grupo_id: grupoId, 
-            asunto, 
-            mensaje,
-            modalidad,
-            fecha_envio: fechaEnvio,
-            hora_envio: horaEnvio
-        };
-
         const btn = document.getElementById('btnEnviarAlerta');
         btn.disabled = true;
         btn.textContent = 'Enviando...';
 
-        try {
-            const res = await fetch('https://semaforo-de-alerta.onrender.com/alertas/enviar', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
-            const data = await res.json();
+        let mensajesResultado = [];
+        let huboError = false;
 
-            if (data.ok) {
-                if (modalidad === 'programar') {
-                    alert(`Alerta programada para ${fechaEnvio} ${horaEnvio}.`);
+        try {
+            // 1) Alumnos / Tutores -> flujo de siempre, sin tocar
+            if (destinatariosNormales.length > 0) {
+                const payload = {
+                    nivel: nivelActual,
+                    destinatarios: destinatariosNormales,
+                    alcance,
+                    grupo_id: grupoId,
+                    asunto,
+                    mensaje,
+                    modalidad,
+                    fecha_envio: fechaEnvio,
+                    hora_envio: horaEnvio
+                };
+
+                const res = await fetch('https://semaforo-de-alerta.onrender.com/alertas/enviar', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+
+                if (data.ok) {
+                    if (modalidad === 'programar') {
+                        mensajesResultado.push(`Alumnos/Tutores: programado para ${fechaEnvio} ${horaEnvio}.`);
+                    } else {
+                        mensajesResultado.push(`Alumnos/Tutores: ${data.enviados} enviados, ${data.fallidos} fallidos.`);
+                    }
                 } else {
-                    alert(`Alerta enviada.\nCorreos enviados: ${data.enviados}\nFallidos: ${data.fallidos}`);
+                    huboError = true;
+                    mensajesResultado.push(`Alumnos/Tutores: error - ${data.mensaje}`);
                 }
-                await cargarHistorial();
-            } else {
-                alert(`Error al enviar: ${data.mensaje}`);
             }
+
+            // 2) Docentes -> endpoint y lógica propios (1 correo resumen por docente)
+            if (incluyeDocentes) {
+                const payloadDocente = { nivel: nivelActual, grupo_id: grupoId };
+
+                const resDoc = await fetch('https://semaforo-de-alerta.onrender.com/alertas/enviar-docente', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payloadDocente)
+                });
+                const dataDoc = await resDoc.json();
+
+                if (dataDoc.ok) {
+                    mensajesResultado.push(`Docentes: ${dataDoc.enviados} correo(s) resumen enviados a ${dataDoc.total_docentes} docente(s).`);
+                } else {
+                    huboError = true;
+                    mensajesResultado.push(`Docentes: ${dataDoc.mensaje}`);
+                }
+            }
+
+            alert(mensajesResultado.join('\n'));
+            await cargarHistorial();
+
         } catch (e) {
             alert('No se pudo conectar con el servidor. Revisa que Flask esté corriendo.');
             console.error(e);
@@ -451,6 +486,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     });
 });
+
 // Revisa pendientes apenas carga la página
 fetch('https://semaforo-de-alerta.onrender.com/alertas/procesar-pendientes')
     .then(res => res.json())
