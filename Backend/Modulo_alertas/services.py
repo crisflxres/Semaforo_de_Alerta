@@ -1,10 +1,25 @@
-from .queries import consultar_alumnos_por_alerta, consultar_grupos, consultar_resumen_destinatarios, consultar_alertas_por_alumno
+from .queries import consultar_alumnos_por_alerta, consultar_alumnos_por_alerta_docente, consultar_grupos, consultar_resumen_destinatarios, consultar_alertas_por_alumno
 from conexion_db import obtener_conexion
 
 def obtener_alumnos_por_alerta(nivel):
     conexion = obtener_conexion()
     cursor = conexion.cursor(dictionary=True)
     cursor.execute(consultar_alumnos_por_alerta(), (nivel,))
+    alumnos = cursor.fetchall()
+    cursor.close()
+    conexion.close()
+    return alumnos
+
+def obtener_alumnos_por_alerta_docente(nivel):
+    """
+    Igual que obtener_alumnos_por_alerta, pero para el flujo de Docentes:
+    el docente sale de `horarios` (quien realmente da clase al grupo),
+    no de `tutor_grupo`. Un alumno puede repetirse una vez por cada
+    docente distinto que le dé clase en su grupo -- es lo esperado.
+    """
+    conexion = obtener_conexion()
+    cursor = conexion.cursor(dictionary=True)
+    cursor.execute(consultar_alumnos_por_alerta_docente(), (nivel,))
     alumnos = cursor.fetchall()
     cursor.close()
     conexion.close()

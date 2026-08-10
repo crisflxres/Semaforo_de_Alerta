@@ -162,23 +162,30 @@ async function actualizarTotal() {
 
     if (alcance === 'especifico' && grupoId) {
         try {
-            const res = await fetch(`https://semaforo-de-alerta.onrender.com/alertas/alumnos?nivel=${nivelActual}`);
-            const data = await res.json();
-            console.log('--- DEBUG actualizarTotal ---');
-            console.log('nivel:', nivelActual, '| grupoId seleccionado:', grupoId);
-            console.log('total alumnos regresados por la API:', data.datos?.length);
-            console.log('primeros 3 alumnos:', data.datos?.slice(0,3)); 
+            const quiereAlumnosOTutores = [...checkboxes].some(c => c.value === 'alumnos' || c.value === 'tutores');
+            const quiereDocentes = [...checkboxes].some(c => c.value === 'docentes');
 
-            if (data.ok) {
-                const alumnosGrupo = data.datos.filter(a => String(a.Id_Grupo) === String(grupoId));
-                console.log('alumnos que coinciden con el grupo:', alumnosGrupo.length);
-                console.log('campos del primer alumno del grupo:', alumnosGrupo[0]);
+            const peticiones = [];
+            peticiones.push(quiereAlumnosOTutores
+                ? fetch(`https://semaforo-de-alerta.onrender.com/alertas/alumnos?nivel=${nivelActual}`).then(r => r.json())
+                : Promise.resolve(null));
+            peticiones.push(quiereDocentes
+                ? fetch(`https://semaforo-de-alerta.onrender.com/alertas/alumnos-docente?nivel=${nivelActual}`).then(r => r.json())
+                : Promise.resolve(null));
 
+            const [dataAlumnos, dataDocentes] = await Promise.all(peticiones);
+
+            if (dataAlumnos?.ok) {
+                const alumnosGrupo = dataAlumnos.datos.filter(a => String(a.Id_Grupo) === String(grupoId));
                 checkboxes.forEach(c => {
                     if (c.value === 'alumnos') total += alumnosGrupo.filter(a => a.Email).length;
                     if (c.value === 'tutores') total += alumnosGrupo.filter(a => a.Correo_Tutor).length;
-                    if (c.value === 'docentes') total += alumnosGrupo.filter(a => a.Correo_Docente).length;
                 });
+            }
+
+            if (dataDocentes?.ok) {
+                const alumnosGrupoDoc = dataDocentes.datos.filter(a => String(a.Id_Grupo) === String(grupoId));
+                total += alumnosGrupoDoc.filter(a => a.Correo_Docente).length;
             }
         } catch (e) {
             console.error('Error calculando total por grupo:', e);
