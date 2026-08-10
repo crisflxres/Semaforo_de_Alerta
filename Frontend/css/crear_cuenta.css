@@ -7,10 +7,10 @@
 }
 body {
     background-color: #fcfbfa;
-    min-height: 100vh;
+    height: 100vh;
     display: flex;
     flex-direction: column;
-    overflow-x: hidden;
+    overflow: hidden;
 }
 
 /* 2. HEADER INSTITUCIONAL */
@@ -41,7 +41,7 @@ body {
     justify-content: space-between;
     padding: 40px 10%;
     position: relative;
-    min-height: calc(100vh - 94px);
+    overflow: hidden;
     background-image: url('../html/fondo.png');
     background-size: cover;
     background-position: center;
@@ -50,14 +50,16 @@ body {
 
 /* 4. DISTRIBUCIÓN DE COLUMNAS FLEXIBLES */
 .info-lado {
-    flex: 1;
-    max-width: 50%;
+    flex: 1 1 55%;
+    max-width: 60%;
+    min-width: 340px;
     display: flex;
     flex-direction: column;
     justify-content: center;
     z-index: 2;
     padding-right: 20px;
 }
+.titulo-sistema { font-size: clamp(2.2rem, 4vw, 3rem); color: #850121; font-weight: 700; line-height: 1.2; }
 .titulo-sistema { font-size: clamp(2rem, 4vw, 3rem); color: #850121; font-weight: 700; line-height: 1.2; }
 .titulo-sistema span { color: #850121; font-size: clamp(2.3rem, 4.5vw, 3.4rem); }
 .formulario-lado { flex: 1; display: flex; justify-content: flex-end; align-items: center; z-index: 2; }
@@ -66,57 +68,43 @@ body {
 .tarjeta-login {
     background: #ffffff;
     width: 100%;
-    max-width: 480px;
-    padding: 50px 40px;
+    max-width: 460px;
+    min-width: 300px;
+    padding: 35px 40px;
     border-radius: 28px;
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
     border: 1px solid #e2e8f0;
     text-align: center;
-    max-height: 90vh;
+    max-height: calc(100vh - 130px);
     overflow-y: auto;
 }
-.tarjeta-login h2 { font-size: 2.2rem; color: #850121; margin-bottom: 8px; }
-.subtitulo { font-size: 0.85rem; color: #8a8a8a; margin-bottom: 35px; }
-.grupo-input { margin-bottom: 20px; }
+.tarjeta-login h2 { font-size: 1.9rem; color: #850121; margin-bottom: 6px; }
+.subtitulo { font-size: 0.8rem; color: #8a8a8a; margin-bottom: 22px; line-height: 1.4; }
+.grupo-input { margin-bottom: 14px; }
 .input-icono-wrapper { position: relative; width: 100%; }
 
 /* Icono de entrada izquierdo (Usuario/Candado/Correo/Teléfono/Rol) */
-.input-icono-wrapper > i {
-    position: absolute;
-    left: 20px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #475569;
-    font-size: 22px;
-    pointer-events: none;
-}
 .input-icono-wrapper input {
     width: 100%;
-    padding: 18px 40px 18px 55px;
+    padding: 13px 40px 13px 52px;
     text-align: left;
     border: 1px solid #cbd5e1;
     border-radius: 14px;
     background-color: #f8fafc;
-    font-size: 1rem;
+    font-size: 0.92rem;
     color: #334155;
     outline: none;
     transition: all 0.2s ease;
 }
-.input-icono-wrapper input:focus {
-    border-color: #850121;
-    background-color: #ffffff;
-    box-shadow: 0 0 0 4px rgba(133, 1, 33, 0.1);
-}
 
-/* 5.1 ESTILO DEL SELECT DE ROL (mismo look que los inputs) */
 .input-icono-wrapper select {
     width: 100%;
-    padding: 18px 40px 18px 55px;
+    padding: 13px 40px 13px 52px;
     text-align: left;
     border: 1px solid #cbd5e1;
     border-radius: 14px;
     background-color: #f8fafc;
-    font-size: 1rem;
+    font-size: 0.92rem;
     color: #334155;
     outline: none;
     transition: all 0.2s ease;
@@ -125,25 +113,14 @@ body {
     -moz-appearance: none;
     cursor: pointer;
 }
-.input-icono-wrapper select:focus {
-    border-color: #850121;
-    background-color: #ffffff;
-    box-shadow: 0 0 0 4px rgba(133, 1, 33, 0.1);
-}
-.input-icono-wrapper select:invalid {
-    color: #94a3b8;
-}
-/* Flechita personalizada para el select, para que combine con el diseño */
-.input-icono-wrapper:has(select)::after {
-    content: '\f078';
-    font-family: 'Font Awesome 6 Free';
-    font-weight: 900;
+
+.input-icono-wrapper > i {
     position: absolute;
-    right: 20px;
+    left: 18px;
     top: 50%;
     transform: translateY(-50%);
     color: #475569;
-    font-size: 14px;
+    font-size: 19px;
     pointer-events: none;
 }
 
@@ -312,30 +289,4 @@ body {
     .titulo-sistema {
         font-size: 1.4rem;
     }
-}
-
-/* ==========================================================================
-   RESPONSIVE DESIGN
-   ========================================================================== */
-@media (max-width: 992px) {
-    .main-layout { flex-direction: column; }
-    .crear-cuenta-container, #panelRegistro { width: 100%; }
-    .grid-tarjetas { grid-template-columns: repeat(2, 1fr); }
-}
-
-@media (max-width: 768px) {
-    .logo { height: 32px; }
-
-    .tabs { flex-wrap: wrap; }
-    .tab-item { flex: 1 1 45%; font-size: 0.85rem; padding: 10px 6px; }
-
-    .contenedor-grupos { padding: 15px; margin: 15px auto; }
-    .header-grupos { flex-direction: column; align-items: stretch; gap: 10px; }
-    .input-buscar { width: 100%; }
-}
-
-@media (max-width: 480px) {
-    .tab-item { flex: 1 1 100%; }
-    .grid-tarjetas { grid-template-columns: 1fr; padding: 12px; }
-    .tarjeta-menu-flotante { width: 240px; }
 }
