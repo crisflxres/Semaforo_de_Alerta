@@ -42,6 +42,23 @@ def _obtener_filtros_disponibles(cursor):
     _CACHE_FILTROS["expira"] = ahora + _CACHE_TTL_SEGUNDOS
     return datos
 
+def _obtener_conteos_globales(cursor, base_from):
+    """
+    Calcula el desglose Regular/Riesgo/Crítico usando el mismo criterio
+    (niveles_alerta) y el mismo universo de alumnos (con JOIN a grupos/carreras)
+    que usa la lista principal. Así dashboard-stats y /api/alumnos nunca
+    se desincronizan.
+    """
+    cursor.execute(f"""
+        SELECT
+            COUNT(*) AS total,
+            SUM(CASE WHEN COALESCE(na.Nombre, 'Verde') = 'Verde' THEN 1 ELSE 0 END) AS regulares,
+            SUM(CASE WHEN na.Nombre = 'Amarillo' THEN 1 ELSE 0 END) AS riesgo,
+            SUM(CASE WHEN na.Nombre = 'Rojo' THEN 1 ELSE 0 END) AS criticos
+        {base_from}
+    """)
+    return cursor.fetchone()
+
 @alumnos_bp.route('/api/alumnos', methods=['GET'])
 def get_alumnos():
     conexion = None
@@ -83,15 +100,7 @@ def get_alumnos():
         """
 
         # --- Conteos globales para las tarjetas de metricas (SIEMPRE del total, sin filtros) ---
-        cursor.execute(f"""
-            SELECT
-                COUNT(*) AS total,
-                SUM(CASE WHEN COALESCE(na.Nombre, 'Verde') = 'Verde' THEN 1 ELSE 0 END) AS regulares,
-                SUM(CASE WHEN na.Nombre = 'Amarillo' THEN 1 ELSE 0 END) AS riesgo,
-                SUM(CASE WHEN na.Nombre = 'Rojo' THEN 1 ELSE 0 END) AS criticos
-            {base_from}
-        """)
-        conteos = cursor.fetchone()
+        conteos = _obtener_conteos_globales(cursor, base_from)
 
         # --- Filtros dinamicos para la lista (se aplican en SQL, no en el navegador) ---
         condiciones = []
@@ -196,44 +205,6 @@ def get_alumnos():
         if conexion and conexion.is_connected():
             conexion.close()
 
-
-@alumnos_bp.route('/api/dashboard-stats', methods=['GET'])
-def get_dashboard_stats():
-    try:
-        conexion = obtener_conexion()
-        cursor = conexion.cursor(dictionary=True)
-        cursor.execute("""
-            SELECT
-                COUNT(*) as total,
-                SUM(CASE WHEN COALESCE(rep.materias_reprobadas, 0) = 0 THEN 1 ELSE 0 END) as regulares,
-                SUM(CASE WHEN na.Nombre = 'Amarillo' THEN 1 ELSE 0 END) as riesgo,
-                SUM(CASE WHEN na.Nombre = 'Rojo' THEN 1 ELSE 0 END) as criticos
-            FROM alumnos a
-            LEFT JOIN (
-                SELECT Matricula, COUNT(*) AS materias_reprobadas
-                FROM calificaciones WHERE Aprobado = 0
-                GROUP BY Matricula
-            ) rep ON a.Matricula = rep.Matricula
-            LEFT JOIN niveles_alerta na
-                ON COALESCE(rep.materias_reprobadas, 0) >= na.Min_Reprobadas
-                AND (na.Max_Reprobados IS NULL OR COALESCE(rep.materias_reprobadas, 0) <= na.Max_Reprobados)
-            WHERE a.Activo = 1
-        """)
-        stats = cursor.fetchone()
-        cursor.close()
-        conexion.close()
-        return jsonify({
-            "success": True,
-            "total": stats['total'],
-            "regulares": stats['regulares'],
-            "riesgo": stats['riesgo'],
-            "criticos": stats['criticos']
-        })
-    
-    except mysql.connector.Error as err:
-        return jsonify({"success": False, "message": str(err)}), 500
-
-
 @alumnos_bp.route('/api/tutor/<matricula>', methods=['GET'])
 def get_tutor(matricula):
     conexion = None
@@ -281,20 +252,16 @@ def actualizar_tutor(matricula):
 
         cursor = conexion.cursor(dictionary=True)
 
-        # Verificamos si ya existe un registro para esta matricula
-        cursor.execute("SELECT Matricula FROM padre_alumno WHERE Matricula = %s", (matricula,))
-        existe = cursor.fetchone()
-
-        if existe:
-            cursor.execute(
-                "UPDATE padre_alumno SET Nombre = %s, Telefono = %s, Email = %s WHERE Matricula = %s",
-                (nombre, telefono, email, matricula)
-            )
-        else:
-            cursor.execute(
-                "INSERT INTO padre_alumno (Matricula, Nombre, Telefono, Email) VALUES (%s, %s, %s, %s)",
-                (matricula, nombre, telefono, email)
-            )
+        # Si la matrícula no existe, la inserta; si ya existe, actualiza los campos
+        sql = """
+            INSERT INTO padre_alumno (Matricula, Nombre, Telefono, Email)
+            VALUES (%s, %s, %s, %s)
+            ON DUPLICATE KEY UPDATE
+                Nombre = VALUES(Nombre),
+                Telefono = VALUES(Telefono),
+                Email = VALUES(Email)
+        """
+        cursor.execute(sql, (matricula, nombre, telefono, email))
 
         conexion.commit()
         cursor.close()
@@ -365,6 +332,46 @@ def delete_alumnos_6Semestre():
             conexion.rollback()
         print(f"Error de SQL: {err}")
         return jsonify({"success": False, "message": f"Error de base de datos: {str(err)}"}), 500
+    finally:
+        if conexion and conexion.is_connected():
+            conexion.close()
+            
+@alumnos_bp.route('/api/dashboard-stats', methods=['GET'])
+def get_dashboard_stats():
+    conexion = None
+    try:
+        conexion = obtener_conexion()
+        cursor = conexion.cursor(dictionary=True)
+
+        base_from = """
+            FROM alumnos a
+            JOIN grupos g ON a.Id_Grupo = g.Id_Grupo
+            JOIN carreras c ON g.Id_Carrera = c.Id_Carrera
+            LEFT JOIN (
+                SELECT Matricula, COUNT(*) AS materias_reprobadas
+                FROM calificaciones
+                WHERE Aprobado = 0
+                GROUP BY Matricula
+            ) rep ON a.Matricula = rep.Matricula
+            LEFT JOIN niveles_alerta na
+                ON COALESCE(rep.materias_reprobadas, 0) >= na.Min_Reprobadas
+                AND (na.Max_Reprobados IS NULL OR COALESCE(rep.materias_reprobadas, 0) <= na.Max_Reprobados)
+            WHERE a.Activo = 1
+        """
+
+        stats = _obtener_conteos_globales(cursor, base_from)
+        cursor.close()
+
+        return jsonify({
+            "success": True,
+            "total": stats['total'],
+            "regulares": stats['regulares'],
+            "riesgo": stats['riesgo'],
+            "criticos": stats['criticos']
+        })
+
+    except mysql.connector.Error as err:
+        return jsonify({"success": False, "message": str(err)}), 500
     finally:
         if conexion and conexion.is_connected():
             conexion.close()

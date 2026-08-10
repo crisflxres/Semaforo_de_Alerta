@@ -1,15 +1,17 @@
 from flask import Blueprint, request, jsonify
 import mysql.connector
 import secrets
-from werkzeug.security import generate_password_hash
+import bcrypt
 from conexion_db import obtener_conexion
+from auth_utils import requiere_rol
 
 tutor_bp = Blueprint('tutor_bp', __name__)
 
-ID_ROL_TUTOR = 3  # según tu tabla roles: 3 - Tutor - Tutor Académico
+ID_ROL_TUTOR = 3  # Rol 3: Tutor Académico / Padre de Familia
 
 
 @tutor_bp.route('/api/tutor/<matricula>', methods=['GET'])
+@requiere_rol(1, 2, 3)
 def get_tutor(matricula):
     conexion = None
     try:
@@ -18,7 +20,6 @@ def get_tutor(matricula):
             return jsonify({"success": False, "message": "No se pudo conectar a la base de datos"}), 500
 
         cursor = conexion.cursor(dictionary=True)
-        # Especificamos explícitamente u.Nombre desde la tabla usuarios
         cursor.execute("""
             SELECT 
                 u.Id_Usuario, 
@@ -32,7 +33,6 @@ def get_tutor(matricula):
         """, (matricula,))
         
         tutor = cursor.fetchone()
-        cursor.close()
 
         if tutor:
             nombre_val = tutor.get('Nombre') or ''
@@ -47,58 +47,57 @@ def get_tutor(matricula):
                     "Telefono": tutor.get('Telefono') or '',
                     "Email": tutor.get('Email') or ''
                 }
-            })
+            }), 200
         else:
-            return jsonify({"success": True, "existe": False})
+            return jsonify({"success": True, "existe": False}), 200
 
     except mysql.connector.Error as err:
-        print(f"Error de SQL en GET: {err}")
         return jsonify({"success": False, "message": f"Error de base de datos: {str(err)}"}), 500
     finally:
         if conexion and conexion.is_connected():
             conexion.close()
 
 @tutor_bp.route('/api/tutor/<matricula>', methods=['PUT'])
+@requiere_rol(1, 3)
 def actualizar_tutor(matricula):
-    print("--- ENTRANDO A ACTUALIZAR TUTOR ---")
+    datos = request.get_json(silent=True) or {}
+    
+    nombre_completo = str(datos.get('nombre', '')).strip()
+    telefono = str(datos.get('telefono', '')).strip()
+    email = str(datos.get('email', '')).strip()
+
+    if not nombre_completo or not telefono or not email:
+        return jsonify({"success": False, "message": "Faltan datos obligatorios del tutor (nombre, teléfono y email)."}), 400
+
+    partes = nombre_completo.split(' ', 1)
+    nombre = partes[0]
+    apellidos = partes[1] if len(partes) > 1 else ''
+
     conexion = None
     try:
-        datos = request.get_json()
-        nombre_completo = (datos.get('nombre') or '').strip()
-        telefono = (datos.get('telefono') or '').strip()
-        email = (datos.get('email') or '').strip()
-
-        if not nombre_completo or not telefono or not email:
-            return jsonify({"success": False, "message": "Faltan datos del tutor"}), 400
-
-        partes = nombre_completo.split(' ', 1)
-        nombre = partes[0]
-        apellidos = partes[1] if len(partes) > 1 else ''
-
         conexion = obtener_conexion()
         if not conexion:
             return jsonify({"success": False, "message": "No se pudo conectar a la base de datos"}), 500
 
         cursor = conexion.cursor(dictionary=True)
 
-        # ¿Ya hay un tutor ligado a esta matrícula?
+        # 1. Verificar si la matrícula ya tiene un tutor ligado
         cursor.execute(
             "SELECT Id_Usuario FROM padre_alumno WHERE Matricula = %s",
             (matricula,)
         )
         fila = cursor.fetchone()
 
-        # ¿Ese correo ya lo usa alguien en el sistema?
+        # 2. Verificar si el correo ya pertenece a algún usuario
         cursor.execute("SELECT Id_Usuario FROM usuarios WHERE Email = %s", (email,))
         usuario_con_ese_email = cursor.fetchone()
 
         if fila:
             id_usuario = fila['Id_Usuario']
 
-            # Si el correo pertenece a OTRO usuario distinto al tutor actual -> error
+            # Si el correo pertenece a OTRO usuario diferente al tutor actual
             if usuario_con_ese_email and usuario_con_ese_email['Id_Usuario'] != id_usuario:
-                cursor.close()
-                return jsonify({"success": False, "message": "Ese correo ya está registrado con otro usuario"}), 409
+                return jsonify({"success": False, "message": "Ese correo ya está registrado por otro usuario en el sistema."}), 409
 
             cursor.execute(
                 "UPDATE usuarios SET Nombre = %s, Apellidos = %s, Telefono = %s, Email = %s WHERE Id_Usuario = %s",
@@ -107,14 +106,20 @@ def actualizar_tutor(matricula):
 
         else:
             if usuario_con_ese_email:
-                # Ya existe un usuario con ese correo (ej. tutor de un hermano) -> lo reutilizamos
+                # Reutilizar el usuario existente (ej. tutor de un hermano)
                 id_usuario = usuario_con_ese_email['Id_Usuario']
                 cursor.execute(
                     "UPDATE usuarios SET Nombre = %s, Apellidos = %s, Telefono = %s WHERE Id_Usuario = %s",
                     (nombre, apellidos, telefono, id_usuario)
                 )
             else:
-                password_temporal = generate_password_hash(secrets.token_hex(8))
+                # Generar contraseña temporal segura con bcrypt
+                pass_temp_plain = secrets.token_hex(8)
+                password_temporal = bcrypt.hashpw(
+                    pass_temp_plain.encode('utf-8'), 
+                    bcrypt.gensalt()
+                ).decode('utf-8')
+
                 cursor.execute(
                     """INSERT INTO usuarios (Id_Rol, Nombre, Apellidos, Email, Password, Activo, Telefono)
                        VALUES (%s, %s, %s, %s, %s, %s, %s)""",
@@ -122,18 +127,16 @@ def actualizar_tutor(matricula):
                 )
                 id_usuario = cursor.lastrowid
 
+            # Crear la relación en la tabla intermedia
             cursor.execute(
                 "INSERT INTO padre_alumno (Matricula, Id_Usuario) VALUES (%s, %s)",
                 (matricula, id_usuario)
             )
 
         conexion.commit()
-        cursor.close()
-
-        return jsonify({"success": True, "message": "Datos del tutor guardados correctamente"})
+        return jsonify({"success": True, "message": "Datos del tutor guardados correctamente."}), 200
 
     except mysql.connector.Error as err:
-        print(f"Error de SQL: {err}")
         return jsonify({"success": False, "message": f"Error de base de datos: {str(err)}"}), 500
     finally:
         if conexion and conexion.is_connected():
