@@ -75,16 +75,13 @@ def agregar_aula():
         conexion = obtener_conexion()
         cursor = conexion.cursor()
 
-        # El backend calcula el ID real, no confiamos en lo que mande el cliente
-        cursor.execute("SELECT COALESCE(MAX(Id_Aula), 0) + 1 AS siguiente FROM aulas")
-        siguiente_id = cursor.fetchone()[0]
-
-        cursor.execute("""
-            INSERT INTO aulas (Id_Aula, Nombre)
-            VALUES (%s, %s)
-        """, (siguiente_id, nombre))
-
+        # Insertamos solo el nombre; MySQL asigna el Id_Aula automáticamente
+        cursor.execute("INSERT INTO aulas (Nombre) VALUES (%s)", (nombre,))
+        
         conexion.commit()
+        
+        # Obtenemos el ID que acaba de generar MySQL
+        siguiente_id = cursor.lastrowid
 
         cursor.close()
         conexion.close()
