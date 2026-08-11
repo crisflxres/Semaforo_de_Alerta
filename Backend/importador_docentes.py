@@ -5,7 +5,7 @@ def importar_docentes(hoja):
     
     for i, fila in hoja.iterrows():
         nombre_docente = str(fila.iloc[1]).strip()
-        correo = str(fila.iloc[2]).strip
+        correo = str(fila.iloc[2]).strip()
         rol_texto = str(fila.iloc[3]).strip().lower()
         
         # Omitir subdirectora o filas vacías/encabezados
