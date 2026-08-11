@@ -6,7 +6,7 @@ from auth_utils import requiere_rol
 rutas_docentes = Blueprint('rutas_docentes', __name__)
 
 @rutas_docentes.route('/docentes', methods=['GET'])
-@requiere_rol(1, 2, 4)
+@requiere_rol(1, 2, 3)
 def get_docentes():
     conexion = None
     try:
@@ -28,7 +28,7 @@ def get_docentes():
 
 
 @rutas_docentes.route('/docentes/<int:id_usuario>/resumen', methods=['GET'])
-@requiere_rol(1, 2, 4)
+@requiere_rol(1, 2, 3)
 def get_resumen_docente(id_usuario):
     conexion = None
     try:
@@ -52,7 +52,7 @@ def get_resumen_docente(id_usuario):
 
 
 @rutas_docentes.route('/docentes', methods=['POST'])
-@requiere_rol(1, 4)
+@requiere_rol(1, 3)
 def crear_docente():
     datos = request.get_json() or {}
     conexion = None
@@ -88,7 +88,7 @@ def crear_docente():
 
 
 @rutas_docentes.route('/docentes/<int:id_usuario>', methods=['PUT'])
-@requiere_rol(1, 4)
+@requiere_rol(1, 3)
 def editar_docente(id_usuario):
     datos = request.get_json() or {}
     conexion = None
@@ -112,7 +112,7 @@ def editar_docente(id_usuario):
 
 
 @rutas_docentes.route('/docentes/<int:id_usuario>', methods=['DELETE'])
-@requiere_rol(1, 4)
+@requiere_rol(1, 3)
 def eliminar_docente(id_usuario):
     conexion = None
     try:
