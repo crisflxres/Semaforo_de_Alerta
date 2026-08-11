@@ -6,17 +6,7 @@ horarios_bp = Blueprint('horarios_bp', __name__)
 
 
 def verificar_conflictos(cursor, id_grupo, id_usuario, id_aula, dia_semana,
-                          hora_inicio, hora_fin, id_horario_excluir=None):
-    """
-    Revisa si ya existe una clase registrada que se traslape en tiempo
-    (mismo día, y el rango de horas se cruza) y que además comparta
-    Aula, Docente o Grupo con la clase que se quiere guardar.
-
-    id_horario_excluir se usa al editar, para no chocar contra sí misma.
-
-    Regresa None si no hay conflicto, o un string con el mensaje de error
-    describiendo el conflicto encontrado.
-    """
+                         hora_inicio, hora_fin, id_horario_excluir=None):
     query = """
         SELECT h.Id_Horario, h.Id_Aula, h.Id_Usuario, h.Id_Grupo,
                a.Nombre AS Aula,
@@ -52,7 +42,6 @@ def verificar_conflictos(cursor, id_grupo, id_usuario, id_aula, dia_semana,
         if str(c['Id_Grupo']) == str(id_grupo):
             motivos.append(f"el grupo '{c['Grupo']}' ya tiene otra clase")
 
-    # Quitamos duplicados manteniendo el orden
     motivos = list(dict.fromkeys(motivos))
     return "Conflicto de horario: " + "; ".join(motivos) + " en ese día y hora."
 
@@ -60,10 +49,7 @@ def verificar_conflictos(cursor, id_grupo, id_usuario, id_aula, dia_semana,
 @horarios_bp.route('/api/horarios', methods=['GET'])
 @requiere_rol(1, 2, 3)
 def get_horarios():
-    """
-    Devuelve todas las clases registradas, con los nombres ya resueltos
-    (docente, grupo, materia, aula) para poder pintarlas directo en el grid.
-    """
+    conexion = None
     try:
         conexion = obtener_conexion()
         cursor = conexion.cursor(dictionary=True)
@@ -82,9 +68,7 @@ def get_horarios():
         """)
         horarios = cursor.fetchall()
         cursor.close()
-        conexion.close()
 
-        # MySQL devuelve las columnas TIME como timedelta -> las pasamos a texto "HH:MM:SS"
         for h in horarios:
             for campo in ('Hora_Inicio', 'Hora_Fin'):
                 if h.get(campo) is not None:
@@ -93,12 +77,16 @@ def get_horarios():
         return jsonify({"success": True, "data": horarios})
     except Exception as err:
         return jsonify({"success": False, "message": str(err)}), 500
+    finally:
+        if conexion and conexion.is_connected():
+            conexion.close()
 
 
 @horarios_bp.route('/api/horarios', methods=['POST'])
 @requiere_rol(1, 3) 
 def crear_horario():
-    datos = request.get_json()
+    datos = request.get_json() or {}
+    conexion = None
     try:
         id_usuario  = datos.get('Id_Usuario')
         id_grupo    = datos.get('Id_Grupo')
@@ -119,7 +107,6 @@ def crear_horario():
         )
         if conflicto:
             cursor.close()
-            conexion.close()
             return jsonify({"success": False, "message": conflicto}), 409
 
         cursor.execute("""
@@ -130,7 +117,6 @@ def crear_horario():
         conexion.commit()
         nuevo_id = cursor.lastrowid
         cursor.close()
-        conexion.close()
 
         return jsonify({
             "success": True,
@@ -138,13 +124,19 @@ def crear_horario():
             "Id_Horario": nuevo_id
         })
     except Exception as err:
+        if conexion and conexion.is_connected():
+            conexion.rollback()
         return jsonify({"success": False, "message": str(err)}), 500
+    finally:
+        if conexion and conexion.is_connected():
+            conexion.close()
 
 
 @horarios_bp.route('/api/horarios/<int:id_horario>', methods=['PUT'])
 @requiere_rol(1, 3) 
 def editar_horario(id_horario):
-    datos = request.get_json()
+    datos = request.get_json() or {}
+    conexion = None
     try:
         id_usuario  = datos.get('Id_Usuario')
         id_grupo    = datos.get('Id_Grupo')
@@ -166,7 +158,6 @@ def editar_horario(id_horario):
         )
         if conflicto:
             cursor.close()
-            conexion.close()
             return jsonify({"success": False, "message": conflicto}), 409
 
         cursor.execute("""
@@ -177,20 +168,20 @@ def editar_horario(id_horario):
         """, (id_usuario, id_grupo, id_materia, dia_semana, hora_inicio, hora_fin, id_aula, id_horario))
         conexion.commit()
         cursor.close()
-        conexion.close()
         return jsonify({"success": True, "message": "Clase actualizada correctamente."})
     except Exception as err:
+        if conexion and conexion.is_connected():
+            conexion.rollback()
         return jsonify({"success": False, "message": str(err)}), 500
+    finally:
+        if conexion and conexion.is_connected():
+            conexion.close()
 
 
 @horarios_bp.route('/api/horarios/resumen-materia/<int:id_materia>', methods=['GET'])
 @requiere_rol(1, 2, 3) 
 def resumen_materia(id_materia):
-    """
-    Nota general de una materia: qué docentes la imparten, en qué grupos
-    y en qué aulas, según lo que ya está registrado en 'horarios'.
-    Se usa para la tarjetita que aparece al hacer doble clic en una clase.
-    """
+    conexion = None
     try:
         conexion = obtener_conexion()
         cursor = conexion.cursor(dictionary=True)
@@ -227,7 +218,6 @@ def resumen_materia(id_materia):
         aulas = [f['nombre'] for f in cursor.fetchall()]
 
         cursor.close()
-        conexion.close()
 
         return jsonify({
             "success": True,
@@ -240,18 +230,26 @@ def resumen_materia(id_materia):
         })
     except Exception as err:
         return jsonify({"success": False, "message": str(err)}), 500
+    finally:
+        if conexion and conexion.is_connected():
+            conexion.close()
 
 
 @horarios_bp.route('/api/horarios/<int:id_horario>', methods=['DELETE'])
 @requiere_rol(1, 3)
 def eliminar_horario(id_horario):
+    conexion = None
     try:
         conexion = obtener_conexion()
         cursor = conexion.cursor()
         cursor.execute("DELETE FROM horarios WHERE Id_Horario=%s", (id_horario,))
         conexion.commit()
         cursor.close()
-        conexion.close()
         return jsonify({"success": True, "message": "Clase eliminada correctamente."})
     except Exception as err:
+        if conexion and conexion.is_connected():
+            conexion.rollback()
         return jsonify({"success": False, "message": str(err)}), 500
+    finally:
+        if conexion and conexion.is_connected():
+            conexion.close()

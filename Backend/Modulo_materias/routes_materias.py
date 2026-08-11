@@ -1,107 +1,91 @@
 from flask import Blueprint, jsonify, request
 from conexion_db import obtener_conexion
 from auth_utils import requiere_rol
+import mysql.connector
 
 materias_bp = Blueprint("materias", __name__)
 
-@materias_bp.route("/api/materias")
+@materias_bp.route("/api/materias", methods=["GET"])
 @requiere_rol(1, 2, 3)
 def get_materias():
-    conexion = obtener_conexion()
-    query = "SELECT Id_Materia, Nombre, Semestre, Id_Carrera, Tipo FROM materias"
-    
-    cursor = conexion.cursor()
-    cursor.execute(query)
-    filas = cursor.fetchall()
-    
-    materias:list = []
-    
-    for fila in filas:
-        materias.append({
-            "Id_Materia": fila[0],
-            "Nombre": fila[1],
-            "Semestre":fila[2],
-            "Id_Carrera": fila [3],
-            "Tipo": fila[4]
-        })
-    cursor.close()
-    conexion.close()
-    return jsonify(materias)
+    conexion = None
+    try:
+        conexion = obtener_conexion()
+        cursor = conexion.cursor(dictionary=True)
+        query = "SELECT Id_Materia, Nombre, Semestre, Id_Carrera, Tipo FROM materias"
+        cursor.execute(query)
+        materias = cursor.fetchall()
+        return jsonify(materias), 200
+    except mysql.connector.Error as err:
+        return jsonify({"success": False, "message": f"Error de base de datos: {err}"}), 500
+    finally:
+        if conexion and conexion.is_connected():
+            conexion.close()
 
-@materias_bp.route("/api/materias", methods = ["POST"])
+@materias_bp.route("/api/materias", methods=["POST"])
 @requiere_rol(1, 3)
 def crear_materia():
-    datos =request.get_json()
+    datos = request.get_json(silent=True) or {}
     
-    nombre = datos.get('Nombre', '').strip()
-    semestre = datos.get('Semestre', '')
-    clave_Carrera = datos.get('Clave_Carrera', '').strip()
+    nombre = str(datos.get('Nombre', '')).strip()
+    semestre = datos.get('Semestre')
+    id_carrera = datos.get('Clave_Carrera') or datos.get('Id_Carrera')
     tipo_materia = datos.get('Tipo')
     
-    if not nombre:
-        return jsonify({"success": False, "message": "El nombre es obligatorio."}), 400
-    conexion = obtener_conexion()
-    cursor = conexion.cursor()
-    
-    sql = "INSERT IGNORE INTO materias (Nombre, Semestre, Id_Carrera, Tipo) VALUES (%s, %s, %s, %s)"
-    valores = (
-        nombre, 
-        semestre, 
-        clave_Carrera,  
-        tipo_materia
-    )
-    cursor.execute(sql, valores)
-    conexion.commit()
+    if not nombre or not id_carrera:
+        return jsonify({"success": False, "message": "El nombre y la carrera son obligatorios."}), 400
 
-    cursor.close()
-    conexion.close()
+    conexion = None
+    try:
+        conexion = obtener_conexion()
+        cursor = conexion.cursor()
+        sql = "INSERT IGNORE INTO materias (Nombre, Semestre, Id_Carrera, Tipo) VALUES (%s, %s, %s, %s)"
+        cursor.execute(sql, (nombre, semestre, id_carrera, tipo_materia))
+        conexion.commit()
+        return jsonify({"success": True, "message": "Materia registrada correctamente."}), 201
+    except mysql.connector.Error as err:
+        return jsonify({"success": False, "message": f"Error de base de datos: {err}"}), 500
+    finally:
+        if conexion and conexion.is_connected():
+            conexion.close()
 
-    return jsonify({"success": True, "message": "Materia registrada correctamente..."})
-
-@materias_bp.route("/api/materias", methods = ["PUT"] )
+@materias_bp.route("/api/materias/<int:id_materia>", methods=["PUT"])
 @requiere_rol(1, 3)
-def editar_materia():
-    datos = request.get_json()
+def editar_materia(id_materia):
+    datos = request.get_json(silent=True) or {}
     
-    id_materia   = datos.get('Id_Materia')
-    nombre       = datos.get('Nombre', '').strip()
-    semestre     = datos.get('Semestre', '')
-    clave_carrera = datos.get('Clave_Carrera', '')
-    tipo_materia = datos.get('Tipo', '')
+    nombre = str(datos.get('Nombre', '')).strip()
+    semestre = datos.get('Semestre')
+    id_carrera = datos.get('Clave_Carrera') or datos.get('Id_Carrera')
+    tipo_materia = datos.get('Tipo')
 
-    valores = (nombre, semestre, clave_carrera, tipo_materia, id_materia)
-    
-    conexion = obtener_conexion()
-    cursor = conexion.cursor()
-    
-    sql = "UPDATE materias SET Nombre = %s, Semestre = %s, Id_Carrera = %s, Tipo = %s WHERE Id_Materia = %s"
-    
-    cursor.execute(sql, valores)
-    conexion.commit()
-    
-    cursor.close()
-    conexion.close()
-    
-    return jsonify({"success": True, "message": "Materia actualizada correctamente."})
+    conexion = None
+    try:
+        conexion = obtener_conexion()
+        cursor = conexion.cursor()
+        sql = "UPDATE materias SET Nombre = %s, Semestre = %s, Id_Carrera = %s, Tipo = %s WHERE Id_Materia = %s"
+        cursor.execute(sql, (nombre, semestre, id_carrera, tipo_materia, id_materia))
+        conexion.commit()
+        return jsonify({"success": True, "message": "Materia actualizada correctamente."}), 200
+    except mysql.connector.Error as err:
+        return jsonify({"success": False, "message": f"Error de base de datos: {err}"}), 500
+    finally:
+        if conexion and conexion.is_connected():
+            conexion.close()
 
-@materias_bp.route("/api/materias", methods = ["DELETE"] )
+@materias_bp.route("/api/materias/<int:id_materia>", methods=["DELETE"])
 @requiere_rol(1, 3)
-def eliminar_materia():
-    dato = request.get_json()
-    
-    id_materia   = dato.get('Id_Materia')
-    
-    valor = (id_materia,)
-    
-    conexion = obtener_conexion()
-    cursor = conexion.cursor()
-    
-    sql = "DELETE FROM materias WHERE Id_Materia = %s"
-    
-    cursor.execute(sql, valor)
-    conexion.commit()
-    
-    cursor.close()
-    conexion.close()
-    
-    return jsonify({"success": True, "message": "Materia eliminada correctamente."})
+def eliminar_materia(id_materia):
+    conexion = None
+    try:
+        conexion = obtener_conexion()
+        cursor = conexion.cursor()
+        sql = "DELETE FROM materias WHERE Id_Materia = %s"
+        cursor.execute(sql, (id_materia,))
+        conexion.commit()
+        return jsonify({"success": True, "message": "Materia eliminada correctamente."}), 200
+    except mysql.connector.Error as err:
+        return jsonify({"success": False, "message": f"Error de base de datos: {err}"}), 500
+    finally:
+        if conexion and conexion.is_connected():
+            conexion.close()

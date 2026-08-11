@@ -37,16 +37,12 @@ def extraer_nombre_grupo(nombre_archivo):
     return coincidencia.group(1).upper()
 
 
-def obtener_datos_grupo(nombre_grupo):
-    conexion = obtener_conexion()
-    cursor = conexion.cursor(dictionary=True)
+def obtener_datos_grupo(cursor, nombre_grupo):
     cursor.execute(
         "SELECT Id_Grupo, Id_Carrera, Semestre FROM grupos WHERE Nombre = %s",
         (nombre_grupo,)
     )
     fila = cursor.fetchone()
-    cursor.close()
-    conexion.close()
 
     if not fila:
         return None
@@ -59,19 +55,13 @@ def obtener_datos_grupo(nombre_grupo):
 
     return fila["Id_Grupo"], fila["Id_Carrera"], semestre_numero
 
+
 def comprimir_foto(ruta_archivo, ancho_maximo=400, calidad=75):
-    """
-    Abre una foto, la redimensiona si es más ancha que ancho_maximo
-    (conservando proporción), la convierte a JPEG comprimido,
-    y regresa los bytes listos para guardar en la BD.
-    """
     imagen = Image.open(ruta_archivo)
     imagen = ImageOps.exif_transpose(imagen)
-    # Si la imagen viene en modo raro (ej. PNG con transparencia, CMYK), la pasamos a RGB
     if imagen.mode != "RGB":
         imagen = imagen.convert("RGB")
 
-    # Redimensionar solo si es más ancha que el máximo permitido
     if imagen.width > ancho_maximo:
         proporcion = ancho_maximo / imagen.width
         nuevo_alto = int(imagen.height * proporcion)
@@ -92,6 +82,7 @@ def prueba():
 
 @configuracion_bp.route("/historial/<int:id_importacion>", methods=["DELETE"])
 def borrar_importacion(id_importacion):
+    conexion = None
     try:
         conexion = obtener_conexion()
         cursor = conexion.cursor()
@@ -99,23 +90,33 @@ def borrar_importacion(id_importacion):
         cursor.execute("DELETE FROM importaciones WHERE id_importacion = %s", (id_importacion,))
         conexion.commit()
         cursor.close()
-        conexion.close()
         return jsonify({"success": True, "mensaje": "Importación eliminada"})
     except Exception as e:
+        if conexion and conexion.is_connected():
+            conexion.rollback()
         return jsonify({"success": False, "mensaje": str(e)}), 500
+    finally:
+        if conexion and conexion.is_connected():
+            conexion.close()
 
 
 @configuracion_bp.route("/historial", methods=["GET"])
 def historial_importaciones():
+    conexion = None
     try:
         conexion = obtener_conexion()
         cursor = conexion.cursor(dictionary=True)
         cursor.execute("""
-            SELECT i.id_importacion, i.archivo, i.fecha,
-                    g.Nombre AS grupo,
-                    (SELECT COUNT(*) FROM calificaciones c WHERE c.Id_Importacion = i.id_importacion) AS registros
+            SELECT 
+                i.id_importacion, 
+                i.archivo, 
+                i.fecha,
+                g.Nombre AS grupo,
+                COUNT(c.Id_Calificacion) AS registros
             FROM importaciones i
             LEFT JOIN grupos g ON g.Id_Grupo = i.id_grupo
+            LEFT JOIN calificaciones c ON c.Id_Importacion = i.id_importacion
+            GROUP BY i.id_importacion, i.archivo, i.fecha, g.Nombre
             ORDER BY i.fecha DESC
         """)
         filas = cursor.fetchall()
@@ -124,10 +125,12 @@ def historial_importaciones():
                 fila["fecha"] = fila["fecha"].strftime("%Y-%m-%d %H:%M:%S")
 
         cursor.close()
-        conexion.close()
         return jsonify({"success": True, "data": filas})
     except Exception as e:
         return jsonify({"success": False, "mensaje": str(e)}), 500
+    finally:
+        if conexion and conexion.is_connected():
+            conexion.close()
 
 
 @configuracion_bp.route("/importar-taca", methods=["POST"])
@@ -154,23 +157,24 @@ def importar_taca():
                         f"Se espera un nombre como 'TACA_03AL4I.xls'."
         }), 400
 
+    conexion = None
     try:
-        datos_grupo = obtener_datos_grupo(nombre_grupo)
-    except ValueError as e:
-        return jsonify({"success": False, "mensaje": str(e)}), 400
+        conexion = obtener_conexion()
+        cursor = conexion.cursor(dictionary=True)
 
-    if datos_grupo is None:
-        return jsonify({
-            "success": False,
-            "mensaje": f"El grupo '{nombre_grupo}' extraído del archivo no existe en la tabla de grupos."
-        }), 400
+        datos_grupo = obtener_datos_grupo(cursor, nombre_grupo)
 
-    id_grupo, id_carrera, semestre = datos_grupo
+        if datos_grupo is None:
+            return jsonify({
+                "success": False,
+                "mensaje": f"El grupo '{nombre_grupo}' extraído del archivo no existe en la tabla de grupos."
+            }), 400
 
-    ruta_temporal = os.path.join(tempfile.gettempdir(), nombre_archivo)
-    archivo.save(ruta_temporal)
+        id_grupo, id_carrera, semestre = datos_grupo
 
-    try:
+        ruta_temporal = os.path.join(tempfile.gettempdir(), nombre_archivo)
+        archivo.save(ruta_temporal)
+
         resultado = importar_taca_completo(
             ruta_archivo=ruta_temporal,
             nombre_archivo=nombre_archivo,
@@ -179,10 +183,20 @@ def importar_taca():
             semestre=semestre,
             importado_por=None,
         )
+
+        conexion.commit()
+        cursor.close()
+
+    except ValueError as e:
+        return jsonify({"success": False, "mensaje": str(e)}), 400
     except Exception as e:
+        if conexion and conexion.is_connected():
+            conexion.rollback()
         return jsonify({"success": False, "mensaje": f"Error al importar: {str(e)}"}), 500
     finally:
-        if os.path.exists(ruta_temporal):
+        if conexion and conexion.is_connected():
+            conexion.close()
+        if 'ruta_temporal' in locals() and os.path.exists(ruta_temporal):
             os.remove(ruta_temporal)
 
     return jsonify({
@@ -214,6 +228,7 @@ def importar_contactos():
     ruta_temporal = os.path.join(tempfile.gettempdir(), nombre_archivo)
     archivo.save(ruta_temporal)
 
+    conexion = None
     try:
         hoja = pd.read_excel(ruta_temporal)
         contactos = importar_correos_electronicos(hoja)
@@ -222,26 +237,27 @@ def importar_contactos():
         cursor = conexion.cursor()
 
         actualizados = actualizar_correos_bulk(cursor, contactos)
-
         id_importacion = insertar_importacion(cursor, None, nombre_archivo, None)
 
         conexion.commit()
         cursor.close()
-        conexion.close()
 
+        return jsonify({
+            "success": True,
+            "mensaje": "Contactos importados correctamente",
+            "archivo": nombre_archivo,
+            "registros": actualizados,
+            "id_importacion": id_importacion,
+        })
     except Exception as e:
+        if conexion and conexion.is_connected():
+            conexion.rollback()
         return jsonify({"success": False, "mensaje": f"Error al importar contactos: {str(e)}"}), 500
     finally:
+        if conexion and conexion.is_connected():
+            conexion.close()
         if os.path.exists(ruta_temporal):
             os.remove(ruta_temporal)
-
-    return jsonify({
-        "success": True,
-        "mensaje": "Contactos importados correctamente",
-        "archivo": nombre_archivo,
-        "registros": actualizados,
-        "id_importacion": id_importacion,
-    }) 
 
 
 @configuracion_bp.route("/importar-fotos", methods=["POST"])
@@ -252,16 +268,14 @@ def importar_fotos_route():
         return jsonify({"success": False, "mensaje": "No se enviaron fotos"}), 400
 
     carpeta_temporal = tempfile.mkdtemp(prefix="fotos_import_")
+    conexion = None
 
     try:
-        # Guardamos cada archivo en la carpeta temporal, aplanado (sin subcarpetas).
-        # importar_fotos() recorre con os.walk y solo le importa el nombre del
-        # archivo (número = matrícula), no en qué subcarpeta esté.
         for archivo in archivos:
             nombre_base = os.path.basename(archivo.filename)
             extension = os.path.splitext(nombre_base)[1].lower()
             if extension not in EXTENSIONES_FOTOS_PERMITIDAS:
-                continue  # ignora archivos que no sean .jpg/.jpeg 
+                continue 
             nombre_seguro = secure_filename(nombre_base)
             ruta_destino = os.path.join(carpeta_temporal, nombre_seguro)
             archivo.save(ruta_destino)
@@ -275,8 +289,6 @@ def importar_fotos_route():
                 print(f"[AVISO] No se pudo procesar la foto de {foto['matricula']}: {e}")
                 return None
 
-        # Pillow libera el GIL durante resize/save, así que varios hilos
-        # sí aceleran esto en vez de procesar las fotos una por una.
         with ThreadPoolExecutor(max_workers=os.cpu_count() or 4) as executor:
             fotos_comprimidas = [
                 resultado for resultado in executor.map(_comprimir_foto_segura, fotos_encontradas)
@@ -290,38 +302,44 @@ def importar_fotos_route():
 
         conexion.commit()
         cursor.close()
-        conexion.close()
 
+        return jsonify({
+            "success": True,
+            "mensaje": "Lote de fotos importado correctamente",
+            "registros": actualizadas,
+        })
     except Exception as e:
+        if conexion and conexion.is_connected():
+            conexion.rollback()
         return jsonify({"success": False, "mensaje": f"Error al importar fotos: {str(e)}"}), 500
     finally:
+        if conexion and conexion.is_connected():
+            conexion.close()
         shutil.rmtree(carpeta_temporal, ignore_errors=True)
 
-    return jsonify({
-        "success": True,
-        "mensaje": "Lote de fotos importado correctamente",
-        "registros": actualizadas,
-    })
 
 @configuracion_bp.route("/finalizar-importacion-fotos", methods=["POST"])
 def finalizar_importacion_fotos():
-    """Se llama UNA sola vez, después de subir todos los lotes de fotos,
-    para dejar un solo registro en el Historial con el total acumulado."""
-    datos = request.get_json()
+    datos = request.get_json() or {}
     total_registros = datos.get("registros", 0)
 
+    conexion = None
     try:
         conexion = obtener_conexion()
         cursor = conexion.cursor()
         id_importacion = insertar_importacion(cursor, None, "Carpeta de fotos", None)
         conexion.commit()
         cursor.close()
-        conexion.close()
-    except Exception as e:
-        return jsonify({"success": False, "mensaje": str(e)}), 500
 
-    return jsonify({
-        "success": True,
-        "id_importacion": id_importacion,
-        "registros": total_registros,
-    })
+        return jsonify({
+            "success": True,
+            "id_importacion": id_importacion,
+            "registros": total_registros,
+        })
+    except Exception as e:
+        if conexion and conexion.is_connected():
+            conexion.rollback()
+        return jsonify({"success": False, "mensaje": str(e)}), 500
+    finally:
+        if conexion and conexion.is_connected():
+            conexion.close()

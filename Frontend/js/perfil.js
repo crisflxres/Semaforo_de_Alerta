@@ -43,8 +43,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    
-
     // 4. MOSTRAR CARGO SEGÚN EL ROL
     const CARGOS_POR_ROL = {
         1: "Administrador",

@@ -1,4 +1,5 @@
 from flask import Blueprint, jsonify
+import mysql.connector
 from conexion_db import obtener_conexion
 from auth_utils import requiere_rol
 
@@ -7,22 +8,21 @@ carreras_bp = Blueprint("carreras", __name__)
 @carreras_bp.route("/api/carreras")
 @requiere_rol(1, 2, 3)
 def get_carreras():
-    conexion = obtener_conexion()
-    query = "SELECT Id_Carrera, Nombre, Clave FROM carreras"
+    conexion = None
+    try:
+        cursor = conexion.cursor(dictionary=True)
+        # Pedimos los datos estructurados como diccionario
+        cursor.execute("SELECT Id_Carrera, Nombre, Clave FROM carreras")
+        filas = cursor.fetchall()
 
-    cursor = conexion.cursor()
-    cursor.execute(query)
-    filas = cursor.fetchall()
+        # fetchall() ya entrega la lista de diccionarios lista para jsonify
+        carreras = cursor.fetchall()
 
-    carreras: list = []
+        cursor.close()
+        return jsonify(carreras)
 
-    for fila in filas:
-        carreras.append({
-            "Id_Carrera": fila[0],
-            "Nombre": fila[1],
-            "Clave": fila[2]
-        })
-
-    cursor.close()
-    conexion.close()
-    return jsonify(carreras)
+    except mysql.connector.Error as err:
+        return jsonify({"success": False, "message": str(err)}), 500
+    finally:
+        if conexion and conexion.is_connected():
+            conexion.close()
