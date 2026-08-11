@@ -414,16 +414,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         let fechaEnvio = null;
         let horaEnvio = null;
 
-        if (modalidad === 'programar' && destinatariosNormales.length > 0) {
+        if (modalidad === 'programar' && (destinatariosNormales.length > 0 || incluyeDocentes)) {
             fechaEnvio = document.getElementById('inputFecha').value;
             horaEnvio = document.getElementById('inputHora').value;
-
             if (!fechaEnvio || !horaEnvio) {
                 alert('Selecciona la fecha y hora de envío.');
                 return;
             }
         }
-
         const btn = document.getElementById('btnEnviarAlerta');
         btn.disabled = true;
         btn.textContent = 'Enviando...';
@@ -472,18 +470,26 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             // 2) Docentes -> endpoint y lógica propios (1 correo resumen por docente)
             if (incluyeDocentes) {
-                const payloadDocente = { nivel: nivelActual, grupo_id: grupoId };
-
+                const payloadDocente = {
+                    nivel: nivelActual,
+                    grupo_id: grupoId,
+                    modalidad,
+                    fecha_envio: fechaEnvio,
+                    hora_envio: horaEnvio
+                };
                 const resDoc = await fetch('https://semaforo-de-alerta.onrender.com/alertas/enviar-docente', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payloadDocente)
                 });
                 const dataDoc = await resDoc.json();
-
                 if (dataDoc.ok) {
-                    totalDocentes = dataDoc.enviados;
-                    totalFallidos += dataDoc.fallidos;
+                    if (modalidad === 'programar') {
+                        mensajesInfo.push(`Docentes programados: ${dataDoc.total_programados}`);
+                    } else {
+                        totalDocentes = dataDoc.enviados;
+                        totalFallidos += dataDoc.fallidos;
+                    }
                 } else {
                     huboError = true;
                     mensajesError.push(`Docentes: ${dataDoc.mensaje}`);
