@@ -342,6 +342,7 @@ body {
     body { overflow: auto; height: auto; } /* en móvil dejamos que la página scrollee normal */
     .logo { height: 30px; }
     .main-header { position: relative; padding: 10px 16px; height: 56px; } 
+    .user-avatar { width: 32px; height: 32px; font-size: 13px; } 
 
 
     .tabs { flex-wrap: wrap; gap: 8px; }
