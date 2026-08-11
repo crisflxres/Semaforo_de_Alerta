@@ -414,21 +414,23 @@ document.addEventListener('DOMContentLoaded', async () => {
         let fechaEnvio = null;
         let horaEnvio = null;
 
-        if (modalidad === 'programar' && destinatariosNormales.length > 0) {
+        if (modalidad === 'programar' && (destinatariosNormales.length > 0 || incluyeDocentes)) {
             fechaEnvio = document.getElementById('inputFecha').value;
             horaEnvio = document.getElementById('inputHora').value;
-
             if (!fechaEnvio || !horaEnvio) {
                 alert('Selecciona la fecha y hora de envío.');
                 return;
             }
         }
-
         const btn = document.getElementById('btnEnviarAlerta');
         btn.disabled = true;
         btn.textContent = 'Enviando...';
 
-        let mensajesResultado = [];
+        let totalEnviados = 0;
+        let totalFallidos = 0;
+        let totalDocentes = 0;
+        let mensajesError = [];
+        let mensajesInfo = [];
         let huboError = false;
 
         try {
@@ -455,36 +457,50 @@ document.addEventListener('DOMContentLoaded', async () => {
 
                 if (data.ok) {
                     if (modalidad === 'programar') {
-                        mensajesResultado.push(`Alumnos/Tutores: programado para ${fechaEnvio} ${horaEnvio}.`);
+                        mensajesInfo.push(`Programado para ${fechaEnvio} ${horaEnvio}`);
                     } else {
-                        mensajesResultado.push(`Alumnos/Tutores: ${data.enviados} enviados, ${data.fallidos} fallidos.`);
+                        totalEnviados += data.enviados;
+                        totalFallidos += data.fallidos;
                     }
                 } else {
                     huboError = true;
-                    mensajesResultado.push(`Alumnos/Tutores: error - ${data.mensaje}`);
+                    mensajesError.push(`Alumnos/Tutores: ${data.mensaje}`);
                 }
             }
 
             // 2) Docentes -> endpoint y lógica propios (1 correo resumen por docente)
             if (incluyeDocentes) {
-                const payloadDocente = { nivel: nivelActual, grupo_id: grupoId };
-
+                const payloadDocente = {
+                    nivel: nivelActual,
+                    grupo_id: grupoId,
+                    modalidad,
+                    fecha_envio: fechaEnvio,
+                    hora_envio: horaEnvio
+                };
                 const resDoc = await fetch('https://semaforo-de-alerta.onrender.com/alertas/enviar-docente', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payloadDocente)
                 });
                 const dataDoc = await resDoc.json();
-
                 if (dataDoc.ok) {
-                    mensajesResultado.push(`Docentes: ${dataDoc.enviados} correo(s) resumen enviados a ${dataDoc.total_docentes} docente(s).`);
+                    if (modalidad === 'programar') {
+                        mensajesInfo.push(`Docentes programados: ${dataDoc.total_programados}`);
+                    } else {
+                        totalDocentes = dataDoc.enviados;
+                        totalFallidos += dataDoc.fallidos;
+                    }
                 } else {
                     huboError = true;
-                    mensajesResultado.push(`Docentes: ${dataDoc.mensaje}`);
+                    mensajesError.push(`Docentes: ${dataDoc.mensaje}`);
                 }
             }
 
-            alert(mensajesResultado.join('\n'));
+            let mensajeFinal = `Correos enviados: ${totalEnviados}\nFallidos: ${totalFallidos}\nDocentes: ${totalDocentes}`;
+            if (mensajesInfo.length > 0) mensajeFinal += `\n${mensajesInfo.join('\n')}`;
+            if (mensajesError.length > 0) mensajeFinal += `\n${mensajesError.join('\n')}`;
+
+            alert(mensajeFinal);
             await cargarHistorial();
 
         } catch (e) {

@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 from .services import obtener_alumnos_por_alerta, obtener_alumnos_por_alerta_docente, obtener_grupos, obtener_resumen_destinatarios, obtener_alertas_alumno
 from .correo_service import enviar_correo, reemplazar_variables, extraer_imagenes_base64
-from .docentes_services import enviar_resumen_docentes
+from .docentes_services import enviar_resumen_docentes, programar_resumen_docentes
 from conexion_db import obtener_conexion
 from datetime import datetime
 from zoneinfo import ZoneInfo
@@ -264,20 +264,22 @@ def enviar_alerta():
 
 @alerta_bp.route("/enviar-docente", methods=["POST"])
 def enviar_alerta_docente():
-    """
-    Endpoint independiente del de alumnos/tutores.
-    grupo_id es opcional: si no se manda, cubre todos los grupos del docente.
-    Manda 1 solo correo resumen por docente, con todos los alumnos que le correspondan.
-    """
     data = request.get_json(silent=True) or {}
     nivel = data.get("nivel")
-    grupo_id = data.get("grupo_id")  # opcional
+    grupo_id = data.get("grupo_id")
+    modalidad = data.get("modalidad", "ahora")
+    fecha_envio = data.get("fecha_envio")
+    hora_envio = data.get("hora_envio")
 
     if not nivel:
         return jsonify({"ok": False, "mensaje": "Falta el nivel de alerta"}), 400
 
     try:
-        resultado = enviar_resumen_docentes(nivel, grupo_id)
+        if modalidad == "programar" and fecha_envio and hora_envio:
+            fecha_hora_dt = datetime.strptime(f"{fecha_envio} {hora_envio}", "%Y-%m-%d %H:%M")
+            resultado = programar_resumen_docentes(nivel, grupo_id, fecha_hora_dt)
+        else:
+            resultado = enviar_resumen_docentes(nivel, grupo_id)
 
         if not resultado["ok"]:
             return jsonify(resultado), 404

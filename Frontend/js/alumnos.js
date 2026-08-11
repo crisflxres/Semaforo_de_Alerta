@@ -39,6 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let paginaActual = 1;
     let selectsYaPoblados = false;
+    let estadoForzadoInicial = null; // viene de la URL (ej. ?estado=Regular), se aplica una sola vez
 
     const inputBuscar = document.querySelector('.search-input');
     const btnLimpiar = document.querySelector('.btn-limpiar');
@@ -60,7 +61,9 @@ document.addEventListener('DOMContentLoaded', () => {
             carrera: selectCarrera ? selectCarrera.value : 'Todos',
             semestre: selectSemestre ? selectSemestre.value : 'Todos',
             turno: selectTurno ? selectTurno.value : 'Todos',
-            estado: selectEstado ? selectEstado.value : 'Todos'
+            // Si aun no se ha aplicado el filtro que vino por URL (porque el select
+            // todavia no tenia esa opcion cargada), lo usamos aqui directamente.
+            estado: estadoForzadoInicial || (selectEstado ? selectEstado.value : 'Todos')
         };
     }
 
@@ -177,6 +180,12 @@ document.addEventListener('DOMContentLoaded', () => {
             // pendientes, de aquí en adelante se lee siempre del DOM.
             filtrosPendientes = null;
 
+            // El filtro que vino de la URL ya se aplico y ya quedo reflejado
+            // en el select (poblarSelects lo usa como valorPrevio). A partir
+            // de aqui, el usuario puede cambiarlo libremente sin que se
+            // vuelva a forzar en cada recarga.
+            estadoForzadoInicial = null;
+
             actualizarControlesPaginacion(data.pagina_actual, data.total_paginas, data.total_filtrado);
 
         } catch (error) {
@@ -277,16 +286,13 @@ document.addEventListener('DOMContentLoaded', () => {
     if (btnEliminar) btnEliminar.addEventListener('click', eliminarAlumnos6toSemestre);
 
     // --- 8. INICIALIZAR ---
-    // Si viene un filtro de estado desde la URL (por ejemplo desde inicio.html),
-    // tiene prioridad sobre lo guardado en sessionStorage.
+    restaurarFiltrosGuardados();
+
+    // Si viene un filtro de estado desde la URL (por ejemplo desde inicio.html)
     const paramsUrl = new URLSearchParams(window.location.search);
     const estadoFiltro = paramsUrl.get('estado');
-    if (estadoFiltro) {
-        if (!filtrosPendientes) {
-            filtrosPendientes = { search: '', grupo: 'Todos', carrera: 'Todos', semestre: 'Todos', turno: 'Todos', estado: estadoFiltro };
-        } else {
-            filtrosPendientes.estado = estadoFiltro;
-        }
+    if (estadoFiltro && selectEstado) {
+        selectEstado.value = estadoFiltro;
     }
 
     cargarDatosAlumnos();

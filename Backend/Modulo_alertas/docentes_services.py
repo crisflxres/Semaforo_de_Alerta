@@ -108,8 +108,8 @@ def enviar_resumen_docentes(nivel, grupo_id=None):
     Función principal del botón Docentes.
     grupo_id es opcional: si no se manda, cubre TODOS los grupos del docente.
     Envía 1 correo resumen por cada docente encontrado y registra
-    el envío en `notificaciones` (una fila por alumno incluido, para mantener
-    el historial trazable sin cambiar el esquema de la tabla).
+    1 SOLA fila en `notificaciones` por cada docente (Matricula queda NULL
+    porque esa fila representa un resumen de varios alumnos, no uno solo).
     """
     alumnos = obtener_alumnos_para_docentes(nivel, grupo_id)
 
@@ -148,13 +148,12 @@ def enviar_resumen_docentes(nivel, grupo_id=None):
             "ok": ok_envio
         })
 
-        # Una fila de historial por cada alumno cubierto en el resumen,
-        # para no requerir Matricula nullable en la tabla notificaciones.
-        for alumno in alumnos_docente:
-            sql_notif = """INSERT INTO notificaciones
-                (Matricula, Destinatario, Asunto, Cuerpo, Estado, Id_Alerta, Fecha_Enviado)
-                VALUES (%s, %s, %s, %s, %s, %s, %s)"""
-            cursor.execute(sql_notif, (alumno["Matricula"], correo_docente, asunto, cuerpo_procesado, estado, None, fecha_local))
+        # 1 sola fila de historial por docente (antes era 1 por alumno, por
+        # eso salían 38 filas en el historial aunque el correo se mandaba 1 vez).
+        sql_notif = """INSERT INTO notificaciones
+            (Matricula, Destinatario, Asunto, Cuerpo, Estado, Id_Alerta, Fecha_Enviado)
+            VALUES (%s, %s, %s, %s, %s, %s, %s)"""
+        cursor.execute(sql_notif, (None, correo_docente, asunto, cuerpo_procesado, estado, None, fecha_local))
 
     conexion.commit()
     cursor.close()
@@ -167,4 +166,48 @@ def enviar_resumen_docentes(nivel, grupo_id=None):
         "enviados": enviados,
         "fallidos": fallidos,
         "detalles": detalles
+    }
+def programar_resumen_docentes(nivel, grupo_id, fecha_hora_dt):
+    """
+    Igual que enviar_resumen_docentes, pero en vez de mandar el correo
+    inserta la notificación con Estado='Programado' para que
+    /alertas/procesar-pendientes la mande cuando llegue la hora.
+    """
+    alumnos = obtener_alumnos_para_docentes(nivel, grupo_id)
+
+    if not alumnos:
+        return {"ok": False, "mensaje": "No hay alumnos con ese nivel de alerta",
+                "total_alumnos": 0, "total_programados": 0}
+
+    grupos_por_docente = _agrupar_por_docente(alumnos)
+
+    if not grupos_por_docente:
+        return {"ok": False, "mensaje": "Ninguno de los alumnos encontrados tiene un docente asignado",
+                "total_alumnos": len(alumnos), "total_programados": 0}
+
+    conexion = obtener_conexion()
+    cursor = conexion.cursor()
+    total_programados = 0
+
+    for correo_docente, alumnos_docente in grupos_por_docente.items():
+        nombre_docente = f"{alumnos_docente[0].get('Nombre_Docente', '')} {alumnos_docente[0].get('Apellidos_Docente', '')}".strip()
+        asunto, cuerpo = construir_correo_docente(nombre_docente or "Docente", nivel, alumnos_docente)
+        cuerpo_procesado, _ = extraer_imagenes_base64(cuerpo)
+
+        sql_notif = """INSERT INTO notificaciones
+            (Matricula, Destinatario, Asunto, Cuerpo, Estado, Id_Alerta, Fecha_Enviado)
+            VALUES (%s, %s, %s, %s, %s, %s, %s)"""
+        cursor.execute(sql_notif, (None, correo_docente, asunto, cuerpo_procesado, "Programado", None, fecha_hora_dt))
+        total_programados += 1
+
+    conexion.commit()
+    cursor.close()
+    conexion.close()
+
+    return {
+        "ok": True,
+        "mensaje": "Envío programado para docentes",
+        "total_alumnos": len(alumnos),
+        "total_docentes": len(grupos_por_docente),
+        "total_programados": total_programados
     }
