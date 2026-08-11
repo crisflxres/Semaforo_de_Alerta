@@ -45,6 +45,9 @@ document.addEventListener("DOMContentLoaded", () => {
                     color: colores[index % colores.length]
                 }));
 
+            // NUEVO: ordenar por ID ascendente (1, 2, 3... 29)
+            todasLasAulas.sort((a, b) => a.id - b.id);
+
                 renderizar();
 
             }
