@@ -167,3 +167,47 @@ def enviar_resumen_docentes(nivel, grupo_id=None):
         "fallidos": fallidos,
         "detalles": detalles
     }
+def programar_resumen_docentes(nivel, grupo_id, fecha_hora_dt):
+    """
+    Igual que enviar_resumen_docentes, pero en vez de mandar el correo
+    inserta la notificación con Estado='Programado' para que
+    /alertas/procesar-pendientes la mande cuando llegue la hora.
+    """
+    alumnos = obtener_alumnos_para_docentes(nivel, grupo_id)
+
+    if not alumnos:
+        return {"ok": False, "mensaje": "No hay alumnos con ese nivel de alerta",
+                "total_alumnos": 0, "total_programados": 0}
+
+    grupos_por_docente = _agrupar_por_docente(alumnos)
+
+    if not grupos_por_docente:
+        return {"ok": False, "mensaje": "Ninguno de los alumnos encontrados tiene un docente asignado",
+                "total_alumnos": len(alumnos), "total_programados": 0}
+
+    conexion = obtener_conexion()
+    cursor = conexion.cursor()
+    total_programados = 0
+
+    for correo_docente, alumnos_docente in grupos_por_docente.items():
+        nombre_docente = f"{alumnos_docente[0].get('Nombre_Docente', '')} {alumnos_docente[0].get('Apellidos_Docente', '')}".strip()
+        asunto, cuerpo = construir_correo_docente(nombre_docente or "Docente", nivel, alumnos_docente)
+        cuerpo_procesado, _ = extraer_imagenes_base64(cuerpo)
+
+        sql_notif = """INSERT INTO notificaciones
+            (Matricula, Destinatario, Asunto, Cuerpo, Estado, Id_Alerta, Fecha_Enviado)
+            VALUES (%s, %s, %s, %s, %s, %s, %s)"""
+        cursor.execute(sql_notif, (None, correo_docente, asunto, cuerpo_procesado, "Programado", None, fecha_hora_dt))
+        total_programados += 1
+
+    conexion.commit()
+    cursor.close()
+    conexion.close()
+
+    return {
+        "ok": True,
+        "mensaje": "Envío programado para docentes",
+        "total_alumnos": len(alumnos),
+        "total_docentes": len(grupos_por_docente),
+        "total_programados": total_programados
+    }
