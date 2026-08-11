@@ -295,12 +295,12 @@ body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #fcfcfc; }
 
 .dropdown-perfil {
     position: absolute;
-    top: 55px;
+    top: 45px;
     right: 0;
-    width: 200px;
+    width: 180px;
     background-color: #4a1222;
-    border-radius: 12px;
-    padding: 8px 0;
+    border-radius: 14px;
+    padding: 12px;
     box-shadow: 0 6px 20px rgba(0,0,0,0.25);
     z-index: 1000;
 
@@ -309,7 +309,6 @@ body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #fcfcfc; }
     transform: translateY(-10px);
     transition: opacity 0.2s ease, transform 0.2s ease;
 }
-
 .dropdown-perfil.open {
     opacity: 1;
     pointer-events: auto;
@@ -322,6 +321,7 @@ body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #fcfcfc; }
     flex-direction: column;
     margin: 0;
     padding: 0;
+    gap: 4px;
 }
 
 .lista-dropdown-perfil li a {
@@ -331,7 +331,8 @@ body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #fcfcfc; }
     color: #ffffff;
     text-decoration: none;
     font-size: 14.5px;
-    padding: 10px 18px;
+    padding: 8px 10px;
+    border-radius: 8px;
     transition: background-color 0.2s ease, color 0.2s ease;
 }
 
@@ -349,7 +350,7 @@ body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #fcfcfc; }
 .divisor-dropdown {
     height: 1px;
     background-color: rgba(255, 255, 255, 0.15);
-    margin: 6px 0;
+    margin: 4px 0;
 }
 
 /* --- Animación del avatar (igual que en Inicio) --- */
