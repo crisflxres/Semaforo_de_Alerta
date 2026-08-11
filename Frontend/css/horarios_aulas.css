@@ -300,7 +300,9 @@ body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #fcfcfc; }
 }
 
 @media (max-width: 768px) {
-    .logo { height: 32px; }
+    .main-header { padding: 10px 16px; height: 56px; }
+    .logo { height: 30px; }
+    .user-avatar { width: 32px; height: 32px; font-size: 13px; }
 
     .tabs { flex-wrap: wrap; gap: 8px; }
     .tab-item:first-child {
