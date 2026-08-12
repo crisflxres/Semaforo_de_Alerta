@@ -57,10 +57,10 @@ def obtener_datos_grupo(cursor, nombre_grupo):
 
 
 def comprimir_foto(ruta_archivo, ancho_maximo=400, calidad=75):
-    imagen = Image.open(ruta_archivo)
-    imagen = ImageOps.exif_transpose(imagen)
-    if imagen.mode != "RGB":
-        imagen = imagen.convert("RGB")
+    with Image.open(ruta_archivo) as imagen:
+        imagen = ImageOps.exif_transpose(imagen)
+        if imagen.mode != "RGB":
+            imagen = imagen.convert("RGB")
 
     if imagen.width > ancho_maximo:
         proporcion = ancho_maximo / imagen.width
@@ -289,7 +289,7 @@ def importar_fotos_route():
                 print(f"[AVISO] No se pudo procesar la foto de {foto['matricula']}: {e}")
                 return None
 
-        with ThreadPoolExecutor(max_workers=os.cpu_count() or 4) as executor:
+        with ThreadPoolExecutor(max_workers= 2) as executor:
             fotos_comprimidas = [
                 resultado for resultado in executor.map(_comprimir_foto_segura, fotos_encontradas)
                 if resultado is not None

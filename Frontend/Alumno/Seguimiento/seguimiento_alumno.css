@@ -105,13 +105,13 @@ body { background-color: var(--color-fondo-global); color: var(--color-texto); }
     background-color: rgba(0, 0, 0, 0.4);
     z-index: 1000;
     opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.25s ease, visibility 0.25s ease;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
 }
 
 .menu-flotante-overlay.open {
     opacity: 1;
-    visibility: visible;
+    pointer-events: auto;
 }
 
 .btn-cerrar-flotante {
@@ -120,7 +120,7 @@ body { background-color: var(--color-fondo-global); color: var(--color-texto); }
     left: 25px;
     width: 55px;
     height: 55px;
-    background-color: var(--color-dorado);
+    background-color: #bc955c;
     border-radius: 50%;
     border: 2px solid #000000;
     display: flex;
@@ -146,8 +146,8 @@ body { background-color: var(--color-fondo-global); color: var(--color-texto); }
     border-radius: 24px;
     padding: 25px 22px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
-    transform: translateY(-30px);
-    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    transform: translateY(-20px);
+    transition: transform 0.3s ease;
 }
 
 .menu-flotante-overlay.open .tarjeta-menu-flotante {

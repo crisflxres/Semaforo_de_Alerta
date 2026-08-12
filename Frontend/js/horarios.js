@@ -163,6 +163,8 @@ document.addEventListener("DOMContentLoaded", () => {
             const grupos   = (await resGrupos.json()).data || [];
             const materias = await resMaterias.json(); // /api/materias devuelve un array plano
             const aulas    = (await resAulas.json()).data || [];
+            // NUEVO: ordenar aulas por ID ascendente
+            aulas.sort((a, b) => a.Id_Aula - b.Id_Aula);
 
             const textoDocente = d => `${d.Nombre} ${d.Apellidos}`;
 
