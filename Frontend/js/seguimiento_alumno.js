@@ -1,5 +1,5 @@
 // Cambia esto si tu Flask corre en otra URL/puerto (misma variable que en alumnos.js e inicio.js)
-const API_BASE = 'http://127.0.0.1:5000';
+const API_BASE = 'https://semaforo-de-alerta.onrender.com';
 
 async function abrirModalHistorialObsvervaciones() {
     const modal = document.getElementById('modalHistorialObservaciones');
