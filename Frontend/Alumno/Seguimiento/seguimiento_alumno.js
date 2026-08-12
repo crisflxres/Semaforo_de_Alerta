@@ -5,14 +5,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 1. Control del Menú Lateral
     const sidebar = document.getElementById('sidebarMenu');
-    const btnAbrir = document.getElementById('btnAbrirMenu');
+    const btnAbrir = document.querySelector('.menu-btn-global');
     const btnCerrar = document.getElementById('btnCerrar');
 
     if (btnAbrir && sidebar && btnCerrar) {
-        btnAbrir.addEventListener('click', () => sidebar.classList.add('open'));
-        btnCerrar.addEventListener('click', () => sidebar.classList.remove('open'));
+        btnAbrir.addEventListener('click', () => {
+            sidebar.classList.add('open');
+        });
+
+        btnCerrar.addEventListener('click', () => {
+            sidebar.classList.remove('open');
+        });
+
+        sidebar.addEventListener('click', (e) => {
+            if (e.target === sidebar) {
+                sidebar.classList.remove('open');
+            }
+        });
+
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') sidebar.classList.remove('open');
+            if (e.key === 'Escape') {
+                sidebar.classList.remove('open');
+            }
         });
     }
 

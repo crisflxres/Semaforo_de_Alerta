@@ -246,8 +246,11 @@ def get_foto(matricula):
         return "", 500
 
     if fila and fila[0]:
-        print("TIPO:", type(fila[0]))
-    print("CONTENIDO (primeros 100 caracteres):", str(fila[0])[:100])
+        # fila[0] es el blob de la imagen guardado en la BD
+        return send_file(
+            BytesIO(fila[0]),
+            mimetype='image/jpeg'  # cambia a 'image/png' si asi las guardas
+        )
 
     print(f"No se encontró foto para matrícula: {nombre}")
     return "", 404
