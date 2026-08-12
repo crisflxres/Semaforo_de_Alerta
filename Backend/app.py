@@ -364,6 +364,24 @@ def api_alertas_alumno(matricula):
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+@app.route('/api/alumno_por_usuario/<int:id_usuario>', methods=['GET'])
+def api_alumno_por_usuario(id_usuario):
+    try:
+        conexion = obtener_conexion()
+        cursor = conexion.cursor(dictionary=True)
+        query = "SELECT * FROM alumnos WHERE Id_Usuario = %s LIMIT 1"
+        cursor.execute(query, (id_usuario,))
+        alumno = cursor.fetchone()
+        cursor.close()
+        conexion.close()
+
+        if not alumno:
+            return jsonify({"success": False, "message": "Alumno no encontrado"}), 404
+
+        return jsonify({"success": True, "alumno": alumno})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
 if __name__ == '__main__':
     print(app.url_map)
     port = int(os.environ.get("PORT", 5000))
