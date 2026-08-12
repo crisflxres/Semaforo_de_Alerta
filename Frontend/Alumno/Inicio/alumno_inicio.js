@@ -4,13 +4,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnAbrir = document.querySelector('.menu-btn-global');
     const btnCerrar = document.getElementById('btnCerrar');
 
-    if (btnAbrir && sidebar && btnCerrar) {
+if (btnAbrir && sidebar && btnCerrar) {
         btnAbrir.addEventListener('click', () => {
             sidebar.classList.add('open');
         });
 
         btnCerrar.addEventListener('click', () => {
             sidebar.classList.remove('open');
+        });
+
+        sidebar.addEventListener('click', (e) => {
+            if (e.target === sidebar) {
+                sidebar.classList.remove('open');
+            }
         });
 
         document.addEventListener('keydown', (e) => {
