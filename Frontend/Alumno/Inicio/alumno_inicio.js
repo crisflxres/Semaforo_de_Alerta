@@ -67,16 +67,18 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // 4. Cargar datos del alumno desde Flask 
-    const matricula = localStorage.getItem('matriculaSeleccionada') || localStorage.getItem('correoUsuario');
+    // 4. Cargar datos del alumno usando la ruta (api/alumno_por_usuario)
+    const idUsuario = localStorage.getItem('idUsuario'); 
+    const matricula = localStorage.getItem('matriculaSeleccionada');
 
-    if (matricula) {
-        // Datos del alumno
-        fetch('https://semaforo-de-alerta.onrender.com/api/alumnos')
+    if (idUsuario) {
+        // Consultamos la info del alumno directamente
+        fetch(`https://semaforo-de-alerta.onrender.com/api/alumno_por_usuario/${idUsuario}`)
             .then(res => res.json())
             .then(data => {
-                const alumno = data.lista.find(a => String(a.Matricula) === String(matricula));
-                if (!alumno) return;
+                if (!data.success || !data.alumno) return;
+
+                const alumno = data.alumno;
 
                 window.cargarDatosAlumno({
                     nombre: `${alumno.Nombre} ${alumno.Apellidos}`,
@@ -87,33 +89,37 @@ document.addEventListener('DOMContentLoaded', () => {
                     turno: alumno.Turno,
                     fotoUrl: `https://semaforo-de-alerta.onrender.com/fotos/${alumno.Matricula}`
                 });
-            });
+            })
+            .catch(err => console.error("Error al cargar datos del alumno:", err));
 
         // Calificaciones para el resumen
-        fetch(`https://semaforo-de-alerta.onrender.com/calificaciones/${matricula}`)
-            .then(res => res.json())
-            .then(respuesta => {
-                if (!respuesta.success) return;
+        if (matricula) {
+            fetch(`https://semaforo-de-alerta.onrender.com/calificaciones/${matricula}`)
+                .then(res => res.json())
+                .then(respuesta => {
+                    if (!respuesta.success) return;
 
-                window.cargarDatosAlumno({
-                    promedio: respuesta.pac,
-                    reprobadas: respuesta.reprobadas
-                });
+                    window.cargarDatosAlumno({
+                        promedio: respuesta.pac,
+                        reprobadas: respuesta.reprobadas
+                    });
 
-                // Estado visual
-                const estado = document.getElementById('estado-academico');
-                if (estado) {
-                    const reprobadas = respuesta.reprobadas;
-                    if (reprobadas === 0) {
-                        estado.style.backgroundColor = '#3ab54a';
-                    } else if (reprobadas <= 2) {
-                        estado.style.backgroundColor = '#f1c40f';
-                    } else {
-                        estado.style.backgroundColor = '#e74c3c';
+                    // Estado visual
+                    const estado = document.getElementById('estado-academico');
+                    if (estado) {
+                        const reprobadas = respuesta.reprobadas;
+                        if (reprobadas === 0) {
+                            estado.style.backgroundColor = '#3ab54a';
+                        } else if (reprobadas <= 2) {
+                            estado.style.backgroundColor = '#f1c40f';
+                        } else {
+                            estado.style.backgroundColor = '#e74c3c';
+                        }
                     }
-                }
-            });
+                })
+                .catch(err => console.error("Error al cargar calificaciones:", err));
+        }
     } else {
-        console.warn("No hay matrícula en localStorage.");
+        console.warn("No hay sesión de usuario activa (idUsuario no encontrado).");
     }
-}); 
+});
