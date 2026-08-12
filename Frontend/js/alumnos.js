@@ -39,7 +39,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let paginaActual = 1;
     let selectsYaPoblados = false;
-    let estadoForzadoInicial = null; // viene de la URL (ej. ?estado=Regular), se aplica una sola vez
 
     const inputBuscar = document.querySelector('.search-input');
     const btnLimpiar = document.querySelector('.btn-limpiar');
@@ -49,9 +48,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const selectTurno = document.getElementById('filtro-turno');
     const selectEstado = document.getElementById('filtro-estado');
 
-    // ---- NUEVO: guardamos aquí los filtros leídos de sessionStorage
-    // apenas arranca la página. Se usan como "valor a aplicar" en cuanto
-    // los selects tengan sus opciones listas, y luego se limpian.
+    // Filtros leidos de sessionStorage (o de la URL) apenas arranca la pagina.
+    // Se usan como "valor a aplicar" en la primera carga, en vez de leer el
+    // DOM (que todavia no tiene las opciones reales de los <select>), y se
+    // limpian despues de esa primera carga.
     let filtrosPendientes = obtenerFiltrosGuardados();
 
     function leerFiltrosActuales() {
@@ -61,9 +61,8 @@ document.addEventListener('DOMContentLoaded', () => {
             carrera: selectCarrera ? selectCarrera.value : 'Todos',
             semestre: selectSemestre ? selectSemestre.value : 'Todos',
             turno: selectTurno ? selectTurno.value : 'Todos',
-            // Si aun no se ha aplicado el filtro que vino por URL (porque el select
-            // todavia no tenia esa opcion cargada), lo usamos aqui directamente.
-            estado: estadoForzadoInicial || (selectEstado ? selectEstado.value : 'Todos')
+            estado: selectEstado ? selectEstado.value : 'Todos',
+            pagina: paginaActual
         };
     }
 
@@ -71,7 +70,8 @@ document.addEventListener('DOMContentLoaded', () => {
         sessionStorage.setItem('filtrosAlumnos', JSON.stringify(filtros));
     }
 
-    // ---- NUEVO: solo lee y devuelve el objeto guardado, sin tocar el DOM.
+    // Solo lee y devuelve el objeto guardado, sin tocar el DOM (los <select>
+    // todavia no tienen sus opciones reales en este punto de la ejecucion).
     function obtenerFiltrosGuardados() {
         const guardado = sessionStorage.getItem('filtrosAlumnos');
         if (!guardado) return null;
@@ -108,13 +108,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- 3. CARGA DE DATOS DESDE BD (con paginacion y filtros aplicados en el servidor) ---
     async function cargarDatosAlumnos() {
         try {
-            // ---- NUEVO: si hay filtros pendientes de restaurar (venimos de
-            // sessionStorage), los usamos en vez de leer el DOM (que en el
-            // primer render todavía no tiene las opciones cargadas).
+            // Si hay filtros pendientes de restaurar (venimos de sessionStorage
+            // o de un ?estado= en la URL), los usamos en vez de leer el DOM.
             let filtros;
             if (filtrosPendientes) {
                 filtros = filtrosPendientes;
                 if (inputBuscar) inputBuscar.value = filtros.search || '';
+                if (filtros.pagina) paginaActual = filtros.pagina;
             } else {
                 filtros = leerFiltrosActuales();
             }
@@ -176,15 +176,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 selectsYaPoblados = true;
             }
 
-            // ---- NUEVO: ya se aplicaron (o se intentó aplicar) los filtros
-            // pendientes, de aquí en adelante se lee siempre del DOM.
+            // Ya se aplicaron (o se intento aplicar) los filtros pendientes;
+            // de aqui en adelante se lee siempre del DOM en cada peticion.
             filtrosPendientes = null;
-
-            // El filtro que vino de la URL ya se aplico y ya quedo reflejado
-            // en el select (poblarSelects lo usa como valorPrevio). A partir
-            // de aqui, el usuario puede cambiarlo libremente sin que se
-            // vuelva a forzar en cada recarga.
-            estadoForzadoInicial = null;
 
             actualizarControlesPaginacion(data.pagina_actual, data.total_paginas, data.total_filtrado);
 
@@ -258,8 +252,8 @@ document.addEventListener('DOMContentLoaded', () => {
             [selectGrupo, selectCarrera, selectSemestre, selectTurno, selectEstado].forEach(select => {
                 if (select) select.value = 'Todos';
             });
-            // ---- NUEVO: al limpiar manualmente, también se descarta
-            // cualquier filtro pendiente que aún no se hubiera aplicado.
+            // Al limpiar manualmente, tambien se descarta cualquier filtro
+            // pendiente que aun no se hubiera aplicado.
             filtrosPendientes = null;
             sessionStorage.removeItem('filtrosAlumnos');
             onFiltroCambiado();
@@ -286,12 +280,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (btnEliminar) btnEliminar.addEventListener('click', eliminarAlumnos6toSemestre);
 
     // --- 8. INICIALIZAR ---
-    restaurarFiltrosGuardados();
-
     // Si viene un filtro de estado desde la URL (por ejemplo desde inicio.html),
-    // lo guardamos aparte: el <select> todavia no tiene esa opcion cargada en
-    // este punto (se llena hasta que responde la API), asi que asignarlo
-    // directamente al select.value no serviria de nada.
+    // se combina con lo que ya hubiera en sessionStorage, o se crea un objeto
+    // de filtros "en blanco" con ese estado si no habia nada guardado.
     const paramsUrl = new URLSearchParams(window.location.search);
     const estadoFiltro = paramsUrl.get('estado');
     if (estadoFiltro) {
