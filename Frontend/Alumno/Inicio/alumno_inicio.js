@@ -75,17 +75,17 @@ document.addEventListener('DOMContentLoaded', () => {
         fetch('https://semaforo-de-alerta.onrender.com/api/alumnos')
             .then(res => res.json())
             .then(data => {
-                const alumno = data.lista.find(a => a.matricula === matricula);
+                const alumno = data.lista.find(a => String(a.Matricula) === String(matricula));
                 if (!alumno) return;
 
                 window.cargarDatosAlumno({
-                    nombre: `${alumno.nombre} ${alumno.apellidos}`,
-                    matricula: alumno.matricula,
-                    email: alumno.email || 'Sin correo registrado',
-                    carrera: alumno.carrera,
-                    grupo: alumno.grupo,
-                    turno: alumno.turno,
-                    fotoUrl: `https://semaforo-de-alerta.onrender.com/fotos/${alumno.matricula}`
+                    nombre: `${alumno.Nombre} ${alumno.Apellidos}`,
+                    matricula: alumno.Matricula,
+                    email: alumno.Email || 'Sin correo registrado',
+                    carrera: alumno.Carrera,
+                    grupo: alumno.Grupo,
+                    turno: alumno.Turno,
+                    fotoUrl: `https://semaforo-de-alerta.onrender.com/fotos/${alumno.Matricula}`
                 });
             });
 
