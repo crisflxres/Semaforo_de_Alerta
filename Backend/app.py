@@ -378,6 +378,10 @@ def api_alumno_por_usuario(id_usuario):
         if not alumno:
             return jsonify({"success": False, "message": "Alumno no encontrado"}), 404
 
+        # Eliminamos el campo 'Foto' (que es un BLOB en bytes) para evitar el error de JSON
+        if 'Foto' in alumno:
+            alumno.pop('Foto', None)
+
         return jsonify({"success": True, "alumno": alumno})
     except Exception as e:
         print(f"ERROR EN RUTA ALUMNO POR USUARIO: {str(e)}")
