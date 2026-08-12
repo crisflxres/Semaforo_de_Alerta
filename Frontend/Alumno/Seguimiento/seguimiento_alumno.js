@@ -1,3 +1,6 @@
+ // Cambia esto si tu Flask corre en otra URL/puerto (misma variable que en los demas archivos)
+const API_BASE = 'https://semaforo-de-alerta.onrender.com';
+
 document.addEventListener('DOMContentLoaded', () => {
 
     // 1. Control del Menú Lateral
@@ -100,7 +103,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const matricula = localStorage.getItem('matriculaSeleccionada');
 
     if (matricula) {
-        fetch(`https://semaforo-de-alerta.onrender.com/calificaciones/${matricula}`)
+        fetch(`${API_BASE}/calificaciones/${matricula}`)
             .then(res => res.json())
             .then(respuesta => {
                 if (!respuesta.success) return;
@@ -144,7 +147,7 @@ document.addEventListener('DOMContentLoaded', () => {
             listaObsAlumno.innerHTML = '<p style="color:#888;">Cargando...</p>';
             modalObs.style.display = 'flex';
 
-            fetch(`https://semaforo-de-alerta.onrender.com/observaciones/${matricula}`)
+            fetch(`${API_BASE}/observaciones/${matricula}`)
                 .then(res => res.json())
                 .then(data => {
                     if (!data.success || data.observaciones.length === 0) {
