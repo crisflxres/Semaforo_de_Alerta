@@ -56,7 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Resumen académico
         if (datos.promedio) document.getElementById('promedio-academico').textContent = datos.promedio;
         if (datos.reprobadas !== undefined) document.getElementById('materias-reprobadas').textContent = datos.reprobadas;
-        
+
         // Tutor
         if (datos.tutorNombre) document.getElementById('nombre-tutor').textContent = datos.tutorNombre;
         if (datos.tutorEmail) document.getElementById('email-tutor').textContent = datos.tutorEmail;
@@ -67,14 +67,15 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // 4. Cargar datos del alumno usando la ruta (api/alumno_por_usuario)
-    const idUsuario = localStorage.getItem('idUsuario'); 
-    const matricula = localStorage.getItem('matriculaSeleccionada');
+    // 4. Cargar datos del alumno (por Matrícula)
+    const matriculaGuardada = localStorage.getItem('matriculaSeleccionada');
 
-    if (idUsuario) {
-        // Consultamos la info del alumno directamente
-        fetch(`https://semaforo-de-alerta.onrender.com/api/alumno_por_usuario/${idUsuario}`)
-            .then(res => res.json())
+    if (matriculaGuardada) {
+        fetch(`https://semaforo-de-alerta.onrender.com/api/alumno_por_matricula/${matriculaGuardada}`)
+            .then(res => {
+                if (!res.ok) throw new Error(`Error HTTP: ${res.status}`);
+                return res.json();
+            })
             .then(data => {
                 if (!data.success || !data.alumno) return;
 
@@ -90,36 +91,37 @@ document.addEventListener('DOMContentLoaded', () => {
                     fotoUrl: `https://semaforo-de-alerta.onrender.com/fotos/${alumno.Matricula}`
                 });
             })
-            .catch(err => console.error("Error al cargar datos del alumno:", err));
+            .catch(err => {
+                console.error("Error al cargar los datos del alumno:", err);
+            });
+    }
 
-        // Calificaciones para el resumen
-        if (matricula) {
-            fetch(`https://semaforo-de-alerta.onrender.com/calificaciones/${matricula}`)
-                .then(res => res.json())
-                .then(respuesta => {
-                    if (!respuesta.success) return;
+    // 5. Calificaciones (Bloque independiente original)
+    const matricula = localStorage.getItem('matriculaSeleccionada');
+    if (matricula) {
+        fetch(`https://semaforo-de-alerta.onrender.com/calificaciones/${matricula}`)
+            .then(res => res.json())
+            .then(respuesta => {
+                if (!respuesta.success) return;
 
-                    window.cargarDatosAlumno({
-                        promedio: respuesta.pac,
-                        reprobadas: respuesta.reprobadas
-                    });
+                window.cargarDatosAlumno({
+                    promedio: respuesta.pac,
+                    reprobadas: respuesta.reprobadas
+                });
 
-                    // Estado visual
-                    const estado = document.getElementById('estado-academico');
-                    if (estado) {
-                        const reprobadas = respuesta.reprobadas;
-                        if (reprobadas === 0) {
-                            estado.style.backgroundColor = '#3ab54a';
-                        } else if (reprobadas <= 2) {
-                            estado.style.backgroundColor = '#f1c40f';
-                        } else {
-                            estado.style.backgroundColor = '#e74c3c';
-                        }
+                // Estado visual
+                const estado = document.getElementById('estado-academico');
+                if (estado) {
+                    const reprobadas = respuesta.reprobadas;
+                    if (reprobadas === 0) {
+                        estado.style.backgroundColor = '#3ab54a';
+                    } else if (reprobadas <= 2) {
+                        estado.style.backgroundColor = '#f1c40f';
+                    } else {
+                        estado.style.backgroundColor = '#e74c3c';
                     }
-                })
-                .catch(err => console.error("Error al cargar calificaciones:", err));
-        }
-    } else {
-        console.warn("No hay sesión de usuario activa (idUsuario no encontrado).");
+                }
+            })
+            .catch(err => console.error("Error al cargar calificaciones:", err));
     }
 });

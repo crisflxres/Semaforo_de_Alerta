@@ -246,7 +246,8 @@ def get_foto(matricula):
         return "", 500
 
     if fila and fila[0]:
-        return send_file(BytesIO(fila[0]), mimetype="image/jpeg")
+        print("TIPO:", type(fila[0]))
+    print("CONTENIDO (primeros 100 caracteres):", str(fila[0])[:100])
 
     print(f"No se encontró foto para matrícula: {nombre}")
     return "", 404
@@ -364,28 +365,42 @@ def api_alertas_alumno(matricula):
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-@app.route('/api/alumno_por_usuario/<int:id_usuario>', methods=['GET'])
-def api_alumno_por_usuario(id_usuario):
+@app.route('/api/alumno_por_matricula/<matricula>', methods=['GET'])
+def api_alumno_por_matricula(matricula):
+    conexion = None
+    cursor = None
     try:
         conexion = obtener_conexion()
         cursor = conexion.cursor(dictionary=True)
-        query = "SELECT * FROM alumnos WHERE Id_Usuario = %s LIMIT 1"
-        cursor.execute(query, (id_usuario,))
+        query = """
+            SELECT a.*,
+                g.Nombre AS Grupo,
+                g.Turno AS Turno,
+                c.Nombre AS Carrera
+            FROM alumnos a
+            LEFT JOIN grupos g ON a.Id_Grupo = g.Id_Grupo
+            LEFT JOIN carreras c ON g.Id_Carrera = c.Id_Carrera
+            WHERE a.Matricula = %s
+            LIMIT 1
+        """
+        cursor.execute(query, (matricula,))
         alumno = cursor.fetchone()
-        cursor.close()
-        conexion.close()
 
         if not alumno:
             return jsonify({"success": False, "message": "Alumno no encontrado"}), 404
 
-        # Eliminamos el campo 'Foto' (que es un BLOB en bytes) para evitar el error de JSON
         if 'Foto' in alumno:
             alumno.pop('Foto', None)
 
         return jsonify({"success": True, "alumno": alumno})
     except Exception as e:
-        print(f"ERROR EN RUTA ALUMNO POR USUARIO: {str(e)}")
+        print(f"ERROR EN RUTA ALUMNO POR MATRICULA: {str(e)}")
         return jsonify({"success": False, "error": str(e)}), 500
+    finally:
+        if cursor:
+            cursor.close()
+        if conexion:
+            conexion.close()
 
 if __name__ == '__main__':
     print(app.url_map)
