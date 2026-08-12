@@ -365,6 +365,9 @@ tbody td:last-child { text-align: center; }
     .main-layout { flex-direction: column; }
     .configuracion-container, #panelRegistro { width: 100%; }
     .grid-tarjetas { grid-template-columns: repeat(2, 1fr); }
+    .header-institucional { padding: 10px 16px; height: 56px; }
+    .logo-centro img { height: 32px; }
+    .perfil-usuario .avatar { width: 32px; height: 32px; font-size: 13px; }
 }
 
 @media (max-width: 768px) {

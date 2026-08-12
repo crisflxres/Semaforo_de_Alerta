@@ -1,3 +1,6 @@
+// Cambia esto si tu Flask corre en otra URL/puerto (misma variable que en alumnos.js)
+const API_BASE = 'https://semaforo-de-alerta.onrender.com';
+
 // 1. Lógica del Menú Lateral (Sidebar) y Dropdown de Perfil
 document.addEventListener('DOMContentLoaded', () => {
     // Elementos del Sidebar
@@ -86,7 +89,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // --- Caso Docente: pedimos su resumen real al backend ---
         const idUsuario = localStorage.getItem('idUsuario');
 
-        fetch(`https://semaforo-de-alerta.onrender.com/docentes/${idUsuario}/resumen`, {
+        fetch(`${API_BASE}/docentes/${idUsuario}/resumen`, {
             headers: { 'X-Id-Rol': localStorage.getItem('rolUsuario') }
         })
             .then(res => res.json())
@@ -128,7 +131,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 async function cargarDatosDashboard() {
     try {
-        const respuesta = await fetch('https://semaforo-de-alerta.onrender.com/api/dashboard-stats');
+        const respuesta = await fetch(`${API_BASE}/api/dashboard-stats`);
         const data = await respuesta.json();
 
         if (data.success) {

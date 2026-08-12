@@ -48,6 +48,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const selectTurno = document.getElementById('filtro-turno');
     const selectEstado = document.getElementById('filtro-estado');
 
+    // Filtros leidos de sessionStorage (o de la URL) apenas arranca la pagina.
+    // Se usan como "valor a aplicar" en la primera carga, en vez de leer el
+    // DOM (que todavia no tiene las opciones reales de los <select>), y se
+    // limpian despues de esa primera carga.
+    let filtrosPendientes = obtenerFiltrosGuardados();
+
     function leerFiltrosActuales() {
         return {
             search: inputBuscar ? inputBuscar.value.trim() : '',
@@ -55,7 +61,8 @@ document.addEventListener('DOMContentLoaded', () => {
             carrera: selectCarrera ? selectCarrera.value : 'Todos',
             semestre: selectSemestre ? selectSemestre.value : 'Todos',
             turno: selectTurno ? selectTurno.value : 'Todos',
-            estado: selectEstado ? selectEstado.value : 'Todos'
+            estado: selectEstado ? selectEstado.value : 'Todos',
+            pagina: paginaActual
         };
     }
 
@@ -63,19 +70,16 @@ document.addEventListener('DOMContentLoaded', () => {
         sessionStorage.setItem('filtrosAlumnos', JSON.stringify(filtros));
     }
 
-    function restaurarFiltrosGuardados() {
+    // Solo lee y devuelve el objeto guardado, sin tocar el DOM (los <select>
+    // todavia no tienen sus opciones reales en este punto de la ejecucion).
+    function obtenerFiltrosGuardados() {
         const guardado = sessionStorage.getItem('filtrosAlumnos');
-        if (!guardado) return;
+        if (!guardado) return null;
         try {
-            const filtros = JSON.parse(guardado);
-            if (inputBuscar) inputBuscar.value = filtros.search || '';
-            if (selectGrupo) selectGrupo.value = filtros.grupo || 'Todos';
-            if (selectCarrera) selectCarrera.value = filtros.carrera || 'Todos';
-            if (selectSemestre) selectSemestre.value = filtros.semestre || 'Todos';
-            if (selectTurno) selectTurno.value = filtros.turno || 'Todos';
-            if (selectEstado) selectEstado.value = filtros.estado || 'Todos';
+            return JSON.parse(guardado);
         } catch (e) {
-            console.warn('No se pudieron restaurar los filtros guardados:', e);
+            console.warn('No se pudieron leer los filtros guardados:', e);
+            return null;
         }
     }
 
@@ -104,7 +108,16 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- 3. CARGA DE DATOS DESDE BD (con paginacion y filtros aplicados en el servidor) ---
     async function cargarDatosAlumnos() {
         try {
-            const filtros = leerFiltrosActuales();
+            // Si hay filtros pendientes de restaurar (venimos de sessionStorage
+            // o de un ?estado= en la URL), los usamos en vez de leer el DOM.
+            let filtros;
+            if (filtrosPendientes) {
+                filtros = filtrosPendientes;
+                if (inputBuscar) inputBuscar.value = filtros.search || '';
+                if (filtros.pagina) paginaActual = filtros.pagina;
+            } else {
+                filtros = leerFiltrosActuales();
+            }
             guardarFiltros(filtros);
 
             const params = new URLSearchParams({
@@ -162,6 +175,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 poblarSelects(data.filtros_disponibles, filtros);
                 selectsYaPoblados = true;
             }
+
+            // Ya se aplicaron (o se intento aplicar) los filtros pendientes;
+            // de aqui en adelante se lee siempre del DOM en cada peticion.
+            filtrosPendientes = null;
 
             actualizarControlesPaginacion(data.pagina_actual, data.total_paginas, data.total_filtrado);
 
@@ -235,6 +252,10 @@ document.addEventListener('DOMContentLoaded', () => {
             [selectGrupo, selectCarrera, selectSemestre, selectTurno, selectEstado].forEach(select => {
                 if (select) select.value = 'Todos';
             });
+            // Al limpiar manualmente, tambien se descarta cualquier filtro
+            // pendiente que aun no se hubiera aplicado.
+            filtrosPendientes = null;
+            sessionStorage.removeItem('filtrosAlumnos');
             onFiltroCambiado();
         });
     }
@@ -259,13 +280,17 @@ document.addEventListener('DOMContentLoaded', () => {
     if (btnEliminar) btnEliminar.addEventListener('click', eliminarAlumnos6toSemestre);
 
     // --- 8. INICIALIZAR ---
-    restaurarFiltrosGuardados();
-
-    // Si viene un filtro de estado desde la URL (por ejemplo desde inicio.html)
+    // Si viene un filtro de estado desde la URL (por ejemplo desde inicio.html),
+    // se combina con lo que ya hubiera en sessionStorage, o se crea un objeto
+    // de filtros "en blanco" con ese estado si no habia nada guardado.
     const paramsUrl = new URLSearchParams(window.location.search);
     const estadoFiltro = paramsUrl.get('estado');
-    if (estadoFiltro && selectEstado) {
-        selectEstado.value = estadoFiltro;
+    if (estadoFiltro) {
+        if (!filtrosPendientes) {
+            filtrosPendientes = { search: '', grupo: 'Todos', carrera: 'Todos', semestre: 'Todos', turno: 'Todos', estado: estadoFiltro };
+        } else {
+            filtrosPendientes.estado = estadoFiltro;
+        }
     }
 
     cargarDatosAlumnos();

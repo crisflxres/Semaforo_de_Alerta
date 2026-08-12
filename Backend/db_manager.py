@@ -252,7 +252,7 @@ def _asegurar_usuarios_alumnos_bulk(cursor, alumnos):
         for alumno in faltantes:
             password = bcrypt.hashpw(alumno["matricula"].encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
             apellidos = alumno["apellido.p"] + " " + alumno["apellido.m"]
-            valores.append((5, alumno["nombre(s)"], apellidos, alumno["matricula"], password))
+            valores.append((4,alumno["nombre(s)"], apellidos, alumno["matricula"], password))
 
         cursor.executemany(
             "INSERT INTO usuarios (Id_Rol, Nombre, Apellidos, Email, Password) VALUES (%s, %s, %s, %s, %s)",
