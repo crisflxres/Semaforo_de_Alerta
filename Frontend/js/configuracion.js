@@ -205,7 +205,7 @@ function mostrarErrorContactos(mensaje) {
 
 /* ================== FOTOS (carpeta arrastrada) ================== */
 
-const TAMANO_LOTE_FOTOS = 100;
+const TAMANO_LOTE_FOTOS = 50;
 let lotesFallidos = []; // guarda { numero, archivos, mensaje } de los lotes que fallaron
 
 function bloquearZonaContactos(bloquear) {
