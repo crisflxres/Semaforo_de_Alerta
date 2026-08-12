@@ -288,11 +288,18 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- 8. INICIALIZAR ---
     restaurarFiltrosGuardados();
 
-    // Si viene un filtro de estado desde la URL (por ejemplo desde inicio.html)
+    // Si viene un filtro de estado desde la URL (por ejemplo desde inicio.html),
+    // lo guardamos aparte: el <select> todavia no tiene esa opcion cargada en
+    // este punto (se llena hasta que responde la API), asi que asignarlo
+    // directamente al select.value no serviria de nada.
     const paramsUrl = new URLSearchParams(window.location.search);
     const estadoFiltro = paramsUrl.get('estado');
-    if (estadoFiltro && selectEstado) {
-        selectEstado.value = estadoFiltro;
+    if (estadoFiltro) {
+        if (!filtrosPendientes) {
+            filtrosPendientes = { search: '', grupo: 'Todos', carrera: 'Todos', semestre: 'Todos', turno: 'Todos', estado: estadoFiltro };
+        } else {
+            filtrosPendientes.estado = estadoFiltro;
+        }
     }
 
     cargarDatosAlumnos();
