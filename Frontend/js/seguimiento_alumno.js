@@ -1,3 +1,6 @@
+// Cambia esto si tu Flask corre en otra URL/puerto (misma variable que en alumnos.js e inicio.js)
+const API_BASE = 'https://semaforo-de-alerta.onrender.com';
+
 async function abrirModalHistorialObsvervaciones() {
     const modal = document.getElementById('modalHistorialObservaciones');
     const lista = document.getElementById('listaHistorialCompletoObservaciones');
@@ -10,7 +13,7 @@ async function abrirModalHistorialObsvervaciones() {
     modal.style.display = 'flex';
 
     try {
-        const res = await fetch(`https://semaforo-de-alerta.onrender.com/observaciones/${matricula}`);
+        const res = await fetch(`${API_BASE}/observaciones/${matricula}`);
         const data = await res.json();
 
         if (!data.success || data.observaciones.length === 0) {
@@ -64,7 +67,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const elBadgeReprobadas  = document.getElementById('txt-reprobadas');
     const foto              = document.getElementById('foto-alumno');
 
-    fetch('https://semaforo-de-alerta.onrender.com/api/alumnos')
+    fetch(`${API_BASE}/api/alumnos`)
         .then(res => res.json())
         .then(data => {
             const alumno = data.lista.find(a => a.matricula === matricula);
@@ -72,7 +75,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Foto: ahora sí existe alumno
             if (foto) {
-                foto.src =`https://semaforo-de-alerta.onrender.com/fotos/${alumno.matricula}`;
+                foto.src = `${API_BASE}/fotos/${alumno.matricula}`;
                 foto.onerror = function() {
                     foto.style.display = 'none';
                 };
@@ -121,7 +124,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- 5. CALIFICACIONES DESDE FLASK ---
     const tbody = document.querySelector('.data-table tbody');
 
-    fetch(`https://semaforo-de-alerta.onrender.com/calificaciones/${matricula}`)
+    fetch(`${API_BASE}/calificaciones/${matricula}`)
         .then(res => res.json())
         .then(respuesta => {
             if (!respuesta.success) return;
@@ -147,7 +150,6 @@ document.addEventListener('DOMContentLoaded', () => {
         .catch(err => console.error("Error al cargar calificaciones:", err));
 
         // --- 4. OBSERVACIONES ---
-    const API = 'https://semaforo-de-alerta.onrender.com';
     const idUsuario = localStorage.getItem('idUsuario');
     const panelObs = document.getElementById('panel-observaciones');
     const btnObs = document.getElementById('btn-observaciones');
@@ -172,7 +174,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            fetch(`${API}/observaciones`, {
+            fetch(`${API_BASE}/observaciones`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

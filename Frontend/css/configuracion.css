@@ -83,11 +83,12 @@ display: block;
 
 .dropdown-perfil {
 position: absolute;
-top: 50px;
+top: 45px;
 right: 0;
-width: 220px;
+width: 180px;
 background-color: var(--guinda-oscuro);
 border-radius: 14px;
+padding: 12px;
 overflow: hidden;
 box-shadow: 0 8px 25px rgba(0,0,0,.30);
 
@@ -110,6 +111,9 @@ transform: translateY(0);
 list-style: none;
 margin: 0;
 padding: 0;
+display: flex;
+flex-direction: column;
+gap: 4px;
 }
 
 .lista-dropdown-perfil li {
@@ -120,7 +124,8 @@ list-style: none;
 display: flex;
 align-items: center;
 gap: 12px;
-padding: 14px 18px;
+padding: 8px 10px;
+border-radius: 8px;
 color: var(--blanco);
 text-decoration: none;
 font-size: 14px;
@@ -140,7 +145,7 @@ color: var(--dorado-detalle);
 .divisor-dropdown {
 height: 1px;
 background: rgba(255,255,255,.15);
-margin: 4px 15px;
+margin: 4px 0;
 }
 
 /* MENÚ FLOTANTE IZQUIERDO */

@@ -1,12 +1,11 @@
 from flask import Blueprint, request, jsonify
 import mysql.connector
 from conexion_db import obtener_conexion
-from auth_utils import requiere_rol
 
 observacion_bp = Blueprint('observacion', __name__)
 
-@observacion_bp.route('/api/observaciones/<matricula>', methods=['GET'])
-@requiere_rol(1, 2, 3)
+
+@observacion_bp.route('/observaciones/<matricula>', methods=['GET'])
 def get_observaciones(matricula):
     conexion = None
     try:
@@ -43,8 +42,8 @@ def get_observaciones(matricula):
         if conexion and conexion.is_connected():
             conexion.close()
 
-@observacion_bp.route('/api/observaciones', methods=['POST'])
-@requiere_rol(1, 2, 3)
+
+@observacion_bp.route('/observaciones', methods=['POST'])
 def crear_observacion():
     datos = request.get_json(silent=True) or {}
 

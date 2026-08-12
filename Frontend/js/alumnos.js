@@ -39,6 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let paginaActual = 1;
     let selectsYaPoblados = false;
+    let estadoForzadoInicial = null; // viene de la URL (ej. ?estado=Regular), se aplica una sola vez
 
     const inputBuscar = document.querySelector('.search-input');
     const btnLimpiar = document.querySelector('.btn-limpiar');
@@ -55,7 +56,9 @@ document.addEventListener('DOMContentLoaded', () => {
             carrera: selectCarrera ? selectCarrera.value : 'Todos',
             semestre: selectSemestre ? selectSemestre.value : 'Todos',
             turno: selectTurno ? selectTurno.value : 'Todos',
-            estado: selectEstado ? selectEstado.value : 'Todos'
+            // Si aun no se ha aplicado el filtro que vino por URL (porque el select
+            // todavia no tenia esa opcion cargada), lo usamos aqui directamente.
+            estado: estadoForzadoInicial || (selectEstado ? selectEstado.value : 'Todos')
         };
     }
 
@@ -163,6 +166,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 selectsYaPoblados = true;
             }
 
+            // El filtro que vino de la URL ya se aplico y ya quedo reflejado
+            // en el select (poblarSelects lo usa como valorPrevio). A partir
+            // de aqui, el usuario puede cambiarlo libremente sin que se
+            // vuelva a forzar en cada recarga.
+            estadoForzadoInicial = null;
+
             actualizarControlesPaginacion(data.pagina_actual, data.total_paginas, data.total_filtrado);
 
         } catch (error) {
@@ -261,11 +270,14 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- 8. INICIALIZAR ---
     restaurarFiltrosGuardados();
 
-    // Si viene un filtro de estado desde la URL (por ejemplo desde inicio.html)
+    // Si viene un filtro de estado desde la URL (por ejemplo desde inicio.html),
+    // lo guardamos aparte: el <select> todavia no tiene esa opcion cargada en
+    // este punto (se llena hasta que responde la API), asi que asignarlo
+    // directamente al select.value no serviria de nada.
     const paramsUrl = new URLSearchParams(window.location.search);
     const estadoFiltro = paramsUrl.get('estado');
-    if (estadoFiltro && selectEstado) {
-        selectEstado.value = estadoFiltro;
+    if (estadoFiltro) {
+        estadoForzadoInicial = estadoFiltro;
     }
 
     cargarDatosAlumnos();
