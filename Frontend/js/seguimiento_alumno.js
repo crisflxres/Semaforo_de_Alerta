@@ -1,5 +1,5 @@
 // Cambia esto si tu Flask corre en otra URL/puerto (misma variable que en alumnos.js e inicio.js)
-const API_BASE = 'https://semaforo-de-alerta.onrender.com';
+const API_BASE = 'http://127.0.0.1:5000';
 
 async function abrirModalHistorialObsvervaciones() {
     const modal = document.getElementById('modalHistorialObservaciones');
@@ -67,37 +67,27 @@ document.addEventListener('DOMContentLoaded', () => {
     const elBadgeReprobadas  = document.getElementById('txt-reprobadas');
     const foto              = document.getElementById('foto-alumno');
 
-    fetch(`${API_BASE}/api/alumnos`)
-        .then(res => res.json())
-        .then(data => {
-            const alumno = data.lista.find(a => a.matricula === matricula);
-            if (!alumno) return;
+    fetch(`${API_BASE}/api/alumno_por_matricula/${matricula}`)
+    .then(res => res.json())
+    .then(data => {
+        if (!data.success || !data.alumno) return;
+        const alumno = data.alumno;
 
-            // Foto: ahora sí existe alumno
-            if (foto) {
-                foto.src = `${API_BASE}/fotos/${alumno.matricula}`;
-                foto.onerror = function() {
-                    foto.style.display = 'none';
-                };
-            }
+        if (foto) {
+            foto.src = `${API_BASE}/fotos/${alumno.Matricula}`;
+            foto.onerror = function() {
+                foto.style.display = 'none';
+            };
+        }
 
-            if (elNombre)    elNombre.textContent = `${alumno.nombre} ${alumno.apellidos}`.toUpperCase();
-            if (elMatricula) elMatricula.textContent = alumno.matricula;
-            if (elCorreo)    elCorreo.textContent = alumno.email;
-            if (elCarrera)   elCarrera.textContent = alumno.carrera;
-            if (elGrupo)     elGrupo.textContent = alumno.grupo;
-            if (elTurno)     elTurno.textContent = alumno.turno;
-            if (elBadgeReprobadas) elBadgeReprobadas.textContent = `Materias reprobadas: ${alumno.materias_reprobadas}`;
-
-            if (elEstado) {
-                elEstado.textContent = `Estado: ${alumno.estado_alerta}`;
-                elEstado.className = '';
-                const estadoLimpio = alumno.estado_alerta.toLowerCase().trim();
-                if      (estadoLimpio.includes('regular'))  elEstado.classList.add('badge-estado-regular');
-                else if (estadoLimpio.includes('riesgo'))   elEstado.classList.add('badge-estado-riesgo');
-                else if (estadoLimpio.includes('critico'))  elEstado.classList.add('badge-estado-critico');
-            }
-        });
+        if (elNombre)    elNombre.textContent = `${alumno.Nombre} ${alumno.Apellidos}`.toUpperCase();
+        if (elMatricula) elMatricula.textContent = alumno.Matricula;
+        if (elCorreo)    elCorreo.textContent = alumno.Email;
+        if (elCarrera)   elCarrera.textContent = alumno.Carrera;
+        if (elGrupo)     elGrupo.textContent = alumno.Grupo;
+        if (elTurno)     elTurno.textContent = alumno.Turno;
+    })
+    .catch(err => console.error("Error al cargar datos del alumno:", err));
 
 
     // --- 3. DROPDOWN DE PERFIL ---
