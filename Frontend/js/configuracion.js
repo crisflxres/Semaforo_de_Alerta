@@ -12,7 +12,7 @@ document.getElementById("btnCerrarSidebar").addEventListener("click", () => docu
 
 // Cambia esto si tu Flask corre en otra URL/puerto
 const API_BASE = "https://semaforo-de-alerta.onrender.com";
-
+const API_FOTOS = "https://semaforo-de-alerta-fotos.onrender.com";
 function manejarArchivo(input, tipo) {
     if (input.files && input.files.length > 0) {
         procesarArchivos(Array.from(input.files), tipo);
@@ -242,7 +242,7 @@ async function subirLoteFotos(lote) {
     });
 
     try {
-        const respuesta = await fetch(`${API_BASE}/configuracion/importar-fotos`, {
+        const respuesta = await fetch(`${API_FOTOS}/configuracion/importar-fotos`, {
             method: "POST",
             body: formData,
         });
@@ -311,7 +311,7 @@ async function procesarCarpetaFotos(archivos) {
 
 async function finalizarImportacionFotos(totalRegistros) {
     try {
-        const respuesta = await fetch(`${API_BASE}/configuracion/finalizar-importacion-fotos`, {
+        const respuesta = await fetch(`${API_FOTOS}/configuracion/finalizar-importacion-fotos`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ registros: totalRegistros }),

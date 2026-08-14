@@ -1,9 +1,9 @@
 import os
 import re
+import gc
 import shutil
 import tempfile
 import pandas as pd
-from concurrent.futures import ThreadPoolExecutor
 from werkzeug.utils import secure_filename
 from flask import Blueprint, jsonify, request
 from db_manager import importar_taca_completo, actualizar_correos_bulk, actualizar_fotos_bulk, insertar_importacion
@@ -62,14 +62,14 @@ def comprimir_foto(ruta_archivo, ancho_maximo=400, calidad=75):
         if imagen.mode != "RGB":
             imagen = imagen.convert("RGB")
 
-    if imagen.width > ancho_maximo:
-        proporcion = ancho_maximo / imagen.width
-        nuevo_alto = int(imagen.height * proporcion)
-        imagen = imagen.resize((ancho_maximo, nuevo_alto), Image.LANCZOS)
+        if imagen.width > ancho_maximo:
+            proporcion = ancho_maximo / imagen.width
+            nuevo_alto = int(imagen.height * proporcion)
+            imagen = imagen.resize((ancho_maximo, nuevo_alto), Image.LANCZOS)
 
-    buffer = BytesIO()
-    imagen.save(buffer, format="JPEG", quality=calidad, optimize=True)
-    return buffer.getvalue()
+        buffer = BytesIO()
+        imagen.save(buffer, format="JPEG", quality=calidad, optimize=True)
+        return buffer.getvalue()
 
 
 @configuracion_bp.route("/prueba", methods=["GET"])
@@ -282,18 +282,21 @@ def importar_fotos_route():
 
         fotos_encontradas = importar_fotos(carpeta_temporal)
 
-        def _comprimir_foto_segura(foto):
+        # Procesamiento secuencial (sin hilos) para mantener el pico de memoria
+        # bajo y predecible. Cada foto se comprime y su archivo temporal se
+        # borra de inmediato, en vez de esperar a que termine todo el lote.
+        fotos_comprimidas = []
+        for foto in fotos_encontradas:
             try:
-                return {"matricula": foto["matricula"], "contenido_bytes": comprimir_foto(foto["ruta"])}
+                contenido = comprimir_foto(foto["ruta"])
+                fotos_comprimidas.append({"matricula": foto["matricula"], "contenido_bytes": contenido})
             except Exception as e:
                 print(f"[AVISO] No se pudo procesar la foto de {foto['matricula']}: {e}")
-                return None
-
-        with ThreadPoolExecutor(max_workers= 2) as executor:
-            fotos_comprimidas = [
-                resultado for resultado in executor.map(_comprimir_foto_segura, fotos_encontradas)
-                if resultado is not None
-            ]
+            finally:
+                try:
+                    os.remove(foto["ruta"])
+                except OSError:
+                    pass
 
         conexion = obtener_conexion()
         cursor = conexion.cursor()
@@ -302,6 +305,11 @@ def importar_fotos_route():
 
         conexion.commit()
         cursor.close()
+
+        # Liberar explícitamente la memoria del lote antes de responder,
+        # para que no se acumule de un request al siguiente.
+        del fotos_comprimidas, fotos_encontradas
+        gc.collect()
 
         return jsonify({
             "success": True,
