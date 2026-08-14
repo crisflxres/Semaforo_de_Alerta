@@ -7,7 +7,7 @@ tutor_bp = Blueprint('tutor_bp', __name__)
 
 
 @tutor_bp.route('/api/tutor/<matricula>', methods=['GET'])
-@requiere_rol(1, 2, 3)
+@requiere_rol(1, 2, 3, 4)
 def get_tutor(matricula):
     conexion = None
     try:
@@ -45,7 +45,7 @@ def get_tutor(matricula):
 
 
 @tutor_bp.route('/api/tutor/<matricula>', methods=['PUT'])
-@requiere_rol(1, 3)
+@requiere_rol(1, 3, 4)
 def actualizar_tutor(matricula):
     datos = request.get_json(silent=True) or {}
 
