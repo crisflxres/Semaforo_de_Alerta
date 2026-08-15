@@ -11,7 +11,7 @@ ID_ROL_TUTOR = 3  # Rol 3: Tutor Académico / Padre de Familia
 
 
 @tutor_bp.route('/api/tutor/<matricula>', methods=['GET'])
-@requiere_rol(1, 2, 3)
+@requiere_rol(1, 2, 3, 5)
 def get_tutor(matricula):
     conexion = None
     try:

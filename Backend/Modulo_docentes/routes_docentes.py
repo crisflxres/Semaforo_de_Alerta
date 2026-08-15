@@ -6,7 +6,7 @@ from auth_utils import requiere_rol
 rutas_docentes = Blueprint('rutas_docentes', __name__)
 
 @rutas_docentes.route('/docentes', methods=['GET'])
-@requiere_rol(1, 2, 3)
+@requiere_rol(1, 2, 3, 5)
 def get_docentes():
     conexion = None
     try:
@@ -15,7 +15,7 @@ def get_docentes():
         cursor.execute("""
             SELECT Id_Usuario, Nombre, Apellidos, Email, Telefono, Id_Rol
             FROM usuarios
-            WHERE Id_Rol IN (2, 3) AND Activo = 1
+            WHERE Id_Rol IN (2, 3, 5) AND Activo = 1
         """)
         docentes = cursor.fetchall()
         cursor.close()
