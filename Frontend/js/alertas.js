@@ -33,10 +33,17 @@ Atentamente,
 Coordinación Académica Institucional CECyTE Hidalgo`;
 }
 
+const EMOJI_ESTATUS = {
+    Verde:    '🟢',
+    Amarillo: '🟡',
+    Rojo:     '🔴'
+};
+
 function aplicarPlantilla() {
     const asunto = document.getElementById('asuntoNotificacion');
     const editor = document.getElementById('mensajeEditor');
-    if (asunto) asunto.value = "Situación Académica de {alumno} - Estatus: {estatus}";
+    const emoji = EMOJI_ESTATUS[nivelActual] || '';
+    if (asunto) asunto.value = `${emoji} Situación Académica de {alumno} - Estatus: {estatus}`;
     if (editor) editor.innerHTML = generarMensaje(nivelActual).replace(/\n/g, '<br>');
 }
 
