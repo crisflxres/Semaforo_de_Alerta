@@ -6,7 +6,7 @@ from auth_utils import requiere_rol
 carreras_bp = Blueprint("carreras", __name__)
 
 @carreras_bp.route("/api/carreras")
-@requiere_rol(1, 2, 3)
+@requiere_rol(1, 2, 3, 5)
 def get_carreras():
     conexion = None
     try:
