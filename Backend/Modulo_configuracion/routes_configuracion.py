@@ -330,12 +330,13 @@ def importar_fotos_route():
 def finalizar_importacion_fotos():
     datos = request.get_json() or {}
     total_registros = datos.get("registros", 0)
+    nombre_importacion = datos.get("nombre", "Carpeta de fotos")
 
     conexion = None
     try:
         conexion = obtener_conexion()
         cursor = conexion.cursor()
-        id_importacion = insertar_importacion(cursor, None, "Carpeta de fotos", None)
+        id_importacion = insertar_importacion(cursor, None, nombre_importacion, None)
         conexion.commit()
         cursor.close()
 

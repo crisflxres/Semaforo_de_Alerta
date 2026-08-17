@@ -207,6 +207,7 @@ function mostrarErrorContactos(mensaje) {
 
 const TAMANO_LOTE_FOTOS = 25;
 let lotesFallidos = []; // guarda { numero, archivos, mensaje } de los lotes que fallaron
+let nombreCarpetaActual = "Carpeta de fotos"; // nombre de la carpeta que se está procesando actualmente
 
 function bloquearZonaContactos(bloquear) {
     const zona = document.getElementById('dropContactos');
@@ -258,7 +259,7 @@ async function subirLoteFotos(lote) {
     }
 }
 
-async function procesarCarpetaFotos(archivos) {
+async function procesarCarpetaFotos(archivos, nombreCarpeta = "Carpeta de fotos") {
     const msg = document.getElementById('exitoContactos');
     const textoMsg = document.getElementById('textoExitoContactos');
     const btnReintentar = document.getElementById('btnReintentarFotos');
@@ -273,6 +274,7 @@ async function procesarCarpetaFotos(archivos) {
     bloquearZonaContactos(true);
     btnReintentar.style.display = 'none';
     lotesFallidos = [];
+    nombreCarpetaActual = nombreCarpeta;
 
     try {
         const totalLotes = Math.ceil(archivos.length / TAMANO_LOTE_FOTOS);
@@ -310,16 +312,18 @@ async function procesarCarpetaFotos(archivos) {
 }
 
 async function finalizarImportacionFotos(totalRegistros) {
+    const nombreConPrefijo = `[FOTOS] ${nombreCarpetaActual}`;
+
     try {
         const respuesta = await fetch(`${API_FOTOS}/configuracion/finalizar-importacion-fotos`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ registros: totalRegistros }),
+            body: JSON.stringify({ registros: totalRegistros, nombre: nombreConPrefijo }),
         });
         const data = await respuesta.json();
 
         agregarHistorial(
-            "Carpeta de fotos",
+            nombreCarpetaActual,
             new Date().toLocaleDateString('es-MX'),
             new Date().toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' }),
             `${totalRegistros} regs`,
@@ -427,12 +431,12 @@ async function manejarDropContactos(event) {
     }
 
     if (carpetasEncontradas.length > 0) {
-        // Se leen todas las carpetas en paralelo y se juntan sus archivos en un solo lote
-        const resultados = await Promise.all(
-            carpetasEncontradas.map((carpeta) => leerCarpetaRecursiva(carpeta))
-        );
-        const archivosDeFotos = resultados.flat();
-        procesarCarpetaFotos(archivosDeFotos);
+        // Se procesa una carpeta a la vez, en orden. Si una falla a medio subir,
+        // el proceso se detiene ahí (no avanza a la siguiente) hasta que se reintente y quede completa.
+        for (const carpeta of carpetasEncontradas) {
+            const archivosDeCarpeta = await leerCarpetaRecursiva(carpeta);
+            await procesarCarpetaFotos(archivosDeCarpeta, carpeta.name);
+        }
     }
 
     if (archivosExcel.length > 0) {
@@ -540,12 +544,14 @@ function cargarHistorial() {
             if (!data.success) return;
             const tbody = document.getElementById('cuerpoHistorial');
             tbody.innerHTML = '';
-            data.data.forEach(item => {
+            [...data.data].reverse().forEach(item => {
                 const fechaObj = new Date(item.fecha);
                 const fecha = fechaObj.toLocaleDateString('es-MX');
                 const hora = fechaObj.toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' });
-                const nombre = item.archivo.replace(/\.[^/.]+$/, "");
-                agregarHistorial(nombre, fecha, hora, `${item.registros} regs`, 'academico', null, item.archivo, item.id_importacion);
+                const esFoto = item.archivo.startsWith('[FOTOS] ');
+                const tipo = esFoto ? 'contactos' : 'academico';
+                const nombre = (esFoto ? item.archivo.slice(8) : item.archivo).replace(/\.[^/.]+$/, "");
+                agregarHistorial(nombre, fecha, hora, `${item.registros} regs`, tipo, null, item.archivo, item.id_importacion);
             });
             actualizarVacio();
         })
