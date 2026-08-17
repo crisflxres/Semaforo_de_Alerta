@@ -16,7 +16,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnCancelarTutor = document.getElementById('btn-cancelar-tutor');
 
     function cargarTutor() {
-        fetch(`https://semaforo-de-alerta.onrender.com/api/tutor/${matricula}`)
+        fetch(`https://semaforo-de-alerta.onrender.com/api/tutor/${matricula}`, {
+            headers: { 'X-Id-Rol': localStorage.getItem('rolUsuario') }
+        })
             .then(res => res.json())
             .then(data => {
                 if (data.success && data.existe) {
@@ -87,7 +89,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         fetch(`https://semaforo-de-alerta.onrender.com/api/tutor/${matricula}`, {
             method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Id-Rol': localStorage.getItem('rolUsuario')
+            },
             body: JSON.stringify({ nombre, telefono, email })
         })
         .then(res => res.json())
