@@ -12,7 +12,7 @@ document.getElementById("btnCerrarSidebar").addEventListener("click", () => docu
 
 // Cambia esto si tu Flask corre en otra URL/puerto
 const API_BASE = "https://semaforo-de-alerta.onrender.com";
-
+const API_FOTOS = "https://semaforo-de-alerta-fotos.onrender.com";
 function manejarArchivo(input, tipo) {
     if (input.files && input.files.length > 0) {
         procesarArchivos(Array.from(input.files), tipo);
@@ -242,7 +242,7 @@ async function subirLoteFotos(lote) {
     });
 
     try {
-        const respuesta = await fetch(`${API_BASE}/configuracion/importar-fotos`, {
+        const respuesta = await fetch(`${API_FOTOS}/configuracion/importar-fotos`, {
             method: "POST",
             body: formData,
         });
@@ -311,7 +311,7 @@ async function procesarCarpetaFotos(archivos) {
 
 async function finalizarImportacionFotos(totalRegistros) {
     try {
-        const respuesta = await fetch(`${API_BASE}/configuracion/finalizar-importacion-fotos`, {
+        const respuesta = await fetch(`${API_FOTOS}/configuracion/finalizar-importacion-fotos`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ registros: totalRegistros }),
@@ -404,14 +404,14 @@ async function manejarDropContactos(event) {
     const items = event.dataTransfer.items;
     const archivosExcel = [];
     const archivosFotos = [];
-    let carpetaEncontrada = null;
+    const carpetasEncontradas = []; // antes era una sola variable; ahora soporta varias carpetas
 
     for (let i = 0; i < items.length; i++) {
         const entry = items[i].webkitGetAsEntry();
         if (!entry) continue;
 
         if (entry.isDirectory) {
-            carpetaEncontrada = entry;
+            carpetasEncontradas.push(entry);
 
         } else if (entry.isFile) {
             const archivo = items[i].getAsFile();
@@ -426,8 +426,12 @@ async function manejarDropContactos(event) {
         }
     }
 
-    if (carpetaEncontrada) {
-        const archivosDeFotos = await leerCarpetaRecursiva(carpetaEncontrada);
+    if (carpetasEncontradas.length > 0) {
+        // Se leen todas las carpetas en paralelo y se juntan sus archivos en un solo lote
+        const resultados = await Promise.all(
+            carpetasEncontradas.map((carpeta) => leerCarpetaRecursiva(carpeta))
+        );
+        const archivosDeFotos = resultados.flat();
         procesarCarpetaFotos(archivosDeFotos);
     }
 
