@@ -209,6 +209,9 @@ const TAMANO_LOTE_FOTOS = 25;
 let lotesFallidos = []; // guarda { numero, archivos, mensaje } de los lotes que fallaron
 let nombreCarpetaActual = "Carpeta de fotos"; // nombre de la carpeta que se está procesando actualmente
 
+let resolverEsperaLotes = null; // función para resolver la promesa de espera entre lotes
+let totalRegistrosAcumuladosFotos = 0; // registros acumulados entre el intento inicial y los reintentos
+
 function bloquearZonaContactos(bloquear) {
     const zona = document.getElementById('dropContactos');
     const input = document.getElementById('inputContactos');
@@ -297,8 +300,19 @@ async function procesarCarpetaFotos(archivos, nombreCarpeta = "Carpeta de fotos"
             }
         }
 
-        await finalizarImportacionFotos(totalRegistros);
-        mostrarReporteFinalFotos(totalRegistros);
+        totalRegistrosAcumuladosFotos = totalRegistros;
+        mostrarReporteFinalFotos(totalRegistrosAcumuladosFotos);
+
+        if (lotesFallidos.length === 0) {
+            await finalizarImportacionFotos(totalRegistrosAcumuladosFotos);
+            totalRegistrosAcumuladosFotos = 0;
+        } else {
+            // Nos quedamos esperando aquí hasta que el usuario reintente con éxito. 
+            // El "for" que sube las carpetas no avanza mientras esta promesa no se resuelva.
+            await new Promise((resolve) => {
+                resolverEsperaLotes = resolve;
+            });
+        }
 
     } catch (error) {
         console.error("Error inesperado al procesar fotos:", error);
@@ -344,14 +358,16 @@ function mostrarReporteFinalFotos(totalRegistros) {
 
     if (lotesFallidos.length === 0) {
         textoMsg.textContent = `${totalRegistros} foto(s) vinculada(s) correctamente. Sin errores.`;
+
+        msg.style.display = 'flex';
+        setTimeout(() => { msg.style.display = 'none'; }, 8000);
+
     } else {
         const fotosFallidas = lotesFallidos.reduce((suma, l) => suma + l.archivos.length, 0);
         textoMsg.textContent = `${totalRegistros} foto(s) vinculada(s). ${lotesFallidos.length} lote(s) fallaron (${fotosFallidas} fotos sin subir).`;
         btnReintentar.style.display = 'flex';
+        msg.style.display = 'flex';
     }
-
-    msg.style.display = 'flex';
-    setTimeout(() => { msg.style.display = 'none'; }, 8000);
 }
 
 async function reintentarLotesFallidos() {
@@ -382,12 +398,24 @@ async function reintentarLotesFallidos() {
             }
         }
 
-        if (totalRegistros > 0) {
-            await finalizarImportacionFotos(totalRegistros);
+        totalRegistrosAcumuladosFotos += totalRegistros;
+        mostrarReporteFinalFotos(totalRegistrosAcumuladosFotos);
+
+        if (lotesFallidos.length === 0) {
+            await finalizarImportacionFotos(totalRegistrosAcumuladosFotos);
+            totalRegistrosAcumuladosFotos = 0;
+
+            // Ya quedó completa: destrabamos el "for"
+            // que estaba esperando en procesarCarpetaFotos.
+            if (resolverEsperaLotes) {
+                resolverEsperaLotes();
+                resolverEsperaLotes = null;
+            }
+        } else {
+            // Si todavía quedan lotesFallidos, no hacemos nada más.
+            // El botón sigue visible para volver a intentar.
+            btnReintentar.style.display = 'flex';
         }
-
-        mostrarReporteFinalFotos(totalRegistros);
-
     } catch (error) {
         console.error("Error inesperado al reintentar fotos:", error);
 

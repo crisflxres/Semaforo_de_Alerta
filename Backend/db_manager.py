@@ -1,6 +1,8 @@
 from importador_TACA import leer_taca, importar_alumnos, importar_materias, importar_calificaciones
 from conexion_db import obtener_conexion
 import bcrypt
+from datetime import datetime
+from zoneinfo import ZoneInfo
 
 def insertar_materia(cursor, materia, id_carrera, semestre):
     sql = "INSERT IGNORE INTO materias (Nombre, Semestre, Id_Carrera, Tipo) VALUES (%s, %s, %s, %s)"
@@ -64,11 +66,13 @@ def insertar_alumnos(cursor, alumno, id_grupo, id_usuario):
     return resultado[0]
 
 def insertar_importacion(cursor, id_grupo, archivo, importador_por):
-    sql = "INSERT INTO importaciones (Id_grupo, archivo, importado_por) VALUES (%s, %s, %s)"
+    fecha_mexico = datetime.now(ZoneInfo("America/Mexico_City")).strftime("%Y-%m-%d %H:%M:%S")
+    sql = "INSERT INTO importaciones (Id_grupo, archivo, importado_por, fecha) VALUES (%s, %s, %s, %s)"
     valores = (
         id_grupo,
         archivo,
         importador_por,
+        fecha_mexico,
     )
     cursor.execute(sql, valores)
     return cursor.lastrowid
