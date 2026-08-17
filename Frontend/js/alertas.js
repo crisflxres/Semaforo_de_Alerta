@@ -20,7 +20,7 @@ function generarMensaje(nivel) {
 
 Por medio de la presente, le informamos sobre la situación académica del alumno(a) <b>{alumno}</b>, con matrícula {matricula}, perteneciente al grupo {grupo} de la carrera de {carrera}.
 
-De acuerdo con los registros académicos, el estudiante ${descripcion}. Actualmente cuenta con un Promedio de Aprovechamiento Académico (PAC) de {pac} y {reprobadas} materia(s) en situación de riesgo.
+De acuerdo con los registros académicos, el estudiante mantiene actualmente un estatus académico {estatus}, lo cual significa que ${descripcion}. Actualmente cuenta con un Promedio de Aprovechamiento Académico (PAC) de {pac} y {reprobadas} materia(s) en situación de riesgo.
 
 Le invitamos a dar seguimiento a esta información y, de ser necesario, mantener comunicación con la institución y los docentes correspondientes para favorecer el desempeño académico del estudiante.
 
