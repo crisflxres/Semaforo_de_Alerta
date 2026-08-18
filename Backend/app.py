@@ -28,18 +28,7 @@ from Modulo_tutores.routes_tutor import tutor_bp
 
 app = Flask(__name__)
 # Permitimos CORS para que tus archivos HTML y JS del frontend puedan comunicarse con Python
-CORS(
-    app,
-    resources={
-        r"/*": {
-            "origins": [
-                "https://sema-cecyteh.netlify.app"
-            ]
-        }
-    },
-    methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allow_headers=["Content-Type", "Authorization", "X-ID-Rol"]
-)
+CORS(app)
 app.register_blueprint(recuperacion_bp)
 app.register_blueprint(alumnos_bp)
 app.register_blueprint(materias_bp)
