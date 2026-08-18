@@ -38,7 +38,7 @@ CORS(
         }
     },
     methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allow_headers=["Content-Type", "Authorization"]
+    allow_headers=["Content-Type", "Authorization", "X-ID-Rol"]
 )
 app.register_blueprint(recuperacion_bp)
 app.register_blueprint(alumnos_bp)
