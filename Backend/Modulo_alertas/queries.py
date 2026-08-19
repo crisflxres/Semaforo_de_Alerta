@@ -28,7 +28,7 @@ def consultar_alumnos_por_alerta():
     INNER JOIN niveles_alerta na ON al.Id_Nivel = na.Id_Nivel
     LEFT JOIN padre_alumno pa ON pa.Matricula = a.Matricula
     LEFT JOIN tutor_grupo tg ON tg.Id_Grupo = g.Id_Grupo
-    LEFT JOIN usuarios u_doc ON tg.Id_Usuario = u_doc.Id_Usuario AND u_doc.Id_Rol = 2
+    LEFT JOIN usuarios u_doc ON tg.Id_Usuario = u_doc.Id_Usuario AND u_doc.Id_Rol IN (2, 5)
     WHERE na.Nombre = %s
     ORDER BY g.Nombre, a.Apellidos, a.Nombre;
     """
@@ -70,7 +70,7 @@ def consultar_alumnos_por_alerta_docente():
     INNER JOIN carreras c ON g.Id_Carrera = c.Id_Carrera
     INNER JOIN niveles_alerta na ON al.Id_Nivel = na.Id_Nivel
     INNER JOIN horarios h ON h.Id_Grupo = g.Id_Grupo
-    INNER JOIN usuarios u_doc ON h.Id_Usuario = u_doc.Id_Usuario AND u_doc.Id_Rol = 2
+    INNER JOIN usuarios u_doc ON h.Id_Usuario = u_doc.Id_Usuario AND u_doc.Id_Rol IN (2, 5)
     WHERE na.Nombre = %s
     ORDER BY g.Nombre, a.Apellidos, a.Nombre;
     """
@@ -97,7 +97,7 @@ def consultar_resumen_destinatarios():
     LEFT JOIN usuarios u_alumno ON u_alumno.Id_Usuario = a.Id_Usuario AND u_alumno.Id_Rol = 4
     LEFT JOIN padre_alumno pa ON pa.Matricula = a.Matricula
     LEFT JOIN horarios h ON h.Id_Grupo = a.Id_Grupo
-    LEFT JOIN usuarios u_doc ON u_doc.Id_Usuario = h.Id_Usuario AND u_doc.Id_Rol = 2
+    LEFT JOIN usuarios u_doc ON u_doc.Id_Usuario = h.Id_Usuario AND u_doc.Id_Rol IN (2, 5)
     GROUP BY na.Id_Nivel, na.Nombre
     ORDER BY na.Id_Nivel;
     """
