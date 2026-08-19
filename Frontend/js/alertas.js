@@ -15,12 +15,17 @@ const DESCRIPCION_ESTATUS = {
 };
 
 function generarMensaje(nivel) {
-    const descripcion = DESCRIPCION_ESTATUS[nivel] || DESCRIPCION_ESTATUS.Verde;
     return `Estimado(a) {destinatario}:
 
 Por medio de la presente, le informamos sobre la situación académica del alumno(a) <b>{alumno}</b>, con matrícula {matricula}, perteneciente al grupo {grupo} de la carrera de {carrera}.
 
-De acuerdo con los registros académicos, el estudiante mantiene actualmente un estatus académico {estatus}, lo cual significa que ${descripcion}. Actualmente cuenta con un Promedio de Aprovechamiento Académico (PAC) de {pac} y {reprobadas} materia(s) en situación de riesgo.
+De acuerdo con los registros académicos, el estudiante mantiene actualmente un estatus académico {estatus}. Actualmente cuenta con un Promedio de Aprovechamiento Académico (PAC) de {pac} y {reprobadas} materia(s) en situación de riesgo.
+
+Para su orientación, así funciona el semáforo de alertas académicas:
+
+- Verde: ${DESCRIPCION_ESTATUS.Verde}.
+- Amarillo: ${DESCRIPCION_ESTATUS.Amarillo}.
+- Rojo: ${DESCRIPCION_ESTATUS.Rojo}.
 
 Le invitamos a dar seguimiento a esta información y, de ser necesario, mantener comunicación con la institución y los docentes correspondientes para favorecer el desempeño académico del estudiante.
 
@@ -28,10 +33,17 @@ Atentamente,
 Coordinación Académica Institucional CECyTE Hidalgo`;
 }
 
+const EMOJI_ESTATUS = {
+    Verde:    '🟢',
+    Amarillo: '🟡',
+    Rojo:     '🔴'
+};
+
 function aplicarPlantilla() {
     const asunto = document.getElementById('asuntoNotificacion');
     const editor = document.getElementById('mensajeEditor');
-    if (asunto) asunto.value = "Situación Académica de {alumno} - Estatus: {estatus}";
+    const emoji = EMOJI_ESTATUS[nivelActual] || '';
+    if (asunto) asunto.value = `${emoji} Situación Académica de {alumno} - Estatus: {estatus}`;
     if (editor) editor.innerHTML = generarMensaje(nivelActual).replace(/\n/g, '<br>');
 }
 
