@@ -1,9 +1,12 @@
-// VARIABLES GLOBALES 
+// Cambia esto si tu Flask corre en otra URL/puerto (misma variable que en alumnos.js)
+const API_BASE = 'http://127.0.0.1:5000';
+
+// VARIABLES GLOBALES
 let docentes = [];
 
-// CARGAR DOCENTES DESDE LA BD 
+// CARGAR DOCENTES DESDE LA BD
 async function cargarDocentes() {
-    const res = await fetch('https://semaforo-de-alerta.onrender.com/docentes');
+    const res = await fetch(`${API_BASE}/docentes`);
     const data = await res.json();
     if (data.success) {
         docentes = data.data.map(d => ({
@@ -16,7 +19,7 @@ async function cargarDocentes() {
     }
 }
 
-// RENDERIZAR LISTA 
+// RENDERIZAR LISTA
 function renderizar() {
     const lista = document.getElementById('listaDocentes');
     const term = document.getElementById('buscador').value.toLowerCase();
@@ -36,7 +39,7 @@ function renderizar() {
     });
 }
 
-// CRUD 
+// CRUD
 document.getElementById('btnNuevoDocente').addEventListener('click', () => {
     document.getElementById('inputNombre').value = '';
     document.getElementById('inputEmail').value = '';
@@ -61,13 +64,13 @@ document.getElementById('btnGuardar').addEventListener('click', async () => {
     };
 
     if (indice !== "-1") {
-        await fetch(`https://semaforo-de-alerta.onrender.com/docentes/${indice}`, {
+        await fetch(`${API_BASE}/docentes/${indice}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(datos)
         });
     } else {
-        await fetch('https://semaforo-de-alerta.onrender.com/docentes', {
+        await fetch(`${API_BASE}/docentes`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(datos)
@@ -89,7 +92,7 @@ function editar(id) {
 }
 
 async function eliminar(id) {
-    await fetch(`https://semaforo-de-alerta.onrender.com/docentes/${id}`, { method: 'DELETE' });
+    await fetch(`${API_BASE}/docentes/${id}`, { method: 'DELETE' });
     await cargarDocentes();
 }
 
@@ -97,7 +100,7 @@ document.getElementById('buscador').addEventListener('input', () => {
     renderizar();
 });
 
-// MENÚ HAMBURGUESA 
+// MENÚ HAMBURGUESA
 document.getElementById('btnHamburguesa').addEventListener('click', () => {
     document.getElementById('sidebarOverlay').classList.add('open');
 });

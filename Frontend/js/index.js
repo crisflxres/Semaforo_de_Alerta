@@ -1,4 +1,4 @@
-const API =  'https://semaforo-de-alerta.onrender.com';
+const API =  'http://127.0.0.1:5000';
 
 document.getElementById('formLogin').addEventListener('submit', async (e) => {
     e.preventDefault();
