@@ -9,12 +9,19 @@ async function cargarDocentes() {
     const res = await fetch(`${API_BASE}/docentes`);
     const data = await res.json();
     if (data.success) {
-        docentes = data.data.map(d => ({
-            id: d.Id_Usuario,
-            nombre: `${d.Nombre} ${d.Apellidos}`,
-            email: d.Email || 'Sin correo',
-            rol: parseInt(d.Id_Rol) === 2 ? 'Docente' : 'Tutor'
-        }));
+        docentes = data.data.map(d => {
+            const idRol = parseInt(d.Id_Rol);
+            let rolTexto = 'Tutor';
+            if (idRol === 2) rolTexto = 'Docente';
+            if (idRol === 5) rolTexto = 'Docente/Tutor';
+
+            return {
+                id: d.Id_Usuario,
+                nombre: `${d.Nombre} ${d.Apellidos}`,
+                email: d.Email || 'Sin correo',
+                rol: rolTexto
+            };
+        });
         renderizar();
     }
 }
@@ -86,7 +93,12 @@ function editar(id) {
     const doc = docentes.find(d => d.id === id);
     document.getElementById('inputNombre').value = doc.nombre;
     document.getElementById('inputEmail').value = doc.email;
-    document.getElementById('inputRol').value = doc.rol === 'Docente' ? '2' : '3';
+
+    let valorRol = '3';
+    if (doc.rol === 'Docente') valorRol = '2';
+    if (doc.rol === 'Docente/Tutor') valorRol = '5';
+    document.getElementById('inputRol').value = valorRol;
+
     document.getElementById('panelRegistro').classList.remove('hidden');
     document.getElementById('indiceEdicion').value = id;
 }

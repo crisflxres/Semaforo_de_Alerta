@@ -12,7 +12,7 @@ document.getElementById("btnCerrarSidebar").addEventListener("click", () => docu
 
 // Cambia esto si tu Flask corre en otra URL/puerto
 const API_BASE = "https://semaforo-de-alerta.onrender.com";
-
+const API_FOTOS = "https://semaforo-de-alerta-fotos.onrender.com";
 function manejarArchivo(input, tipo) {
     if (input.files && input.files.length > 0) {
         procesarArchivos(Array.from(input.files), tipo);
@@ -207,6 +207,10 @@ function mostrarErrorContactos(mensaje) {
 
 const TAMANO_LOTE_FOTOS = 25;
 let lotesFallidos = []; // guarda { numero, archivos, mensaje } de los lotes que fallaron
+let nombreCarpetaActual = "Carpeta de fotos"; // nombre de la carpeta que se está procesando actualmente
+
+let resolverEsperaLotes = null; // función para resolver la promesa de espera entre lotes
+let totalRegistrosAcumuladosFotos = 0; // registros acumulados entre el intento inicial y los reintentos
 
 function bloquearZonaContactos(bloquear) {
     const zona = document.getElementById('dropContactos');
@@ -242,7 +246,7 @@ async function subirLoteFotos(lote) {
     });
 
     try {
-        const respuesta = await fetch(`${API_BASE}/configuracion/importar-fotos`, {
+        const respuesta = await fetch(`${API_FOTOS}/configuracion/importar-fotos`, {
             method: "POST",
             body: formData,
         });
@@ -258,7 +262,7 @@ async function subirLoteFotos(lote) {
     }
 }
 
-async function procesarCarpetaFotos(archivos) {
+async function procesarCarpetaFotos(archivos, nombreCarpeta = "Carpeta de fotos") {
     const msg = document.getElementById('exitoContactos');
     const textoMsg = document.getElementById('textoExitoContactos');
     const btnReintentar = document.getElementById('btnReintentarFotos');
@@ -273,6 +277,7 @@ async function procesarCarpetaFotos(archivos) {
     bloquearZonaContactos(true);
     btnReintentar.style.display = 'none';
     lotesFallidos = [];
+    nombreCarpetaActual = nombreCarpeta;
 
     try {
         const totalLotes = Math.ceil(archivos.length / TAMANO_LOTE_FOTOS);
@@ -295,8 +300,19 @@ async function procesarCarpetaFotos(archivos) {
             }
         }
 
-        await finalizarImportacionFotos(totalRegistros);
-        mostrarReporteFinalFotos(totalRegistros);
+        totalRegistrosAcumuladosFotos = totalRegistros;
+        mostrarReporteFinalFotos(totalRegistrosAcumuladosFotos);
+
+        if (lotesFallidos.length === 0) {
+            await finalizarImportacionFotos(totalRegistrosAcumuladosFotos);
+            totalRegistrosAcumuladosFotos = 0;
+        } else {
+            // Nos quedamos esperando aquí hasta que el usuario reintente con éxito. 
+            // El "for" que sube las carpetas no avanza mientras esta promesa no se resuelva.
+            await new Promise((resolve) => {
+                resolverEsperaLotes = resolve;
+            });
+        }
 
     } catch (error) {
         console.error("Error inesperado al procesar fotos:", error);
@@ -310,16 +326,18 @@ async function procesarCarpetaFotos(archivos) {
 }
 
 async function finalizarImportacionFotos(totalRegistros) {
+    const nombreConPrefijo = `[FOTOS] ${nombreCarpetaActual}`;
+
     try {
-        const respuesta = await fetch(`${API_BASE}/configuracion/finalizar-importacion-fotos`, {
+        const respuesta = await fetch(`${API_FOTOS}/configuracion/finalizar-importacion-fotos`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ registros: totalRegistros }),
+            body: JSON.stringify({ registros: totalRegistros, nombre: nombreConPrefijo }),
         });
         const data = await respuesta.json();
 
         agregarHistorial(
-            "Carpeta de fotos",
+            nombreCarpetaActual,
             new Date().toLocaleDateString('es-MX'),
             new Date().toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' }),
             `${totalRegistros} regs`,
@@ -340,14 +358,16 @@ function mostrarReporteFinalFotos(totalRegistros) {
 
     if (lotesFallidos.length === 0) {
         textoMsg.textContent = `${totalRegistros} foto(s) vinculada(s) correctamente. Sin errores.`;
+
+        msg.style.display = 'flex';
+        setTimeout(() => { msg.style.display = 'none'; }, 8000);
+
     } else {
         const fotosFallidas = lotesFallidos.reduce((suma, l) => suma + l.archivos.length, 0);
         textoMsg.textContent = `${totalRegistros} foto(s) vinculada(s). ${lotesFallidos.length} lote(s) fallaron (${fotosFallidas} fotos sin subir).`;
         btnReintentar.style.display = 'flex';
+        msg.style.display = 'flex';
     }
-
-    msg.style.display = 'flex';
-    setTimeout(() => { msg.style.display = 'none'; }, 8000);
 }
 
 async function reintentarLotesFallidos() {
@@ -378,12 +398,24 @@ async function reintentarLotesFallidos() {
             }
         }
 
-        if (totalRegistros > 0) {
-            await finalizarImportacionFotos(totalRegistros);
+        totalRegistrosAcumuladosFotos += totalRegistros;
+        mostrarReporteFinalFotos(totalRegistrosAcumuladosFotos);
+
+        if (lotesFallidos.length === 0) {
+            await finalizarImportacionFotos(totalRegistrosAcumuladosFotos);
+            totalRegistrosAcumuladosFotos = 0;
+
+            // Ya quedó completa: destrabamos el "for"
+            // que estaba esperando en procesarCarpetaFotos.
+            if (resolverEsperaLotes) {
+                resolverEsperaLotes();
+                resolverEsperaLotes = null;
+            }
+        } else {
+            // Si todavía quedan lotesFallidos, no hacemos nada más.
+            // El botón sigue visible para volver a intentar.
+            btnReintentar.style.display = 'flex';
         }
-
-        mostrarReporteFinalFotos(totalRegistros);
-
     } catch (error) {
         console.error("Error inesperado al reintentar fotos:", error);
 
@@ -427,12 +459,12 @@ async function manejarDropContactos(event) {
     }
 
     if (carpetasEncontradas.length > 0) {
-        // Se leen todas las carpetas en paralelo y se juntan sus archivos en un solo lote
-        const resultados = await Promise.all(
-            carpetasEncontradas.map((carpeta) => leerCarpetaRecursiva(carpeta))
-        );
-        const archivosDeFotos = resultados.flat();
-        procesarCarpetaFotos(archivosDeFotos);
+        // Se procesa una carpeta a la vez, en orden. Si una falla a medio subir,
+        // el proceso se detiene ahí (no avanza a la siguiente) hasta que se reintente y quede completa.
+        for (const carpeta of carpetasEncontradas) {
+            const archivosDeCarpeta = await leerCarpetaRecursiva(carpeta);
+            await procesarCarpetaFotos(archivosDeCarpeta, carpeta.name);
+        }
     }
 
     if (archivosExcel.length > 0) {
@@ -540,12 +572,14 @@ function cargarHistorial() {
             if (!data.success) return;
             const tbody = document.getElementById('cuerpoHistorial');
             tbody.innerHTML = '';
-            data.data.forEach(item => {
+            [...data.data].reverse().forEach(item => {
                 const fechaObj = new Date(item.fecha);
                 const fecha = fechaObj.toLocaleDateString('es-MX');
                 const hora = fechaObj.toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' });
-                const nombre = item.archivo.replace(/\.[^/.]+$/, "");
-                agregarHistorial(nombre, fecha, hora, `${item.registros} regs`, 'academico', null, item.archivo, item.id_importacion);
+                const esFoto = item.archivo.startsWith('[FOTOS] ');
+                const tipo = esFoto ? 'contactos' : 'academico';
+                const nombre = (esFoto ? item.archivo.slice(8) : item.archivo).replace(/\.[^/.]+$/, "");
+                agregarHistorial(nombre, fecha, hora, `${item.registros} regs`, tipo, null, item.archivo, item.id_importacion);
             });
             actualizarVacio();
         })

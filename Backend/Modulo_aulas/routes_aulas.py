@@ -5,7 +5,7 @@ from auth_utils import requiere_rol
 aulas_bp = Blueprint('aulas_bp', __name__)
 
 @aulas_bp.route('/api/aulas', methods=['GET'])
-@requiere_rol(1, 2, 3)
+@requiere_rol(1, 2, 3, 5)
 def get_aulas():
 
     try:

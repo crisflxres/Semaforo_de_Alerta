@@ -4,13 +4,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnAbrir = document.querySelector('.menu-btn-global');
     const btnCerrar = document.getElementById('btnCerrar');
 
-    if (btnAbrir && sidebar && btnCerrar) {
+if (btnAbrir && sidebar && btnCerrar) {
         btnAbrir.addEventListener('click', () => {
             sidebar.classList.add('open');
         });
 
         btnCerrar.addEventListener('click', () => {
             sidebar.classList.remove('open');
+        });
+
+        sidebar.addEventListener('click', (e) => {
+            if (e.target === sidebar) {
+                sidebar.classList.remove('open');
+            }
         });
 
         document.addEventListener('keydown', (e) => {
@@ -56,7 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Resumen académico
         if (datos.promedio) document.getElementById('promedio-academico').textContent = datos.promedio;
         if (datos.reprobadas !== undefined) document.getElementById('materias-reprobadas').textContent = datos.reprobadas;
-        
+
         // Tutor
         if (datos.tutorNombre) document.getElementById('nombre-tutor').textContent = datos.tutorNombre;
         if (datos.tutorEmail) document.getElementById('email-tutor').textContent = datos.tutorEmail;
@@ -67,16 +73,19 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // 4. Cargar datos del alumno desde Flask 
-    const matricula = localStorage.getItem('matriculaSeleccionada') || localStorage.getItem('correoUsuario');
+    // 4. Cargar datos del alumno (por Matrícula)
+    const matriculaGuardada = localStorage.getItem('matriculaSeleccionada');
 
-    if (matricula) {
-        // Datos del alumno
-        fetch('https://semaforo-de-alerta.onrender.com/api/alumnos')
-            .then(res => res.json())
+    if (matriculaGuardada) {
+        fetch(`https://semaforo-de-alerta.onrender.com/api/alumno_por_matricula/${matriculaGuardada}`)
+            .then(res => {
+                if (!res.ok) throw new Error(`Error HTTP: ${res.status}`);
+                return res.json();
+            })
             .then(data => {
-                const alumno = data.lista.find(a => String(a.Matricula) === String(matricula));
-                if (!alumno) return;
+                if (!data.success || !data.alumno) return;
+
+                const alumno = data.alumno;
 
                 window.cargarDatosAlumno({
                     nombre: `${alumno.Nombre} ${alumno.Apellidos}`,
@@ -87,9 +96,15 @@ document.addEventListener('DOMContentLoaded', () => {
                     turno: alumno.Turno,
                     fotoUrl: `https://semaforo-de-alerta.onrender.com/fotos/${alumno.Matricula}`
                 });
+            })
+            .catch(err => {
+                console.error("Error al cargar los datos del alumno:", err);
             });
+    }
 
-        // Calificaciones para el resumen
+    // 5. Calificaciones (Bloque independiente original)
+    const matricula = localStorage.getItem('matriculaSeleccionada');
+    if (matricula) {
         fetch(`https://semaforo-de-alerta.onrender.com/calificaciones/${matricula}`)
             .then(res => res.json())
             .then(respuesta => {
@@ -112,8 +127,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         estado.style.backgroundColor = '#e74c3c';
                     }
                 }
-            });
-    } else {
-        console.warn("No hay matrícula en localStorage.");
+            })
+            .catch(err => console.error("Error al cargar calificaciones:", err));
     }
-}); 
+});

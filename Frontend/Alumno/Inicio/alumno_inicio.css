@@ -192,10 +192,9 @@ body { background-color: var(--color-fondo-global); color: var(--color-texto); }
 .btn-cerrar-flotante {
     position: absolute; top: 15px; left: 25px;
     width: 55px; height: 55px; 
-    background-color: #cbb393; 
+    background-color: #bc955c; 
     border-radius: 50%; border: 2px solid #000;
     display: flex; align-items: center; justify-content: center;
-    line-height: 0; padding-bottom: 4px; 
     font-size: 28px; color: #000; cursor: pointer;
     box-shadow: 0 4px 12px rgba(0,0,0,0.3);
 }

@@ -6,7 +6,7 @@ import mysql.connector
 materias_bp = Blueprint("materias", __name__)
 
 @materias_bp.route("/api/materias", methods=["GET"])
-@requiere_rol(1, 2, 3)
+@requiere_rol(1, 2, 3, 5)
 def get_materias():
     conexion = None
     try:

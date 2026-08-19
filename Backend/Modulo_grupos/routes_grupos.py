@@ -5,7 +5,7 @@ from conexion_db import obtener_conexion
 grupos_bp = Blueprint('grupos', __name__)
 
 @grupos_bp.route('/grupos', methods=['GET'])
-@requiere_rol(1, 2, 3)
+@requiere_rol(1, 2, 3, 5)
 def get_grupos():
     conexion = None
     try:
