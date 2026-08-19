@@ -49,11 +49,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const selectTurno = document.getElementById('filtro-turno');
     const selectEstado = document.getElementById('filtro-estado');
 
-    // Filtros leidos de sessionStorage (o de la URL) apenas arranca la pagina.
-    // Se usan como "valor a aplicar" en la primera carga, en vez de leer el
-    // DOM (que todavia no tiene las opciones reales de los <select>), y se
-    // limpian despues de esa primera carga.
-    let filtrosPendientes = obtenerFiltrosGuardados();
+    // FIX: ya no se restauran filtros guardados de sessionStorage al cargar
+    // la pagina. Antes: let filtrosPendientes = obtenerFiltrosGuardados();
+    let filtrosPendientes = null;
 
     function leerFiltrosActuales() {
         return {
@@ -109,8 +107,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- 3. CARGA DE DATOS DESDE BD (con paginacion y filtros aplicados en el servidor) ---
     async function cargarDatosAlumnos() {
         try {
-            // Si hay filtros pendientes de restaurar (venimos de sessionStorage
-            // o de un ?estado= en la URL), los usamos en vez de leer el DOM.
+            // Si hay filtros pendientes de restaurar (por ahora solo vienen
+            // de un ?estado= en la URL), los usamos en vez de leer el DOM.
             let filtros;
             if (filtrosPendientes) {
                 filtros = filtrosPendientes;
@@ -119,7 +117,8 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 filtros = leerFiltrosActuales();
             }
-            guardarFiltros(filtros);
+            // FIX: ya no se guarda el filtro actual en sessionStorage.
+            // Antes aqui iba: guardarFiltros(filtros);
 
             const params = new URLSearchParams({
                 page: paginaActual,
@@ -305,8 +304,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- 8. INICIALIZAR ---
     // Si viene un filtro de estado desde la URL (por ejemplo desde inicio.html),
-    // se combina con lo que ya hubiera en sessionStorage, o se crea un objeto
-    // de filtros "en blanco" con ese estado si no habia nada guardado.
+    // se aplica como filtro inicial de la pagina.
     const paramsUrl = new URLSearchParams(window.location.search);
     const estadoFiltro = paramsUrl.get('estado');
     if (estadoFiltro) {
