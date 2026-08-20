@@ -256,34 +256,56 @@ document.addEventListener("DOMContentLoaded", () => {
         paginacion.innerHTML = "";
         if (totalPaginas <= 1) return;
 
-        const prev = document.createElement("a");
-        prev.innerHTML = '<i class="fa-solid fa-chevron-left"></i>';
-        prev.className = "btn-pag";
-        prev.href = "#";
-        prev.addEventListener("click", (e) => {
-            e.preventDefault();
-            if (paginaActual > 1) { paginaActual--; renderizar(); }
-        });
-        paginacion.appendChild(prev);
+        const crearBoton = (contenido, pagina, extraClass = "") => {
+            const btn = document.createElement("a");
+            btn.innerHTML = contenido;
+            btn.className = `btn-pag ${extraClass}`;
+            btn.href = "#";
+            btn.addEventListener("click", (e) => {
+                e.preventDefault();
+                if (pagina < 1 || pagina > totalPaginas || pagina === paginaActual) return;
+                paginaActual = pagina;
+                renderizar();
+            });
+            return btn;
+        };
+
+        const crearPuntos = () => {
+            const span = document.createElement("span");
+            span.className = "puntos-pag";
+            span.innerText = "...";
+            return span;
+        };
+
+        // Flecha anterior
+        const btnAnterior = crearBoton('<i class="fa-solid fa-chevron-left"></i>', paginaActual - 1, "btn-flecha");
+        if (paginaActual === 1) btnAnterior.classList.add("disabled");
+        paginacion.appendChild(btnAnterior);
+
+        // En pantallas chicas solo se muestra la página actual (+ primera/última);
+        // en pantallas más grandes se muestra 1 vecino a cada lado
+        const delta = window.innerWidth <= 480 ? 0 : 1;
+        const rango = [];
 
         for (let i = 1; i <= totalPaginas; i++) {
-            const btn     = document.createElement("a");
-            btn.innerText = i;
-            btn.className = `btn-pag ${i === paginaActual ? "active" : ""}`;
-            btn.href      = "#";
-            btn.addEventListener("click", (e) => { e.preventDefault(); paginaActual = i; renderizar(); });
-            paginacion.appendChild(btn);
+            if (i === 1 || i === totalPaginas || (i >= paginaActual - delta && i <= paginaActual + delta)) {
+                rango.push(i);
+            }
         }
 
-        const next = document.createElement("a");
-        next.innerHTML = '<i class="fa-solid fa-chevron-right"></i>';
-        next.className = "btn-pag";
-        next.href = "#";
-        next.addEventListener("click", (e) => {
-            e.preventDefault();
-            if (paginaActual < totalPaginas) { paginaActual++; renderizar(); }
+        let ultimaPagina = 0;
+        rango.forEach((i) => {
+            if (ultimaPagina && i - ultimaPagina > 1) {
+                paginacion.appendChild(crearPuntos());
+            }
+            paginacion.appendChild(crearBoton(i, i, i === paginaActual ? "active" : ""));
+            ultimaPagina = i;
         });
-        paginacion.appendChild(next);
+
+        // Flecha siguiente
+        const btnSiguiente = crearBoton('<i class="fa-solid fa-chevron-right"></i>', paginaActual + 1, "btn-flecha");
+        if (paginaActual === totalPaginas) btnSiguiente.classList.add("disabled");
+        paginacion.appendChild(btnSiguiente);
     }
 
     // --- 7. MENÚ DESPLEGABLE ---

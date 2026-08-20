@@ -400,6 +400,22 @@ body {
 .btn-paginacion:disabled { opacity: 0.4; cursor: not-allowed; }
 .pagina-info { font-size: 13px; color: var(--text-muted); font-weight: 500; }
 
+/* Más diseño  */
+.select-pagina {
+    padding: 7px 10px;
+    border: 1px solid var(--brand-maroon);
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--brand-maroon);
+    background-color: var(--white);
+    cursor: pointer;
+    outline: none;
+}
+.select-pagina:hover {
+    background-color: #fcedf1;
+}
+
 /* ==========================================================================
 RESPONSIVE DESIGN
    ========================================================================== */
