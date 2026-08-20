@@ -1,22 +1,32 @@
-// VARIABLES GLOBALES 
+// Cambia esto si tu Flask corre en otra URL/puerto (misma variable que en alumnos.js)
+const API_BASE = 'https://semaforo-de-alerta.onrender.com';
+
+// VARIABLES GLOBALES
 let docentes = [];
 
-// CARGAR DOCENTES DESDE LA BD 
+// CARGAR DOCENTES DESDE LA BD
 async function cargarDocentes() {
-    const res = await fetch('https://semaforo-de-alerta.onrender.com/docentes');
+    const res = await fetch(`${API_BASE}/docentes`);
     const data = await res.json();
     if (data.success) {
-        docentes = data.data.map(d => ({
-            id: d.Id_Usuario,
-            nombre: `${d.Nombre} ${d.Apellidos}`,
-            email: d.Email || 'Sin correo',
-            rol: parseInt(d.Id_Rol) === 2 ? 'Docente' : 'Tutor'
-        }));
+        docentes = data.data.map(d => {
+            const idRol = parseInt(d.Id_Rol);
+            let rolTexto = 'Tutor';
+            if (idRol === 2) rolTexto = 'Docente';
+            if (idRol === 5) rolTexto = 'Docente/Tutor';
+
+            return {
+                id: d.Id_Usuario,
+                nombre: `${d.Nombre} ${d.Apellidos}`,
+                email: d.Email || 'Sin correo',
+                rol: rolTexto
+            };
+        });
         renderizar();
     }
 }
 
-// RENDERIZAR LISTA 
+// RENDERIZAR LISTA
 function renderizar() {
     const lista = document.getElementById('listaDocentes');
     const term = document.getElementById('buscador').value.toLowerCase();
@@ -36,7 +46,7 @@ function renderizar() {
     });
 }
 
-// CRUD 
+// CRUD
 document.getElementById('btnNuevoDocente').addEventListener('click', () => {
     document.getElementById('inputNombre').value = '';
     document.getElementById('inputEmail').value = '';
@@ -51,6 +61,7 @@ document.getElementById('btnCancelar').addEventListener('click', () => {
 
 document.getElementById('btnGuardar').addEventListener('click', async () => {
     const indice = document.getElementById('indiceEdicion').value;
+    const esEdicion = indice !== "-1";
     const nombre = document.getElementById('inputNombre').value.trim();
     const partes = nombre.split(' ');
     const datos = {
@@ -60,44 +71,98 @@ document.getElementById('btnGuardar').addEventListener('click', async () => {
         id_rol:    document.getElementById('inputRol').value
     };
 
-    if (indice !== "-1") {
-        await fetch(`https://semaforo-de-alerta.onrender.com/docentes/${indice}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(datos)
-        });
-    } else {
-        await fetch('https://semaforo-de-alerta.onrender.com/docentes', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(datos)
-        });
+    // Confirmación antes de crear o editar
+    const mensajeConfirmacion = esEdicion
+        ? `¿Confirmas que deseas guardar los cambios de "${nombre}"?`
+        : `¿Confirmas que deseas registrar a "${nombre}" como nuevo docente?`;
+
+    if (!confirm(mensajeConfirmacion)) {
+        return;
     }
 
-    await cargarDocentes();
-    document.getElementById('panelRegistro').classList.add('hidden');
-    document.getElementById('indiceEdicion').value = "-1";
+    try {
+        let res;
+        if (esEdicion) {
+            res = await fetch(`${API_BASE}/docentes/${indice}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(datos)
+            });
+        } else {
+            res = await fetch(`${API_BASE}/docentes`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(datos)
+            });
+        }
+
+        const data = await res.json();
+
+        if (!data.success) {
+            alert(`No se pudo guardar el docente: ${data.message || 'Error desconocido.'}`);
+            return;
+        }
+
+        await cargarDocentes();
+        document.getElementById('panelRegistro').classList.add('hidden');
+        document.getElementById('indiceEdicion').value = "-1";
+    } catch (err) {
+        alert('Ocurrió un error de conexión al guardar el docente.');
+        console.error(err);
+    }
 });
 
 function editar(id) {
     const doc = docentes.find(d => d.id === id);
     document.getElementById('inputNombre').value = doc.nombre;
     document.getElementById('inputEmail').value = doc.email;
-    document.getElementById('inputRol').value = doc.rol === 'Docente' ? '2' : '3';
+
+    let valorRol = '3';
+    if (doc.rol === 'Docente') valorRol = '2';
+    if (doc.rol === 'Docente/Tutor') valorRol = '5';
+    document.getElementById('inputRol').value = valorRol;
+
     document.getElementById('panelRegistro').classList.remove('hidden');
     document.getElementById('indiceEdicion').value = id;
 }
 
 async function eliminar(id) {
-    await fetch(`https://semaforo-de-alerta.onrender.com/docentes/${id}`, { method: 'DELETE' });
-    await cargarDocentes();
+    const doc = docentes.find(d => d.id === id);
+    const nombre = doc ? doc.nombre : 'este docente';
+
+    if (!confirm(`¿Seguro que deseas eliminar a "${nombre}"? Esta acción no se puede deshacer.`)) {
+        return;
+    }
+
+    try {
+        // Se manda un objeto "headers" explícito (aunque vacío) para que
+        // interceptor.js tenga dónde inyectar el header X-Id-Rol.
+        // Antes esta llamada no lo llevaba y el backend la rechazaba
+        // (401/403) sin que se notara en la interfaz.
+        const res = await fetch(`${API_BASE}/docentes/${id}`, {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' }
+        });
+
+        const data = await res.json();
+
+        if (!data.success) {
+            alert(`No se pudo eliminar al docente: ${data.message || 'Error desconocido.'}`);
+            return;
+        }
+
+        await cargarDocentes();
+    } catch (err) {
+        alert('Ocurrió un error de conexión al eliminar el docente.');
+        console.error(err);
+    }
 }
 
 document.getElementById('buscador').addEventListener('input', () => {
     renderizar();
 });
 
-// MENÚ HAMBURGUESA 
+// MENÚ HAMBURGUESA
 document.getElementById('btnHamburguesa').addEventListener('click', () => {
     document.getElementById('sidebarOverlay').classList.add('open');
 });

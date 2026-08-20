@@ -65,7 +65,7 @@ def get_calificaciones(matricula):
 
 
 @calificaciones_bp.route("/api/alumnos/<int:id_alumno>/estatus-alerta")
-@requiere_rol(1, 2, 3)
+@requiere_rol(1, 2, 3, 5)
 def obtener_estatus_alerta(id_alumno):
     conexion = None
     try:

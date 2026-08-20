@@ -27,6 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (btnCerrarSesion) {
         btnCerrarSesion.addEventListener('click', (e) => {
             e.preventDefault();
+            sessionStorage.removeItem('filtrosAlumnos');
             localStorage.removeItem('rolUsuario');
             localStorage.removeItem('nombreUsuario');
             window.location.href = 'index.html';
@@ -191,6 +192,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnPagAnterior = document.getElementById('btn-pagina-anterior');
     const btnPagSiguiente = document.getElementById('btn-pagina-siguiente');
     const txtPaginaInfo = document.getElementById('txt-pagina-info');
+    const selectPagina = document.getElementById('select-pagina');
 
     function actualizarControlesPaginacion(pagina, totalPaginas, totalFiltrado) {
         if (txtPaginaInfo) {
@@ -198,6 +200,21 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         if (btnPagAnterior) btnPagAnterior.disabled = pagina <= 1;
         if (btnPagSiguiente) btnPagSiguiente.disabled = pagina >= totalPaginas;
+
+        // Acceso a "pagina" y "totalPaginas"
+        if (selectPagina) {
+            const necesitaRepoblar = selectPagina.options.length !== totalPaginas;
+            if (necesitaRepoblar) {
+                selectPagina.innerHTML = '';
+                for (let i = 1; i <= totalPaginas; i++) {
+                    const option = document.createElement('option');
+                    option.value = i;
+                    option.textContent = `Página ${i}`;
+                    selectPagina.appendChild(option);
+                }
+            }
+            selectPagina.value = pagina;
+        }
     }
 
     if (btnPagAnterior) {
@@ -215,6 +232,13 @@ document.addEventListener('DOMContentLoaded', () => {
             cargarDatosAlumnos();
         });
     }
+
+    if (selectPagina) {
+    selectPagina.addEventListener('change', () => {
+        paginaActual = parseInt(selectPagina.value, 10);
+        cargarDatosAlumnos();
+    });
+}
 
     // --- 5. NAVEGACION ---
     function configurarClicsSeguimiento() {

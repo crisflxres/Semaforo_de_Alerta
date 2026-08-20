@@ -8,25 +8,43 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 });
 // ── PLANTILLA GENERAL (aplica para los 3 niveles) ───────────────────────────
-const PLANTILLA_GENERAL = {
-    asunto: "Situación Académica de {alumno} - Estatus: {estatus}",
-    mensaje: `Estimado(a) {destinatario}:
+const DESCRIPCION_ESTATUS = {
+    Verde:    'se encuentra fuera de riesgo académico, con un desempeño adecuado y sin materias reprobadas',
+    Amarillo: 'presenta un riesgo académico moderado, entre 1 a 2 materias reprobadas, por lo que requiere seguimiento cercano',
+    Rojo:     'se encuentra en una situación académica crítica, con 3 o más materias reprobadas, por lo que requiere atención inmediata'
+};
 
-Por medio de la presente, le informamos sobre la situación académica del alumno(a) {alumno}, con matrícula {matricula}, perteneciente al grupo {grupo} de la carrera de {carrera}.
+function generarMensaje(nivel) {
+    return `Estimado(a) {destinatario}:
 
-De acuerdo con los registros académicos, el estudiante mantiene actualmente un estatus académico {estatus}, con un Promedio de Aprovechamiento Académico (PAC) de {pac} y {reprobadas} materia(s) en situación de riesgo.
+Por medio de la presente, le informamos sobre la situación académica del alumno(a) <b>{alumno}</b>, con matrícula {matricula}, perteneciente al grupo {grupo} de la carrera de {carrera}.
+
+De acuerdo con los registros académicos, el estudiante mantiene actualmente un estatus académico {estatus}. Actualmente cuenta con un Promedio de Aprovechamiento Académico (PAC) de {pac} y {reprobadas} materia(s) en situación de riesgo.
+
+Para su orientación, así funciona el semáforo de alertas académicas:
+
+- Verde: ${DESCRIPCION_ESTATUS.Verde}.
+- Amarillo: ${DESCRIPCION_ESTATUS.Amarillo}.
+- Rojo: ${DESCRIPCION_ESTATUS.Rojo}.
 
 Le invitamos a dar seguimiento a esta información y, de ser necesario, mantener comunicación con la institución y los docentes correspondientes para favorecer el desempeño académico del estudiante.
 
 Atentamente,
-Coordinación Académica Institucional CECyTE Hidalgo`
+Coordinación Académica Institucional CECyTE Hidalgo`;
+}
+
+const EMOJI_ESTATUS = {
+    Verde:    '🟢',
+    Amarillo: '🟡',
+    Rojo:     '🔴'
 };
 
 function aplicarPlantilla() {
     const asunto = document.getElementById('asuntoNotificacion');
     const editor = document.getElementById('mensajeEditor');
-    if (asunto) asunto.value = PLANTILLA_GENERAL.asunto;
-    if (editor) editor.innerHTML = PLANTILLA_GENERAL.mensaje.replace(/\n/g, '<br>');
+    const emoji = EMOJI_ESTATUS[nivelActual] || '';
+    if (asunto) asunto.value = `${emoji} Situación Académica de {alumno} - Estatus: {estatus}`;
+    if (editor) editor.innerHTML = generarMensaje(nivelActual).replace(/\n/g, '<br>');
 }
 
 // ── EDITOR ───────────────────────────────────────────────────────────────────

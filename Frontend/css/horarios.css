@@ -121,6 +121,19 @@ body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #fcfcfc; }
     position: relative;
 }
 
+.celda-receso {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 10px;
+    font-weight: bold;
+    font-size: 0.85rem;
+    color: #4A0A18;
+    background-color: #fdf2f2;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    margin: 4px 0;
+}
+
 /* --- 8. PANEL NUEVA CLASE (derecha, igual que Grupos/Materias) --- */
 #panelNuevaClase {
     flex: 1;

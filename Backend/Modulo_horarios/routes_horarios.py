@@ -47,7 +47,7 @@ def verificar_conflictos(cursor, id_grupo, id_usuario, id_aula, dia_semana,
 
 
 @horarios_bp.route('/api/horarios', methods=['GET'])
-@requiere_rol(1, 2, 3)
+@requiere_rol(1, 2, 3, 5)
 def get_horarios():
     conexion = None
     try:
@@ -179,7 +179,7 @@ def editar_horario(id_horario):
 
 
 @horarios_bp.route('/api/horarios/resumen-materia/<int:id_materia>', methods=['GET'])
-@requiere_rol(1, 2, 3) 
+@requiere_rol(1, 2, 3, 5) 
 def resumen_materia(id_materia):
     conexion = None
     try:
