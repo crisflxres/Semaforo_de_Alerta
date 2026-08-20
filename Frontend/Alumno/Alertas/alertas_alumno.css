@@ -336,7 +336,7 @@ body {
     .btn-filtro {flex: 1 1 calc(50% - 8px);  padding: 8px 12px; font-size: 13px; text-align: center;}
     .filtro-grupo-fecha { align-items: stretch;}
     .input-fecha-contenedor { max-width: 100%; justify-content: center;}
-    .lista-alertas-scroll { padding: 15px; max-height: calc(100vh - 290px);}
+    .lista-alertas-scroll { padding: 15px; max-height: none; overflow-y: visible; }
     .tarjeta-alerta { flex-direction: column; align-items: stretch; padding: 18px 15px 15px 22px; gap: 15px;}
     .barra-lateral { width: 8px; }
     .alerta-contenido { padding-left: 0; padding-right: 0;}

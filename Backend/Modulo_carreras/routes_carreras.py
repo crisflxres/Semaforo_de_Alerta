@@ -12,7 +12,6 @@ def get_carreras():
     try:
         conexion = obtener_conexion()
         cursor = conexion.cursor(dictionary=True)
-        # Pedimos los datos estructurados como diccionario
         cursor.execute("SELECT Id_Carrera, Nombre, Clave FROM carreras")
 
         # fetchall() ya entrega la lista de diccionarios lista para jsonify

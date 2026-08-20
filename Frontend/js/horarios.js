@@ -16,11 +16,14 @@ document.addEventListener("DOMContentLoaded", () => {
     // --- 2. DATOS BASE DE LA CUADRÍCULA ---
     const horas = [
         "07:00 - 07:50", "07:50 - 08:40","08:40 - 09:30", 
-        "09:30 - 10:20", "10:20 - 11:10", "11:10 - 12:00",
-        "12:00 - 12:50", "12:50 - 13:40", "13:40 - 14:30", 
-        "14:30 - 15:20", "15:20 - 16:10", "16:10 - 17:00", 
-        "17:15 - 18:05", "18:05 - 18:55", "18:55 - 19:45", 
-        "19:45 - 20:35"
+        "09:30 - 10:20", 
+        "Receso -> 10:20 - 10:35", 
+        "10:35 - 11:25", "11:25 - 12:15", "12:15 - 13:05", 
+        "13:05 - 13:55", "13:55 - 14:45", "14:45 - 15:35", 
+        "15:35 - 16:25", "16:25 - 17:15", 
+        "Receso -> 17:15 - 17:30",
+        "17:30 - 18:20", "18:20 - 19:10", "19:10 - 20:00", 
+        "20:00 - 20:50"
     ];
     const dias = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes"];
 
@@ -38,7 +41,7 @@ document.addEventListener("DOMContentLoaded", () => {
     ];
 
     // Almacén: clave "hora|dia|grupo|materia" -> { materia, docente, grupo, aula, color, ids:{...} }
-    // (varias clases pueden compartir el mismo hora|dia si son de grupos distintos)
+    // (varias clases pueden compartir la mismo hora|dia si son de grupos distintos)
     const clases = {};
 
     // Mapa de celdas DOM: keyBase "hora|dia" -> elemento div
@@ -52,6 +55,19 @@ document.addEventListener("DOMContentLoaded", () => {
     const grid = document.getElementById("gridHorarios");
 
     horas.forEach((hora) => {
+        // Se muestra una sola barra que ocupa todo el ancho de la tabla
+        // en vez de hora + 5 celdas con "+"
+        if (hora.startsWith("Receso")) {
+            const [, rango] = hora.split("-> ");
+            const [inicio, fin] = rango.split(" - ");
+
+            const celdaReceso = document.createElement("div");
+            celdaReceso.className   = "celda-receso";
+            celdaReceso.textContent = `${inicio} --- RECESO --- ${fin}`;
+            grid.appendChild(celdaReceso);
+            return; // no generamos celdas de días para el receso
+        }
+
         const celdaHora = document.createElement("div");
         celdaHora.className   = "celda-hora";
         celdaHora.textContent = hora;
