@@ -10,10 +10,13 @@ carreras_bp = Blueprint("carreras", __name__)
 def get_carreras():
     conexion = None
     try:
-        conexion = obtener_conexion()          # ← esto faltaba
+        conexion = obtener_conexion()
         cursor = conexion.cursor(dictionary=True)
         cursor.execute("SELECT Id_Carrera, Nombre, Clave FROM carreras")
-        carreras = cursor.fetchall()           # ← una sola llamada
+
+        # fetchall() ya entrega la lista de diccionarios lista para jsonify
+        carreras = cursor.fetchall()
+
         cursor.close()
         return jsonify(carreras)
 
