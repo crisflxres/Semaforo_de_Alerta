@@ -23,7 +23,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         try {
 
-            const respuesta = await fetch("https://semaforo-de-alerta.onrender.com/api/aulas");
+            const respuesta = await fetch("https://semaforo-de-alerta-f2kf.onrender.com/api/aulas");
             const resultado = await respuesta.json();
 
             if (resultado.success) {
@@ -75,7 +75,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Mostrar el siguiente ID disponible (solo informativo, el backend lo recalcula al guardar)
         try {
-            const respuesta = await fetch("https://semaforo-de-alerta.onrender.com/api/aulas/siguiente-id");
+            const respuesta = await fetch("https://semaforo-de-alerta-f2kf.onrender.com/api/aulas/siguiente-id");
             const resultado = await respuesta.json();
             if (resultado.success) {
                 document.getElementById("inputIdAula").value = resultado.siguiente_id;
@@ -106,7 +106,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             try {
 
-                const respuesta = await fetch("https://semaforo-de-alerta.onrender.com/api/aulas", {
+                const respuesta = await fetch("https://semaforo-de-alerta-f2kf.onrender.com/api/aulas", {
 
                     method: "POST",
 
@@ -153,7 +153,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             try {
 
-                const respuesta = await fetch(`https://semaforo-de-alerta.onrender.com/api/aulas/${id}`, {
+                const respuesta = await fetch(`https://semaforo-de-alerta-f2kf.onrender.com/api/aulas/${id}`, {
 
                     method: "PUT",
 
@@ -344,7 +344,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         try {
 
-            const respuesta = await fetch(`https://semaforo-de-alerta.onrender.com/api/aulas/${aula.id}`, {
+            const respuesta = await fetch(`https://semaforo-de-alerta-f2kf.onrender.com/api/aulas/${aula.id}`, {
                 method: "DELETE"
             });
 

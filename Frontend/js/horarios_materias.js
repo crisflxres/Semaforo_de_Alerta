@@ -14,7 +14,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 // --- 2. DATOS ---
-const BASE_URL = "https://semaforo-de-alerta.onrender.com";
+const BASE_URL = "https://semaforo-de-alerta-f2kf.onrender.com";
 
 // Rol del usuario guardado al hacer login. El backend lo exige
 function obtenerHeadersAuth(conContentType = false) {
