@@ -118,11 +118,6 @@ def editar_grupo(id_grupo):
             WHERE Id_Grupo = %s
         """
         cursor.execute(query, (nombre, turno, semestre, id_carrera, id_grupo))
-
-        if cursor.rowcount == 0:
-            cursor.close()
-            return jsonify({"success": False, "message": "Grupo no encontrado."}), 404
-
         conexion.commit()
         cursor.close()
 
@@ -144,11 +139,6 @@ def eliminar_grupo(id_grupo):
         cursor = conexion.cursor()
 
         cursor.execute("DELETE FROM grupos WHERE Id_Grupo = %s", (id_grupo,))
-
-        if cursor.rowcount == 0:
-            cursor.close()
-            return jsonify({"success": False, "message": "Grupo no encontrado."}), 404
-
         conexion.commit()
         cursor.close()
 
