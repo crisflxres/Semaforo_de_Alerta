@@ -96,7 +96,7 @@ document.addEventListener("DOMContentLoaded", () => {
         // pero representa el Semestre (el número de alumnos real se calcula
         // en el backend según los alumnos inscritos al grupo).
         const valorSemestre = document.getElementById("inputAlumnos").value;
-        const semestre = valorSemestre === "" ? null : parseInt(valorSemestre);
+        const semestre = valorSemestre === "" ? null : valorSemestre;
 
         const turno    = document.getElementById("inputTurno").value.trim();
 
@@ -307,7 +307,7 @@ document.addEventListener("DOMContentLoaded", () => {
         cerrarTodosLosMenus();
         const g = todosLosGrupos[index];
         document.getElementById("inputNombreGrupo").value = g.nombre;
-        document.getElementById("inputAlumnos").value    = g.semestre;
+        document.getElementById("inputAlumnos").value    = (g.semestre || "").toString().toLowerCase();
         document.getElementById("inputTurno").value      = g.turno;
         document.getElementById("indiceEdicion").value   = index;
         const selectCarrera = document.getElementById("inputCarrera");
