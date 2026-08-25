@@ -72,8 +72,11 @@
             <div id="panelRegistro" class="hidden">
                 <h3>Registro de Grupo</h3>
                 <input type="text" id="inputNombreGrupo" placeholder="Nombre del grupo">
-                <input type="number" id="inputAlumnos" placeholder="Número de alumnos">
+                <input type="number" id="inputAlumnos" placeholder="Semestre" min="1" max="12">
                 <input type="text" id="inputTurno" placeholder="Turno (Matutino / Vespertino)">
+                <select id="inputCarrera">
+                    <option value="">Selecciona una carrera</option>
+                </select>
                 <input type="hidden" id="indiceEdicion" value="-1">
                 <div class="panel-actions">
                     <button id="btnGuardar" class="btn-nuevo">Guardar</button>

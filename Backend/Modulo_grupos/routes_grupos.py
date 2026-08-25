@@ -4,8 +4,6 @@ from conexion_db import obtener_conexion
 
 grupos_bp = Blueprint('grupos', __name__)
 
-SEMESTRE_POR_DEFAULT = 1  # Ajusta esto o agrega un input en el frontend cuando lo necesites
-
 
 @grupos_bp.route('/grupos', methods=['GET'])
 @requiere_rol(1, 2, 3, 5)
@@ -20,10 +18,11 @@ def get_grupos():
                 g.Nombre, 
                 g.Semestre, 
                 g.Turno,
+                g.Id_Carrera,
                 COUNT(a.Matricula) AS Alumnos
             FROM grupos g
             LEFT JOIN alumnos a ON a.Id_Grupo = g.Id_Grupo AND a.Activo = 1
-            GROUP BY g.Id_Grupo, g.Nombre, g.Semestre, g.Turno
+            GROUP BY g.Id_Grupo, g.Nombre, g.Semestre, g.Turno, g.Id_Carrera
             ORDER BY g.Nombre
         """)
         grupos = cursor.fetchall()
@@ -43,12 +42,25 @@ def crear_grupo():
 
     nombre = (datos.get('Nombre') or '').strip()
     turno = (datos.get('Turno') or '').strip()
-    semestre = datos.get('Semestre', SEMESTRE_POR_DEFAULT)
+    semestre = datos.get('Semestre')
+    id_carrera = datos.get('Id_Carrera')
 
     if not nombre or not turno:
         return jsonify({
             "success": False,
             "message": "Nombre y Turno son obligatorios."
+        }), 400
+
+    if semestre is None or semestre == '':
+        return jsonify({
+            "success": False,
+            "message": "El semestre es obligatorio."
+        }), 400
+
+    if not id_carrera:
+        return jsonify({
+            "success": False,
+            "message": "La carrera es obligatoria."
         }), 400
 
     conexion = None
@@ -57,10 +69,10 @@ def crear_grupo():
         cursor = conexion.cursor()
 
         query = """
-            INSERT INTO grupos (Nombre, Semestre, Turno)
-            VALUES (%s, %s, %s)
+            INSERT INTO grupos (Nombre, Semestre, Turno, Id_Carrera)
+            VALUES (%s, %s, %s, %s)
         """
-        cursor.execute(query, (nombre, semestre, turno))
+        cursor.execute(query, (nombre, semestre, turno, id_carrera))
         conexion.commit()
 
         id_grupo_nuevo = cursor.lastrowid
@@ -87,6 +99,7 @@ def editar_grupo(id_grupo):
     nombre = (datos.get('Nombre') or '').strip()
     turno = (datos.get('Turno') or '').strip()
     semestre = datos.get('Semestre')
+    id_carrera = datos.get('Id_Carrera')
 
     if not nombre or not turno:
         return jsonify({
@@ -99,20 +112,12 @@ def editar_grupo(id_grupo):
         conexion = obtener_conexion()
         cursor = conexion.cursor()
 
-        if semestre is not None:
-            query = """
-                UPDATE grupos
-                SET Nombre = %s, Turno = %s, Semestre = %s
-                WHERE Id_Grupo = %s
-            """
-            cursor.execute(query, (nombre, turno, semestre, id_grupo))
-        else:
-            query = """
-                UPDATE grupos
-                SET Nombre = %s, Turno = %s
-                WHERE Id_Grupo = %s
-            """
-            cursor.execute(query, (nombre, turno, id_grupo))
+        query = """
+            UPDATE grupos
+            SET Nombre = %s, Turno = %s, Semestre = %s, Id_Carrera = %s
+            WHERE Id_Grupo = %s
+        """
+        cursor.execute(query, (nombre, turno, semestre, id_carrera, id_grupo))
 
         if cursor.rowcount == 0:
             cursor.close()
@@ -150,7 +155,6 @@ def eliminar_grupo(id_grupo):
         return jsonify({"success": True, "message": "Grupo eliminado correctamente."})
 
     except Exception as err:
-        # Si el grupo tiene alumnos asignados (FK), MySQL va a rechazar el DELETE
         return jsonify({"success": False, "message": str(err)}), 500
     finally:
         if conexion and conexion.is_connected():

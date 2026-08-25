@@ -20,9 +20,28 @@ document.addEventListener("DOMContentLoaded", () => {
     let paginaActual  = 1;
     let textoBusqueda = "";
     let todosLosGrupos = [];
+    let todasLasCarreras = [];
 
     const colores = ["bg-rosa","bg-azul","bg-amarillo","bg-verde","bg-naranja",
                      "bg-morado","bg-azul_claro","bg-cafe","bg-gris","bg-rojo"];
+
+    function cargarCarreras() {
+        return fetch(`${API}/api/carreras`)
+            .then(res => res.json())
+            .then(data => {
+                todasLasCarreras = Array.isArray(data) ? data : [];
+                const select = document.getElementById("inputCarrera");
+                if (!select) return;
+                select.innerHTML = '<option value="">Selecciona una carrera</option>';
+                todasLasCarreras.forEach(c => {
+                    const opt = document.createElement("option");
+                    opt.value = c.Id_Carrera;
+                    opt.textContent = c.Nombre;
+                    select.appendChild(opt);
+                });
+            })
+            .catch(err => console.error("Error al cargar carreras:", err));
+    }
 
     function cargarGrupos() {
         fetch(`${API}/grupos`)
@@ -30,12 +49,13 @@ document.addEventListener("DOMContentLoaded", () => {
             .then(respuesta => {
                 if (respuesta.success) {
                     todosLosGrupos = respuesta.data.map((g, i) => ({
-                        id:       g.Id_Grupo,
-                        nombre:   g.Nombre,
-                        semestre: g.Semestre,
-                        alumnos:  g.Alumnos,
-                        turno:    g.Turno,
-                        color:    colores[i % colores.length]
+                        id:         g.Id_Grupo,
+                        nombre:     g.Nombre,
+                        semestre:   g.Semestre,
+                        idCarrera:  g.Id_Carrera,
+                        alumnos:    g.Alumnos,
+                        turno:      g.Turno,
+                        color:      colores[i % colores.length]
                     }));
                     renderizar();
                 }
@@ -43,7 +63,7 @@ document.addEventListener("DOMContentLoaded", () => {
             .catch(err => console.error("Error al cargar grupos:", err));
     }
 
-    cargarGrupos();
+    cargarCarreras().then(cargarGrupos);
 
     // --- 3. PANEL ---
     const panelRegistro    = document.getElementById("panelRegistro");
@@ -58,6 +78,8 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("inputNombreGrupo").value = "";
         document.getElementById("inputAlumnos").value    = "";
         document.getElementById("inputTurno").value      = "";
+        const selectCarrera = document.getElementById("inputCarrera");
+        if (selectCarrera) selectCarrera.value = "";
         panelRegistro.classList.remove("hidden");
     });
 
@@ -69,12 +91,28 @@ document.addEventListener("DOMContentLoaded", () => {
     btnGuardar.addEventListener("click", () => {
         const indice   = parseInt(document.getElementById("indiceEdicion").value);
         const nombre   = document.getElementById("inputNombreGrupo").value.trim();
-        // Este input conserva el id "inputAlumnos" en el HTML, pero ahora representa el Semestre
-        // (el número de alumnos real se calcula en el backend según los alumnos inscritos al grupo)
-        const semestre = parseInt(document.getElementById("inputAlumnos").value) || 1;
+
+        // Este input conserva el id "inputAlumnos" en el HTML por compatibilidad,
+        // pero representa el Semestre (el número de alumnos real se calcula
+        // en el backend según los alumnos inscritos al grupo).
+        const valorSemestre = document.getElementById("inputAlumnos").value;
+        const semestre = valorSemestre === "" ? null : parseInt(valorSemestre);
+
         const turno    = document.getElementById("inputTurno").value.trim();
 
+        const selectCarrera = document.getElementById("inputCarrera");
+        const idCarrera = selectCarrera ? selectCarrera.value : "";
+
         if (!nombre) { alert("El nombre del grupo es obligatorio."); return; }
+        if (semestre === null) { alert("El semestre es obligatorio."); return; }
+        if (!idCarrera) { alert("Selecciona una carrera."); return; }
+
+        const payload = {
+            Nombre: nombre,
+            Semestre: semestre,
+            Turno: turno,
+            Id_Carrera: idCarrera
+        };
 
         if (indice > -1) {
             // --- EDITAR (PUT) ---
@@ -83,14 +121,15 @@ document.addEventListener("DOMContentLoaded", () => {
             fetch(`${API}/grupos/${idGrupo}`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ Nombre: nombre, Semestre: semestre, Turno: turno })
+                body: JSON.stringify(payload)
             })
             .then(res => res.json())
             .then(resultado => {
                 if (resultado.success) {
-                    todosLosGrupos[indice].nombre   = nombre;
-                    todosLosGrupos[indice].semestre = semestre;
-                    todosLosGrupos[indice].turno    = turno;
+                    todosLosGrupos[indice].nombre    = nombre;
+                    todosLosGrupos[indice].semestre  = semestre;
+                    todosLosGrupos[indice].turno     = turno;
+                    todosLosGrupos[indice].idCarrera = idCarrera;
                     renderizar();
                     panelRegistro.classList.add("hidden");
                     document.getElementById("indiceEdicion").value = "-1";
@@ -108,16 +147,17 @@ document.addEventListener("DOMContentLoaded", () => {
             fetch(`${API}/grupos`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ Nombre: nombre, Semestre: semestre, Turno: turno })
+                body: JSON.stringify(payload)
             })
             .then(res => res.json())
             .then(resultado => {
                 if (resultado.success) {
                     todosLosGrupos.push({
-                        id:       resultado.id_grupo,
+                        id:        resultado.id_grupo,
                         nombre,
                         semestre,
-                        alumnos:  0, // un grupo recién creado empieza sin alumnos inscritos
+                        idCarrera,
+                        alumnos:   0, // un grupo recién creado empieza sin alumnos inscritos
                         turno,
                         color: colores[Math.floor(Math.random() * colores.length)]
                     });
@@ -270,6 +310,8 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("inputAlumnos").value    = g.semestre;
         document.getElementById("inputTurno").value      = g.turno;
         document.getElementById("indiceEdicion").value   = index;
+        const selectCarrera = document.getElementById("inputCarrera");
+        if (selectCarrera) selectCarrera.value = g.idCarrera ?? "";
         panelRegistro.classList.remove("hidden");
     };
 
