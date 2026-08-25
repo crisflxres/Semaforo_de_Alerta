@@ -1,4 +1,4 @@
-const API = 'https://semaforo-de-alerta.onrender.com';
+const API = 'https://semaforo-de-alerta-f2kf.onrender.com';
 
 document.getElementById('formCrearCuenta').addEventListener('submit', async function (e) {
     e.preventDefault();

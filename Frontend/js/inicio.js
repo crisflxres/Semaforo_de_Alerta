@@ -1,5 +1,5 @@
 // Cambia esto si tu Flask corre en otra URL/puerto (misma variable que en alumnos.js)
-const API_BASE = 'https://semaforo-de-alerta.onrender.com';
+const API_BASE = 'https://semaforo-de-alerta-f2kf.onrender.com';
 
 // 1. Lógica del Menú Lateral (Sidebar) y Dropdown de Perfil
 document.addEventListener('DOMContentLoaded', () => {

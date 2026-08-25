@@ -77,7 +77,7 @@ if (btnAbrir && sidebar && btnCerrar) {
     const matriculaGuardada = localStorage.getItem('matriculaSeleccionada');
 
     if (matriculaGuardada) {
-        fetch(`https://semaforo-de-alerta.onrender.com/api/alumno_por_matricula/${matriculaGuardada}`)
+        fetch(`https://semaforo-de-alerta-f2kf.onrender.com/api/alumno_por_matricula/${matriculaGuardada}`)
             .then(res => {
                 if (!res.ok) throw new Error(`Error HTTP: ${res.status}`);
                 return res.json();
@@ -94,7 +94,7 @@ if (btnAbrir && sidebar && btnCerrar) {
                     carrera: alumno.Carrera,
                     grupo: alumno.Grupo,
                     turno: alumno.Turno,
-                    fotoUrl: `https://semaforo-de-alerta.onrender.com/fotos/${alumno.Matricula}`
+                    fotoUrl: `https://semaforo-de-alerta-f2kf.onrender.com/fotos/${alumno.Matricula}`
                 });
             })
             .catch(err => {
@@ -105,7 +105,7 @@ if (btnAbrir && sidebar && btnCerrar) {
     // 5. Calificaciones (Bloque independiente original)
     const matricula = localStorage.getItem('matriculaSeleccionada');
     if (matricula) {
-        fetch(`https://semaforo-de-alerta.onrender.com/calificaciones/${matricula}`)
+        fetch(`https://semaforo-de-alerta-f2kf.onrender.com/calificaciones/${matricula}`)
             .then(res => res.json())
             .then(respuesta => {
                 if (!respuesta.success) return;

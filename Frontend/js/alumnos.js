@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- 2. ESTADO DE PAGINACION Y FILTROS ---
-    const API_BASE = 'https://semaforo-de-alerta.onrender.com';
+    const API_BASE = 'https://semaforo-de-alerta-f2kf.onrender.com';
     const POR_PAGINA = 25;
 
     let paginaActual = 1;
@@ -48,6 +48,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const selectSemestre = document.getElementById('filtro-semestre');
     const selectTurno = document.getElementById('filtro-turno');
     const selectEstado = document.getElementById('filtro-estado');
+
+    // FIX 2: forzamos limpieza de los campos apenas arranca la pagina, por si
+    // el navegador restauro automaticamente valores viejos al recargar (F5).
+    // Esto es un comportamiento nativo del navegador, no de nuestro JS.
+    if (inputBuscar) inputBuscar.value = '';
+    [selectGrupo, selectCarrera, selectSemestre, selectTurno, selectEstado].forEach(select => {
+        if (select) select.value = 'Todos';
+    });
 
     // FIX: ya no se restauran filtros guardados de sessionStorage al cargar
     // la pagina. Antes: let filtrosPendientes = obtenerFiltrosGuardados();

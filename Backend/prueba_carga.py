@@ -20,7 +20,7 @@ import requests
 # CONFIGURACION - ajusta esto segun lo que quieras probar
 # ---------------------------------------------------------------------------
 
-BASE_URL = "https://semaforo-de-alerta.onrender.com"
+BASE_URL = "https://semaforo-de-alerta-f2kf.onrender.com"
 
 # Puedes agregar o quitar rutas. method='GET' no necesita body.
 # method='DELETE'/'POST'/'PUT' se dejan comentados por defecto porque

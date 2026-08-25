@@ -152,7 +152,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const matricula = localStorage.getItem('matriculaSeleccionada');
 
     if (matricula) {
-        fetch(`https://semaforo-de-alerta.onrender.com/api/alertas/${matricula}`)
+        fetch(`https://semaforo-de-alerta-f2kf.onrender.com/api/alertas/${matricula}`)
             .then(res => res.json())
             .then(data => {
                 todasLasAlertas = data;

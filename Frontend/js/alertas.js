@@ -114,7 +114,7 @@ let resumenBD = [];
 
 async function cargarGrupos() {
     try {
-        const res = await fetch('https://semaforo-de-alerta.onrender.com/alertas/grupos');
+        const res = await fetch('https://semaforo-de-alerta-f2kf.onrender.com/alertas/grupos');
         const data = await res.json();
         if (data.ok) {
             const select = document.getElementById('selectGrupo');
@@ -128,7 +128,7 @@ async function cargarGrupos() {
 
 async function cargarResumen() {
     try {
-        const res = await fetch('https://semaforo-de-alerta.onrender.com/alertas/resumen');
+        const res = await fetch('https://semaforo-de-alerta-f2kf.onrender.com/alertas/resumen');
         const data = await res.json();
         if (data.ok) resumenBD = data.datos;
     } catch (e) { console.error('Error cargando resumen:', e); }
@@ -136,7 +136,7 @@ async function cargarResumen() {
 
 async function cargarHistorial() {
     try {
-        const res = await fetch('https://semaforo-de-alerta.onrender.com/alertas/historial');
+        const res = await fetch('https://semaforo-de-alerta-f2kf.onrender.com/alertas/historial');
         const data = await res.json();
         const contenedor = document.querySelector('.lista-historial');
         if (!contenedor) return;
@@ -185,10 +185,10 @@ async function actualizarTotal() {
 
             const peticiones = [];
             peticiones.push(quiereAlumnosOTutores
-                ? fetch(`https://semaforo-de-alerta.onrender.com/alertas/alumnos?nivel=${nivelActual}`).then(r => r.json())
+                ? fetch(`https://semaforo-de-alerta-f2kf.onrender.com/alertas/alumnos?nivel=${nivelActual}`).then(r => r.json())
                 : Promise.resolve(null));
             peticiones.push(quiereDocentes
-                ? fetch(`https://semaforo-de-alerta.onrender.com/alertas/alumnos-docente?nivel=${nivelActual}`).then(r => r.json())
+                ? fetch(`https://semaforo-de-alerta-f2kf.onrender.com/alertas/alumnos-docente?nivel=${nivelActual}`).then(r => r.json())
                 : Promise.resolve(null));
 
             const [dataAlumnos, dataDocentes] = await Promise.all(peticiones);
@@ -235,7 +235,7 @@ async function abrirModalHistorial() {
     modal.style.display = 'flex';
 
     try {
-        const res = await fetch('https://semaforo-de-alerta.onrender.com/alertas/historial?completo=1');
+        const res = await fetch('https://semaforo-de-alerta-f2kf.onrender.com/alertas/historial?completo=1');
         const data = await res.json();
 
         if (!data.ok || data.datos.length === 0) {
@@ -466,7 +466,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     hora_envio: horaEnvio
                 };
 
-                const res = await fetch('https://semaforo-de-alerta.onrender.com/alertas/enviar', {
+                const res = await fetch('https://semaforo-de-alerta-f2kf.onrender.com/alertas/enviar', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
@@ -495,7 +495,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     fecha_envio: fechaEnvio,
                     hora_envio: horaEnvio
                 };
-                const resDoc = await fetch('https://semaforo-de-alerta.onrender.com/alertas/enviar-docente', {
+                const resDoc = await fetch('https://semaforo-de-alerta-f2kf.onrender.com/alertas/enviar-docente', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payloadDocente)
@@ -532,7 +532,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 // Revisa pendientes apenas carga la página
-fetch('https://semaforo-de-alerta.onrender.com/alertas/procesar-pendientes')
+fetch('https://semaforo-de-alerta-f2kf.onrender.com/alertas/procesar-pendientes')
     .then(res => res.json())
     .then(data => {
         if (data.ok && data.procesados > 0) {
@@ -544,7 +544,7 @@ fetch('https://semaforo-de-alerta.onrender.com/alertas/procesar-pendientes')
 
 // Y sigue revisando cada 60 segundos mientras la página esté abierta
 setInterval(() => {
-    fetch('https://semaforo-de-alerta.onrender.com/alertas/procesar-pendientes')
+    fetch('https://semaforo-de-alerta-f2kf.onrender.com/alertas/procesar-pendientes')
         .then(res => res.json())
         .then(data => {
             if (data.ok && data.procesados > 0) {
