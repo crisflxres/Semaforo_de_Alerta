@@ -11,7 +11,7 @@ load_dotenv()
 FRONTEND_URL_BASE = "https://sema-cecyteh.netlify.app/html/nueva_contrasena.html" #ruta de netlify y carpeta
 
 SENDINBLUE_API_KEY = os.environ.get("SENDINBLUE_API_KEY")
-BROVO_SENDER_EMAIL = "semaalert@gmail.com"
+BROVO_SENDER_EMAIL = "silviabrizet@gmail.com"
 BROVO_SENDER_NAME = "Sistema de Alertas CECyTEH"
 
 
