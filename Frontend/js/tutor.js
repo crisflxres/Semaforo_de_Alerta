@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnCancelarTutor = document.getElementById('btn-cancelar-tutor');
 
     function cargarTutor() {
-        fetch(`https://semaforo-de-alerta.onrender.com/api/tutor/${matricula}`, {
+        fetch(`https://semaforo-de-alerta-f2kf.onrender.com/api/tutor/${matricula}`, {
             headers: { 'X-Id-Rol': localStorage.getItem('rolUsuario') }
         })
             .then(res => res.json())
@@ -87,7 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        fetch(`https://semaforo-de-alerta.onrender.com/api/tutor/${matricula}`, {
+        fetch(`https://semaforo-de-alerta-f2kf.onrender.com/api/tutor/${matricula}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
