@@ -1,5 +1,5 @@
 // Cambia esta URL por la ruta real de tu backend Flask
-const RESET_ENDPOINT = "https://semaforo-de-alerta.onrender.com/api/nueva-password";
+const RESET_ENDPOINT = "https://semaforo-de-alerta-f2kf.onrender.com/api/nueva-password";
 
 const form = document.getElementById("newPasswordForm");
 const btn = document.getElementById("saveBtn");

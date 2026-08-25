@@ -11,8 +11,8 @@ document.getElementById("btnHamburguesa").addEventListener("click", () => docume
 document.getElementById("btnCerrarSidebar").addEventListener("click", () => document.getElementById("sidebarOverlay").classList.remove("open"));
 
 // Cambia esto si tu Flask corre en otra URL/puerto
-const API_BASE = "https://semaforo-de-alerta.onrender.com";
-const API_FOTOS = "https://semaforo-de-alerta-fotos.onrender.com";
+const API_BASE = "https://semaforo-de-alerta-f2kf.onrender.com";
+const API_FOTOS = "https://semaforo-de-alerta-servidor-fotos.onrender.com";
 function manejarArchivo(input, tipo) {
     if (input.files && input.files.length > 0) {
         procesarArchivos(Array.from(input.files), tipo);
