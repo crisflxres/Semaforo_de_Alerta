@@ -48,7 +48,8 @@ document.addEventListener("DOMContentLoaded", () => {
         1: "Administrador",
         2: "Docente",
         3: "Tutor Académico",
-        4: "Alumno"
+        4: "Alumno",
+        5: "Docente/Tutor"
     };
 
     const elCargo = document.getElementById("txt-cargo");

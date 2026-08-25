@@ -1,3 +1,5 @@
+const API = 'https://semaforo-de-alerta.onrender.com';
+
 document.addEventListener("DOMContentLoaded", () => {
 
     // --- 1. MENÚ LATERAL ---
@@ -13,7 +15,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-// --- 2. DATOS ---
+    // --- 2. DATOS ---
     const gruposPorPagina = 12;
     let paginaActual  = 1;
     let textoBusqueda = "";
@@ -22,21 +24,25 @@ document.addEventListener("DOMContentLoaded", () => {
     const colores = ["bg-rosa","bg-azul","bg-amarillo","bg-verde","bg-naranja",
                      "bg-morado","bg-azul_claro","bg-cafe","bg-gris","bg-rojo"];
 
-    fetch("https://semaforo-de-alerta.onrender.com/grupos")
-        .then(res => res.json())
-        .then(respuesta => {
-            if (respuesta.success) {
-                todosLosGrupos = respuesta.data.map((g, i) => ({
-                    id:      g.Id_Grupo,
-                    nombre:  g.Nombre,
-                    alumnos: g.Alumnos,
-                    turno:   g.Turno,
-                    color:   colores[i % colores.length]
-                }));
-                renderizar();
-            }
-        })
-        .catch(err => console.error("Error al cargar grupos:", err));
+    function cargarGrupos() {
+        fetch(`${API}/grupos`)
+            .then(res => res.json())
+            .then(respuesta => {
+                if (respuesta.success) {
+                    todosLosGrupos = respuesta.data.map((g, i) => ({
+                        id:      g.Id_Grupo,
+                        nombre:  g.Nombre,
+                        alumnos: g.Alumnos,
+                        turno:   g.Turno,
+                        color:   colores[i % colores.length]
+                    }));
+                    renderizar();
+                }
+            })
+            .catch(err => console.error("Error al cargar grupos:", err));
+    }
+
+    cargarGrupos();
 
     // --- 3. PANEL ---
     const panelRegistro    = document.getElementById("panelRegistro");
@@ -68,17 +74,61 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!nombre) { alert("El nombre del grupo es obligatorio."); return; }
 
         if (indice > -1) {
-            todosLosGrupos[indice].nombre  = nombre;
-            todosLosGrupos[indice].alumnos = alumnos;
-            todosLosGrupos[indice].turno   = turno;
-        } else {
-            const colores = ["bg-rosa","bg-azul","bg-amarillo","bg-verde","bg-naranja","bg-morado","bg-azul_claro","bg-cafe"];
-            todosLosGrupos.push({ nombre, alumnos, turno, color: colores[Math.floor(Math.random() * colores.length)] });
-        }
+            // --- EDITAR (PUT) ---
+            const idGrupo = todosLosGrupos[indice].id;
 
-        renderizar();
-        panelRegistro.classList.add("hidden");
-        document.getElementById("indiceEdicion").value = "-1";
+            fetch(`${API}/grupos/${idGrupo}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ Nombre: nombre, Alumnos: alumnos, Turno: turno })
+            })
+            .then(res => res.json())
+            .then(resultado => {
+                if (resultado.success) {
+                    todosLosGrupos[indice].nombre  = nombre;
+                    todosLosGrupos[indice].alumnos = alumnos;
+                    todosLosGrupos[indice].turno   = turno;
+                    renderizar();
+                    panelRegistro.classList.add("hidden");
+                    document.getElementById("indiceEdicion").value = "-1";
+                } else {
+                    alert("Error al editar grupo: " + resultado.message);
+                }
+            })
+            .catch(err => {
+                console.error("Error al editar grupo:", err);
+                alert("No se pudo conectar con el servidor.");
+            });
+
+        } else {
+            // --- CREAR (POST) ---
+            fetch(`${API}/grupos`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ Nombre: nombre, Alumnos: alumnos, Turno: turno })
+            })
+            .then(res => res.json())
+            .then(resultado => {
+                if (resultado.success) {
+                    todosLosGrupos.push({
+                        id:      resultado.id_grupo ?? resultado.data?.Id_Grupo,
+                        nombre,
+                        alumnos,
+                        turno,
+                        color: colores[Math.floor(Math.random() * colores.length)]
+                    });
+                    renderizar();
+                    panelRegistro.classList.add("hidden");
+                    document.getElementById("indiceEdicion").value = "-1";
+                } else {
+                    alert("Error al crear grupo: " + resultado.message);
+                }
+            })
+            .catch(err => {
+                console.error("Error al crear grupo:", err);
+                alert("No se pudo conectar con el servidor.");
+            });
+        }
     });
 
     // --- 4. BUSCADOR ---
@@ -223,8 +273,22 @@ document.addEventListener("DOMContentLoaded", () => {
     window.eliminarGrupo = (index) => {
         cerrarTodosLosMenus();
         if (confirm("¿Eliminar este grupo?")) {
-            todosLosGrupos.splice(index, 1);
-            renderizar();
+            const idGrupo = todosLosGrupos[index].id;
+
+            fetch(`${API}/grupos/${idGrupo}`, { method: "DELETE" })
+                .then(res => res.json())
+                .then(resultado => {
+                    if (resultado.success) {
+                        todosLosGrupos.splice(index, 1);
+                        renderizar();
+                    } else {
+                        alert("Error al eliminar grupo: " + resultado.message);
+                    }
+                })
+                .catch(err => {
+                    console.error("Error al eliminar grupo:", err);
+                    alert("No se pudo conectar con el servidor.");
+                });
         }
     };
 
