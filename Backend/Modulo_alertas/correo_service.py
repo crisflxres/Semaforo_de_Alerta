@@ -5,10 +5,10 @@ import uuid
 import requests
 
 SENDINBLUE_API_KEY = os.environ.get("SENDINBLUE_API_KEY")
-BREVO_SENDER_EMAIL = "semaalert@gmail.com"
+BREVO_SENDER_EMAIL = "silviabrizet@gmail.com"
 BREVO_SENDER_NAME = "Sistema de Alertas CECyTEH"
 
-def enviar_correo(destinatario, asunto, cuerpo_procesado, imagenes):
+def enviar_correo(destinatario, asunwto, cuerpo_procesado, imagenes):
     """
     Envía un correo usando la API HTTP de Brevo (ya no usa SMTP,
     porque Render bloquea las conexiones SMTP salientes).
