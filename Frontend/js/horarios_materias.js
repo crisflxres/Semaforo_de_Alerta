@@ -155,11 +155,10 @@ async function iniciar() {
                     })
                 });
             } else {
-                respuesta = await fetch(`${BASE_URL}/api/materias`, {
+                respuesta = await fetch(`${BASE_URL}/api/materias/${todasLasMaterias[indice].id_materia}`, {
                     method: "PUT",
                     headers: obtenerHeadersAuth(true),
                     body: JSON.stringify({
-                        Id_Materia: todasLasMaterias[indice].id_materia,
                         Nombre: nombre,
                         Semestre: semestre,
                         Clave_Carrera: clave_carrera,
@@ -185,6 +184,8 @@ async function iniciar() {
 
         panelRegistro.classList.add("hidden");
         document.getElementById("indiceEdicion").value = "-1";
+
+        alert(indice === -1 ? "Materia creada correctamente." : "Materia editada correctamente.");
     });
 
     // --- 4. BUSCADOR ---
@@ -333,12 +334,9 @@ async function iniciar() {
         cerrarTodosLosMenus();
         if (confirm("¿Eliminar esta materia?")) {
             try {
-                const respuesta = await fetch(`${BASE_URL}/api/materias`, {
+                const respuesta = await fetch(`${BASE_URL}/api/materias/${todasLasMaterias[index].id_materia}`, {
                     method: "DELETE",
-                    headers: obtenerHeadersAuth(true),
-                    body: JSON.stringify({
-                        Id_Materia: todasLasMaterias[index].id_materia
-                    })
+                    headers: obtenerHeadersAuth(true)
                 });
 
                 if (!respuesta.ok) {
@@ -355,6 +353,8 @@ async function iniciar() {
 
             await obtenerMaterias();
             renderizar();
+
+            alert("Materia eliminada correctamente.");
         }
     };
 

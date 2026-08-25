@@ -49,6 +49,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const selectTurno = document.getElementById('filtro-turno');
     const selectEstado = document.getElementById('filtro-estado');
 
+    // FIX 2: forzamos limpieza de los campos apenas arranca la pagina, por si
+    // el navegador restauro automaticamente valores viejos al recargar (F5).
+    // Esto es un comportamiento nativo del navegador, no de nuestro JS.
+    if (inputBuscar) inputBuscar.value = '';
+    [selectGrupo, selectCarrera, selectSemestre, selectTurno, selectEstado].forEach(select => {
+        if (select) select.value = 'Todos';
+    });
+
     // FIX: ya no se restauran filtros guardados de sessionStorage al cargar
     // la pagina. Antes: let filtrosPendientes = obtenerFiltrosGuardados();
     let filtrosPendientes = null;
