@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- 2. ESTADO DE PAGINACION Y FILTROS ---
-    const API_BASE = 'https://semaforo-de-alerta.onrender.com';
+    const API_BASE = 'https://semaforo-de-alerta-f2kf.onrender.com';
     const POR_PAGINA = 25;
 
     let paginaActual = 1;

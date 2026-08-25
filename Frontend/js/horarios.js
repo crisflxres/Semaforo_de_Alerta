@@ -1,5 +1,5 @@
 // Ajusta esto si tu backend corre en otra IP/puerto
-const API_BASE = "https://semaforo-de-alerta.onrender.com";
+const API_BASE = "https://semaforo-de-alerta-f2kf.onrender.com";
 
 document.addEventListener("DOMContentLoaded", () => {
 

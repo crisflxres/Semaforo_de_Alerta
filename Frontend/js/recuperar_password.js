@@ -1,5 +1,5 @@
 // Cambia esta URL por la ruta real de tu backend Flask
-const RECOVERY_ENDPOINT = "https://semaforo-de-alerta.onrender.com/api/recuperar-password";
+const RECOVERY_ENDPOINT = "https://semaforo-de-alerta-f2kf.onrender.com/api/recuperar-password";
 const form = document.getElementById("recoverForm");
 const btn = document.getElementById("sendBtn");
 const feedback = document.getElementById("feedback");

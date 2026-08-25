@@ -81,35 +81,34 @@ def insertar_docentes(cursor, docente):
     return cursor.lastrowid
 
 
-if __name__ == "__main__":
-    # ---- Rutas de los archivos locales ----
-    hoja3 = pd.read_excel(r"C:\Users\crisf\OneDrive\Documentos\UPT\SEXTO CUATRIMESTRE_SERVICIO_SOCIAL_(TSU)\Proyecto_Documentacion\Datos Programa.xlsx", skiprows=7)
-    hoja_docentes = pd.read_excel(r"C:\Users\crisf\OneDrive\Documentos\UPT\SEXTO CUATRIMESTRE_SERVICIO_SOCIAL_(TSU)\Proyecto_Documentacion\archivos de prueba\correos docentes.xlsx")
+# ---- Rutas de los archivos locales ----
+hoja3 = pd.read_excel(r"C:\Users\crisf\OneDrive\Documentos\UPT\SEXTO CUATRIMESTRE_SERVICIO_SOCIAL_(TSU)\Proyecto_Documentacion\Datos Programa.xlsx", skiprows=7)
+hoja_docentes = pd.read_excel(r"C:\Users\crisf\OneDrive\Documentos\UPT\SEXTO CUATRIMESTRE_SERVICIO_SOCIAL_(TSU)\Proyecto_Documentacion\archivos de prueba\correos docentes.xlsx")
 
-    tutores = importar_tutores(hoja3)
-    docentes = importar_docentes(hoja_docentes)
+tutores = importar_tutores(hoja3)
+docentes = importar_docentes(hoja_docentes)
 
-    conexion = obtener_conexion()
-    cursor = conexion.cursor()
+conexion = obtener_conexion()
+cursor = conexion.cursor()
 
-    # Docentes primero (algunos tutores pueden ya existir como docentes con rol 5)
-    for docente in docentes:
-        insertar_docentes(cursor, docente)
+# Docentes primero (algunos tutores pueden ya existir como docentes con rol 5)
+for docente in docentes:
+    insertar_docentes(cursor, docente)
 
-    mapa_grupos = obtener_mapa_grupos(cursor)
+mapa_grupos = obtener_mapa_grupos(cursor)
 
-    for tutor in tutores:
-        id_usuario = insertar_tutores_usuarios(cursor, tutor)
-        if id_usuario is None:
-            continue  # ya se imprimió el aviso dentro de la función
-        id_grupo = mapa_grupos.get(tutor["grupo"])
-        if id_grupo is None:
-            print(f"Aviso: el grupo '{tutor['grupo']}' del tutor {tutor['tutor']} no existe en la tabla grupos. Se omite.")
-            continue
-        insertar_tutor_grupo(cursor, id_usuario, id_grupo)
+for tutor in tutores:
+    id_usuario = insertar_tutores_usuarios(cursor, tutor)
+    if id_usuario is None:
+        continue  # ya se imprimió el aviso dentro de la función
+    id_grupo = mapa_grupos.get(tutor["grupo"])
+    if id_grupo is None:
+        print(f"Aviso: el grupo '{tutor['grupo']}' del tutor {tutor['tutor']} no existe en la tabla grupos. Se omite.")
+        continue
+    insertar_tutor_grupo(cursor, id_usuario, id_grupo)
 
-    conexion.commit()
-    cursor.close()
-    conexion.close()
+conexion.commit()
+cursor.close()
+conexion.close()
 
-    print(f"Listo: {len(docentes)} docentes y {len(tutores)} tutores procesados.")
+print(f"Listo: {len(docentes)} docentes y {len(tutores)} tutores procesados.")
