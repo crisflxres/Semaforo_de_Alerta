@@ -7,7 +7,7 @@ tutor_bp = Blueprint('tutor_bp', __name__)
 
 
 @tutor_bp.route('/api/tutor/<matricula>', methods=['GET'])
-@requiere_rol(1, 2, 3, 5)
+@requiere_rol(1, 2, 3, 4, 5)
 def get_tutor(matricula):
     conexion = None
     try:
